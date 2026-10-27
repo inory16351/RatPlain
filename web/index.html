@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>슈퍼맨 쥐 · 전투 데모</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d2633; overflow: hidden; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; }
+  #wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  canvas { display: block; cursor: none; }
+  .ov { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; background: rgba(20, 30, 45, .55); text-align: center; gap: 14px; cursor: default; }
+  .ov.on { display: flex; }
+  .ov h1 { margin: 0; font-size: 46px; letter-spacing: 1px; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
+  .ov p { margin: 0; font-size: 17px; line-height: 1.7; opacity: .92; }
+  .ov .keys { background: rgba(255,255,255,.12); border-radius: 12px; padding: 12px 22px; }
+  .ov button { font: inherit; font-size: 20px; padding: 10px 34px; border: 0; border-radius: 999px; background: #e9503f; color: #fff; cursor: pointer; box-shadow: 0 4px 0 #a8342a; }
+  .ov button:active { transform: translateY(3px); box-shadow: 0 1px 0 #a8342a; }
+  .ov .row { display: flex; gap: 14px; }
+  .ov button.sub { background: #3d8fd1; box-shadow: 0 4px 0 #2a6597; }
+  .ov button.sub:active { box-shadow: 0 1px 0 #2a6597; }
+
+  /* ── 격납고 */
+  #hangar { background: rgba(16, 24, 36, .94); justify-content: flex-start; gap: 0; overflow: auto; }
+  #hangar .hg { width: min(1500px, 100%); box-sizing: border-box; padding: 18px 22px 24px; display: grid; grid-template-columns: 330px 1fr 420px; grid-template-rows: auto auto 1fr; gap: 16px; text-align: left; }
+  #hangar header { grid-column: 1 / -1; display: flex; align-items: center; gap: 18px; }
+  #hangar header h1 { font-size: 34px; margin-right: auto; }
+  .money { display: flex; align-items: center; gap: 6px; font-size: 22px; font-weight: bold; background: rgba(255,255,255,.08); padding: 6px 14px; border-radius: 999px; }
+  .money img { width: 28px; height: 28px; object-fit: contain; }
+  #hangar button { font-size: 17px; padding: 8px 22px; }
+  #hangar button.small { font-size: 13px; padding: 5px 12px; background: #4a5566; box-shadow: 0 3px 0 #2f3744; }
+  #hangar button:disabled { background: #4a5566; box-shadow: 0 3px 0 #2f3744; opacity: .6; cursor: default; }
+  /* 스테이지 고르기 */
+  #hg-stages { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .stg { background: rgba(255,255,255,.06); border: 2px solid rgba(255,255,255,.1); border-radius: 14px; padding: 8px 12px; cursor: pointer; }
+  .stg:hover { border-color: rgba(255,255,255,.35); }
+  .stg.on { border-color: #ffd45c; background: rgba(255,212,92,.12); }
+  .stg.lock { opacity: .4; cursor: default; }
+  .stg .sn { font-weight: bold; font-size: 16px; } .stg .ok { color: #8ef08a; }
+  .stg .st { font-size: 13px; opacity: .85; } .stg .sb { font-size: 12px; opacity: .7; margin-top: 3px; }
+  .panel { background: rgba(255,255,255,.06); border-radius: 16px; padding: 14px 16px; }
+  .panel h2 { margin: 0 0 10px; font-size: 19px; opacity: .85; }
+  /* 왼쪽: 선택한 기체 */
+  #hg-prev canvas { width: 100%; height: 220px; display: block; background: radial-gradient(circle at 50% 55%, rgba(120,170,220,.25), transparent 70%); border-radius: 12px; }
+  #hg-prev .nm { font-size: 24px; font-weight: bold; margin-top: 8px; }
+  #hg-prev .kd { opacity: .75; font-size: 15px; }
+  #hg-prev .ds { font-size: 14px; line-height: 1.55; opacity: .85; margin: 8px 0 12px; min-height: 44px; }
+  .stats { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; font-size: 15px; margin-bottom: 14px; }
+  .stats .v { text-align: right; font-weight: bold; }
+  .stats .d { min-width: 44px; text-align: right; font-weight: bold; }
+  .up { color: #8ef08a; } .dn { color: #ff8a7a; }
+  .tier { display: inline-block; font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 999px; color: #1d2633; margin-right: 6px; vertical-align: middle; }
+  /* 가운데: 진화 트리 */
+  #hg-tree { position: relative; }
+  #hg-tree .grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 150px); gap: 14px 26px; }
+  #hg-tree .era { text-align: center; font-size: 13px; opacity: .6; margin-bottom: 6px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+  #hg-tree svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .node { position: relative; z-index: 1; background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.12); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform .1s; }
+  .node:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.35); }
+  .node canvas { width: 100%; height: 84px; }
+  .node .nm { font-size: 14px; font-weight: bold; }
+  .node .st { font-size: 12px; opacity: .8; }
+  .node.own { background: rgba(90,160,110,.18); }
+  .node.use { border-color: #ffd45c; box-shadow: 0 0 0 2px rgba(255,212,92,.35); }
+  .node.lock { opacity: .4; }
+  .node.sel { outline: 3px solid #7fd3ff; outline-offset: 2px; }
+  /* 오른쪽: 파츠 */
+  #hg-parts { overflow: auto; max-height: calc(100vh - 120px); }
+  .slot { margin-bottom: 12px; }
+  .slot h3 { margin: 0 0 6px; font-size: 15px; display: flex; justify-content: space-between; opacity: .9; }
+  .slot.lock h3 { opacity: .45; }
+  .part { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; background: rgba(255,255,255,.05); margin-bottom: 4px; border-left: 4px solid var(--g); }
+  .part:hover { background: rgba(255,255,255,.1); }
+  .part .ic { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .part .pn { font-size: 15px; font-weight: bold; }
+  .part .pd { font-size: 12px; opacity: .75; }
+  .part.on { background: rgba(255,212,92,.14); }
+  .part.lock { opacity: .4; }
+  .part button { font-size: 13px !important; padding: 5px 12px !important; }
+  .part .tag { font-size: 12px; font-weight: bold; color: #ffd45c; }
+  .cost { white-space: nowrap; }
+  .cost img { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="cv" width="1600" height="900"></canvas></div>
+<div class="ov on" id="title">
+  <h1>슈퍼맨 쥐 · 전투 데모</h1>
+  <p>연구자료를 노리는 하늘 고양이와 맹금류를 막아라!</p>
+  <p class="keys">WASD / 방향키 = 날아갈 방향 &nbsp;·&nbsp; 마우스 = 조준, 왼쪽 클릭(누르고 있기) = 사격 &nbsp;·&nbsp; Space = 부스트<br>쏘지 않으면 체력이 회복돼요 · 매가 빨간 점선을 그으면 피하기 · 적은 움직이니 앞질러 쏘기</p>
+  <div class="row"><button id="startBtn">출격</button><button class="sub hangarBtn">격납고</button></div>
+</div>
+<div class="ov" id="result">
+  <h1 id="resTitle"></h1>
+  <p id="resText"></p>
+  <div class="row"><button class="sub hangarBtn">격납고</button><button class="sub" id="againBtn">다시 출격</button><button id="nextBtn">다음 스테이지</button></div>
+</div>
+<div class="ov" id="hangar"></div>
+<script src="../art/sprites/sprites.js"></script>
+<script src="stages.js"></script>
+<script src="upgrades.js"></script>
+<script src="vector.js"></script>
+<script src="backgrounds.js"></script>
+<script src="game.js"></script>
+<script src="hangar.js"></script>
+</body>
+</html>

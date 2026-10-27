@@ -1,0 +1,11 @@
+# 웹 단일 HTML 빌드 산출물 (node tools/build_single.js 로 다시 만듦)
+build/
+# Codex 생성 로그
+art/**/log_*.txt
+# Unity (나중에 unity/ 폴더로 추가 예정)
+unity/[Ll]ibrary/
+unity/[Tt]emp/
+unity/[Oo]bj/
+unity/[Ll]ogs/
+unity/[Bb]uild*/
+unity/[Uu]ser[Ss]ettings/

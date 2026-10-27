@@ -1,0 +1,10 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: boss_king.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached images show our game's art style and characters (cute cats and birds that attack a superhero mouse pilot). This is a NEW enemy for a top-down shoot-em-up.
+
+Image spec:
+- 1536x1536 square. ONE wide subject, centered, filling about 88% of the image width, fully inside the image.
+- SUBJECT: a ROYAL CAT ROCKET SHIP final boss seen from directly ABOVE: a big fat red-and-gold rocket ship with gold bands, a pointed gold nose cone at the RIGHT, large swept red tail fins with gold edges and three round rocket nozzles at the LEFT, small front fins, a glass bubble dome near the front where a fluffy WHITE CAT KING wearing a golden CROWN is visible from above.
+- CAMERA (very important): strict TOP-DOWN view, looking straight down from directly above (bird's-eye view like a classic 2D top-down shoot-em-up such as 1942), NOT side view, NOT isometric, NOT 3/4 view. The subject points to the RIGHT of the image: its nose/head is at the RIGHT, its tail at the LEFT, wings spread toward the TOP and BOTTOM of the image, symmetrical top/bottom.
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no ground, no sea, no shadow, no clouds, no vignette, no frame. The subject itself must not contain magenta or purple-pink; small soft-pink mouse ears, nose, paws and tail are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO speed effects, NO text, NO letters, NO logos.
