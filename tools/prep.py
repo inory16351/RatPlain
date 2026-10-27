@@ -39,6 +39,13 @@ SHEETS = {
     # 파츠 아이콘 3×3 (web/upgrades.js 의 PARTS.icon)
     'parts_a': (3, 3, 46, False),
     'parts_b': (3, 3, 46, False),
+    # 기체별 장비: c = 새 슬롯 종류(조준기 · 기수포 · 레이더 · 폭탄창 · 기총탑), u1~u3 = 희귀 · 전설 고유 장비 (web/upgrades.js 의 ICON)
+    'parts_c': (3, 3, 46, False),
+    'parts_u1': (3, 3, 46, False),
+    'parts_u2': (3, 3, 46, False),
+    'parts_u3': (3, 1, 46, False),
+    # 연구소(제작 의뢰) 화면의 과학자 쥐
+    'scientist': (1, 1, 220, False),
     'e_cat': (1, 1, 130, False),
     'e_hawk': (2, 1, 120, True),
     'boss': (1, 1, 480, False),
@@ -51,7 +58,7 @@ SHEETS = {
     'title_art': (1, 1, 640, False),
 }
 # 작은 얼룩(떨어진 조각)을 지울 시트 — 아이콘처럼 한 덩어리인 것만
-CLEAN = {'parts_a', 'parts_b', 'items'}
+CLEAN = {'parts_a', 'parts_b', 'parts_c', 'parts_u1', 'parts_u2', 'parts_u3', 'items'}
 # 마젠타 없는 통 배경: 이름 → 게임 속 가로 px
 BACKS = {'title_bg': 1280}
 SCALE = 2

@@ -1,0 +1,18 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: parts_c.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached image is our player plane (a cute toy-like biplane piloted by a superhero mouse). Make a SHEET of airplane EQUIPMENT ICONS for its workshop/hangar screen.
+
+Image spec:
+- 1536x1536 square, an evenly spaced 3 columns x 3 rows GRID of 9 separate icons, each icon centered in its own cell, each filling about 65% of its cell, with wide empty magenta gaps between icons (nothing touches or crosses cell borders). No grid lines drawn.
+- Each icon is ONE object seen in a slight 3/4 view, in reading order (left to right, top to bottom):
+1. a simple iron ring-and-bead gun sight on a small mount
+2. a long brass telescopic gun sight scope
+3. a short stubby nose machine gun with a round ammo drum
+4. a pair of short nose cannons side by side on one mount
+5. a small round radar dish on a short pole
+6. a white rounded radar dome on a metal base
+7. a single small teardrop-shaped aerial bomb with tail fins
+8. a small bomb rack holding two teardrop bombs
+9. an open ring-mounted rear machine gun turret with one barrel
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no ground, no sea, no shadow, no clouds, no vignette, no frame. The subject itself must not contain magenta or purple-pink; small soft-pink mouse ears, nose, paws and tail are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO speed effects, NO text, NO letters, NO logos, NO numbers, NO insignia.

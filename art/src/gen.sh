@@ -12,11 +12,12 @@ refs(){ case $1 in
   e_bomber|boss_ship|boss_king) echo "-i side/boss.png -i ref_cats.png";;
   fx) echo "-i items.png -i ref_cats.png";;
   title_art) echo "-i player.png -i side/player.png -i ref_hero.png -i ref_scientist.png -i ref_cats.png";;
+  scientist) echo "-i ref_scientist.png -i ref_hero.png";;
   title_bg) echo "-i clouds.png -i islands.png";;
   *) echo "-i side/player.png -i ref_cats.png";;
 esac; }
 names=${*:-"player e_cat e_hawk boss islands"}
 for n in $names; do
-  bash /c/Project/NKK_PROJECT/Tools/codex.sh exec --skip-git-repo-check --ephemeral -s workspace-write -C "$PWD" $(refs $n) - < prompt_$n.txt > log_$n.txt 2>&1 &
+  bash /c/Dev/NKK_PROJECT/Tools/codex.sh exec --skip-git-repo-check --ephemeral -s workspace-write -C "$PWD" $(refs $n) - < prompt_$n.txt > log_$n.txt 2>&1 &
 done
 wait; ls -la *.png

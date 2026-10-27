@@ -1,0 +1,18 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: parts_u1.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached image is our player plane (a cute toy-like biplane piloted by a superhero mouse). Make a SHEET of airplane LEGENDARY and RARE UNIQUE EQUIPMENT (each one special and distinctive, a bit more ornate and precious-looking) ICONS for its workshop/hangar screen.
+
+Image spec:
+- 1536x1536 square, an evenly spaced 3 columns x 3 rows GRID of 9 separate icons, each icon centered in its own cell, each filling about 65% of its cell, with wide empty magenta gaps between icons (nothing touches or crosses cell borders). No grid lines drawn.
+- Each icon is ONE object seen in a slight 3/4 view, in reading order (left to right, top to bottom):
+1. an ammunition belt whose bullets are cheese-yellow with little holes like swiss cheese
+2. a canvas wing tip with a small colorful pinwheel spinning on it
+3. a prototype engine with a glass dome showing gears inside, brass bolts, a cheese tank and a tiny antenna (made by a scientist mouse)
+4. a brass gun sight scope decorated with a brown hawk feather
+5. an ammunition belt of bullets with bright red-orange tips
+6. a sleek swept wing shaped like a forked swallow tail
+7. a riveted armor plate with a thick layer of yellow cheese padding with holes
+8. a stubby big-bore cannon barrel with a muzzle brake
+9. two small radial engines joined together by a red heart-shaped connector
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no ground, no sea, no shadow, no clouds, no vignette, no frame. The subject itself must not contain magenta or purple-pink; small soft-pink mouse ears, nose, paws and tail are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO speed effects, NO text, NO letters, NO logos, NO numbers, NO insignia.

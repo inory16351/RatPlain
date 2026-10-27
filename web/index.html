@@ -80,6 +80,56 @@
   .part button { font-size: 13px !important; padding: 5px 12px !important; }
   .part .tag { font-size: 12px; font-weight: bold; color: #ffd45c; }
   .cost { white-space: nowrap; }
+  /* 탭 */
+  #hangar nav { display: flex; gap: 6px; background: rgba(255,255,255,.06); padding: 4px; border-radius: 999px; }
+  #hangar .tabb { background: transparent; box-shadow: none; font-size: 16px; padding: 6px 20px; }
+  #hangar .tabb.on { background: #3d8fd1; box-shadow: 0 3px 0 #2a6597; }
+  #hangar .wide { grid-column: 2 / -1; }
+  .slots-line { color: #ffd45c; }
+  .part .ic { border: 2px solid var(--g, transparent); box-sizing: border-box; }
+  .part .ic.empty { border: 2px dashed rgba(255,255,255,.25); opacity: .6; }
+  .part.emptyrow { border-left-color: rgba(255,255,255,.15); }
+  .part .cnt { font-size: 12px; opacity: .7; }
+  .none, .note { font-size: 13px; opacity: .7; line-height: 1.6; margin: 4px 0 10px; }
+  /* 장비 탭 */
+  #hg-slots, #hg-inv, #lab-inv { overflow: auto; max-height: calc(100vh - 230px); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  #hangar .chip { font-size: 13px; padding: 5px 12px; background: #4a5566; box-shadow: 0 3px 0 #2f3744; }
+  #hangar .chip.on { background: #3d8fd1; box-shadow: 0 3px 0 #2a6597; }
+  #hangar .chip.dim { opacity: .55; }
+  .chip b { color: #ffd45c; }
+  /* 연구소 탭 */
+  .tab-lab { grid-template-rows: auto 1fr !important; }
+  #lab-sci { text-align: center; }
+  #lab-sci .sci { width: 100%; max-height: 52vh; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.3)); }
+  #lab-sci .kd { opacity: .6; font-size: 13px; margin-top: 8px; }
+  .bubble { position: relative; background: #fff; color: #1d2633; border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 1.5; margin-top: 10px; text-align: left; }
+  .bubble::before { content: ''; position: absolute; top: -10px; left: 50%; border: 10px solid transparent; border-top: 0; border-bottom-color: #fff; transform: translateX(-50%); }
+  .amt { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 14px; }
+  .amt input { width: 100%; accent-color: #ffd45c; }
+  .presets { display: flex; gap: 6px; }
+  .odds { display: grid; gap: 8px; margin-bottom: 14px; }
+  .orow { display: grid; grid-template-columns: 42px 1fr 58px 36px; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; }
+  .orow b { text-align: right; } .orow .pool { font-size: 12px; opacity: .55; font-weight: normal; }
+  .obar { height: 14px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; }
+  .obar i { display: block; height: 100%; border-radius: 999px; transition: width .15s; }
+  #hangar button.big { width: 100%; font-size: 20px; padding: 12px; }
+  #hangar button.big .cost img { width: 22px; height: 22px; }
+  .result { margin-top: 18px; text-align: center; background: rgba(255,255,255,.06); border: 2px solid var(--g); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; animation: pop .35s ease-out; }
+  .result.g2 { box-shadow: 0 0 24px rgba(111,184,255,.35); } .result.g3 { box-shadow: 0 0 36px rgba(255,184,77,.55); animation: pop .35s ease-out, shine 1.6s ease-in-out infinite; }
+  .result .rh { font-size: 13px; opacity: .6; }
+  .result .ric { width: 110px; height: 110px; object-fit: contain; }
+  .result .rn { font-size: 22px; font-weight: bold; }
+  .result .pd { font-size: 14px; opacity: .85; max-width: 420px; }
+  .result .tag { font-size: 13px; font-weight: bold; color: #ffd45c; }
+  @keyframes pop { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes shine { 50% { box-shadow: 0 0 56px rgba(255,184,77,.8); } }
+  #lab-inv h2 .sub { font-size: 12px; font-weight: normal; opacity: .6; margin-left: 6px; }
+  .tray { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .tslot { width: 52px; height: 52px; border-radius: 10px; background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .tslot.empty { border: 2px dashed rgba(255,255,255,.2); opacity: .6; cursor: default; font-size: 20px; }
+  .tslot .ic { width: 46px; height: 46px; object-fit: contain; border: 2px solid var(--g); border-radius: 8px; box-sizing: border-box; }
+  .tray button { margin-left: auto; }
   .cost img { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; }
 </style>
 </head>
