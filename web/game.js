@@ -15,6 +15,7 @@
   // 칸 좌표 → 고정 난수 (섬 · 물결 자리가 매번 같게)
   const hash = (x, y, s = 0) => { let h = (x * 374761393 + y * 668265263 + s * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
   const qs = new URLSearchParams(location.search);
+  const FONT = "'Pretendard', 'Malgun Gothic', sans-serif"; // 오버레이(index.html)와 같은 글꼴
 
   // ── 그림
   function loadImage(src) {
@@ -72,10 +73,15 @@
   addEventListener('keydown', (e) => {
     if (DIRS[e.code]) { input.keys.add(e.code); e.preventDefault(); }
     if (e.code === 'Space') { input.boost = true; e.preventDefault(); }
-    if (e.code === 'KeyP') paused = !paused;
+    if (e.code === 'KeyP' || e.code === 'Escape') setPaused(!paused);
   });
   addEventListener('keyup', (e) => { input.keys.delete(e.code); if (e.code === 'Space') input.boost = false; });
-  addEventListener('blur', () => { input.fire = false; input.boost = false; input.keys.clear(); });
+  addEventListener('blur', () => { input.fire = false; input.boost = false; input.keys.clear(); if (running && !S.over) setPaused(true); });
+  function setPaused(v) {
+    if (!running || S.over) v = false; // 타이틀 · 결과 화면에서는 멈추지 않음
+    paused = v;
+    SND.hold(v);
+  }
   function wantDir() {
     let x = 0, y = 0;
     for (const k of input.keys) { x += DIRS[k][0]; y += DIRS[k][1]; }
@@ -488,7 +494,7 @@
   function updAirship(f, dt, d, rage) {
     const p = S.p;
     const ca = Math.cos(f.a), sa = Math.sin(f.a);
-    nextPat(f, [[3.2], [3.6], [2.2]]);
+    nextPat(f, [[3.2], [3.6, '나선 탄막!'], [2.2, '졸개 출동!']]);
     if (f.pat === 0) {
       // 대포 두 문: 플레이어가 갈 곳으로 큰 대포알
       if (f.cd <= 0) {
@@ -528,6 +534,7 @@
   function killFoe(f) {
     const D = FOE[f.kind], R = S.st.mult.reward;
     S.kills++;
+    S.stop = f.boss ? 0.25 : 0.035;
     boom(f.x, f.y, f.boss ? 3 : 1, FOE[f.kind].mat || 'feather');
     dropMany('gear', f, D.gear * R);
     dropMany('coin', f, D.coin * R * (1 + T.coinBonus));
@@ -550,6 +557,7 @@
 
   // ── 한 프레임
   function update(dt) {
+    if (S.stop > 0) { S.stop -= dt; return; }
     dt0 = dt;
     S.t += dt;
     S.bannerT -= dt;
@@ -577,6 +585,7 @@
         if (f.hp > 0 && f.st !== 'enter' && !b.hits.includes(f) && hitFoe(f, b.x, b.y, 6)) {
           f.hp -= b.dmg; f.hit = 0.08;
           SND.sfx('hit', 1, f.boss ? 0.8 : 1);
+          if (!f.boss) { const k = 7 * Math.min(2, b.dmg) / Math.hypot(b.vx, b.vy); f.x += b.vx * k; f.y += b.vy * k; }
           if (b.pierce > 0) { b.pierce--; b.hits.push(f); } else b.t = 99;
           S.fx.push({ type: 'spark', x: b.x, y: b.y, life: 0.12, t: 0, a: Math.atan2(b.vy, b.vx) });
           if (b.homing) burst(b.x, b.y, 5, '#ffb050', 160, 9, 0.35);
@@ -860,7 +869,21 @@
     drawClouds(c);
     drawBlizzard();
     if (S.flashT > 0) { ctx.fillStyle = `rgba(255,255,240,${S.flashT * 2.5})`; ctx.fillRect(0, 0, VW, VH); } // 번개 번쩍
+    drawVignette();
     drawHud();
+  }
+
+  // 화면 가장자리 붉은 테: 맞은 직후 0.5초 + 체력 30% 아래면 맥박
+  function drawVignette() {
+    const p = S.p;
+    if (S.over && !S.win) return;
+    const low = p.hp < T.hp * 0.3 ? (0.25 + 0.15 * Math.sin(S.t * 6)) * (1 - p.hp / (T.hp * 0.3)) : 0;
+    const a = Math.max(clamp(1 - p.hurt / 0.5, 0, 1) * 0.55, low);
+    if (a <= 0.01) return;
+    const g = ctx.createRadialGradient(VW / 2, VH / 2, VH * 0.35, VW / 2, VH / 2, VW * 0.62);
+    g.addColorStop(0, 'rgba(200,20,30,0)');
+    g.addColorStop(1, `rgba(200,20,30,${a})`);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
   }
 
   // 기체 그림: 전용 그림(spr)이 있으면 그대로, 아직 없으면 기본 그림 + 색 필터 · 크기로 대신
@@ -934,39 +957,39 @@
     ctx.textBaseline = 'middle';
     // 체력 · 부스트
     ctx.fillStyle = 'rgba(25,35,50,.45)'; roundRect(20, 18, 380, 78, 16); ctx.fill();
-    ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
+    ctx.font = `bold 20px ${FONT}`; ctx.fillStyle = '#fff'; ctx.textAlign = 'left';
     ctx.fillText('체력', 36, 42);
     bar(92, 32, 290, 20, p.hp / T.hp, p.hp < T.hp * 0.3 ? '#ff5a4e' : '#ff8f6b');
-    if (p.noFire > T.regenDelay && p.hurt > T.regenDelay && p.hp < T.hp) { ctx.fillStyle = '#b6ffb0'; ctx.font = 'bold 15px sans-serif'; ctx.fillText('회복 중', 300, 42); }
-    ctx.font = 'bold 20px sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText('부스트', 36, 74);
+    if (p.noFire > T.regenDelay && p.hurt > T.regenDelay && p.hp < T.hp) { ctx.fillStyle = '#b6ffb0'; ctx.font = `bold 15px ${FONT}`; ctx.fillText('회복 중', 300, 42); }
+    ctx.font = `bold 20px ${FONT}`; ctx.fillStyle = '#fff'; ctx.fillText('부스트', 36, 74);
     bar(112, 66, 270, 14, p.boost / T.boostMax, '#7fd3ff');
     // 재료
     ctx.fillStyle = 'rgba(25,35,50,.45)'; roundRect(VW - 260, 18, 240, 56, 16); ctx.fill();
     sprite('items', 0, VW - 228, 46, 0, 0.75, 0.75);
     sprite('items', 1, VW - 118, 46, 0, 0.75, 0.75);
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px sans-serif';
+    ctx.fillStyle = '#fff'; ctx.font = `bold 24px ${FONT}`;
     ctx.fillText(S.gear, VW - 200, 47); ctx.fillText(S.coin, VW - 90, 47);
     // 웨이브
-    ctx.textAlign = 'center'; ctx.font = 'bold 22px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.9)';
+    ctx.textAlign = 'center'; ctx.font = `bold 22px ${FONT}`; ctx.fillStyle = 'rgba(255,255,255,.9)';
     ctx.fillText(S.wave === W.length - 1 ? 'BOSS' : `WAVE ${S.wave + 1} / ${W.length - 1}`, VW / 2, 34);
     if (S.bannerT > 0) {
       const a = clamp(S.bannerT / 0.4, 0, 1) * clamp((2.4 - S.bannerT) / 0.25, 0, 1);
       ctx.globalAlpha = a;
       ctx.fillStyle = 'rgba(25,35,50,.5)'; ctx.fillRect(0, VH * 0.3 - 44, VW, 88);
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 54px sans-serif'; ctx.fillText(S.banner, VW / 2, VH * 0.3);
+      ctx.fillStyle = '#fff'; ctx.font = `bold 54px ${FONT}`; ctx.fillText(S.banner, VW / 2, VH * 0.3);
       ctx.globalAlpha = 1;
     }
     // 보스 체력
     const boss = S.foes.find((f) => f.boss);
     if (boss) {
-      ctx.fillStyle = '#fff'; ctx.font = 'bold 20px sans-serif'; ctx.fillText(S.st.bossName, VW / 2, VH - 62);
+      ctx.fillStyle = '#fff'; ctx.font = `bold 20px ${FONT}`; ctx.fillText(S.st.bossName, VW / 2, VH - 62);
       bar(VW / 2 - 400, VH - 44, 800, 18, boss.hp / boss.max, boss.hp < boss.max / 2 ? '#ff4f6d' : '#ffb03b');
       if (boss.kind === 'king') for (const k of [1 / 3, 2 / 3]) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(VW / 2 - 400 + 800 * k - 1.5, VH - 46, 3, 22); } // 구간 표시
     }
     // 보스 패턴 예고 문구
     if (S.warn && S.warn.t > 0) {
       ctx.globalAlpha = clamp(S.warn.t / 0.3, 0, 1);
-      ctx.font = 'bold 34px sans-serif'; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(60,10,20,.6)'; ctx.fillStyle = '#ffd0d6';
+      ctx.font = `bold 34px ${FONT}`; ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(60,10,20,.6)'; ctx.fillStyle = '#ffd0d6';
       ctx.strokeText(S.warn.text, VW / 2, VH * 0.2); ctx.fillText(S.warn.text, VW / 2, VH * 0.2);
       ctx.globalAlpha = 1;
     }
@@ -988,7 +1011,7 @@
     ctx.beginPath(); ctx.arc(input.mx, input.my, 14, 0, TAU); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(input.mx - 22, input.my); ctx.lineTo(input.mx - 8, input.my); ctx.moveTo(input.mx + 8, input.my); ctx.lineTo(input.mx + 22, input.my);
     ctx.moveTo(input.mx, input.my - 22); ctx.lineTo(input.mx, input.my - 8); ctx.moveTo(input.mx, input.my + 8); ctx.lineTo(input.mx, input.my + 22); ctx.stroke();
-    if (paused) { ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.fillRect(0, 0, VW, VH); ctx.fillStyle = '#fff'; ctx.font = 'bold 50px sans-serif'; ctx.fillText('일시정지 (P)', VW / 2, VH / 2); }
+    if (paused) { ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.fillRect(0, 0, VW, VH); ctx.fillStyle = '#fff'; ctx.font = `bold 50px ${FONT}`; ctx.fillText('일시정지 (P · Esc)', VW / 2, VH / 2); }
   }
 
   // ── 시작 · 끝
@@ -1016,6 +1039,7 @@
     if (Number.isInteger(i)) UP.pickStage(i);
     stageIdx = pickStage();
     for (const id of ['#title', '#result', '#hangar']) $(id).classList.remove('on');
+    paused = false; SND.hold(false);
     running = true;
     newGame(clamp(Number(qs.get('wave') || 1) - 1, 0, STAGES[stageIdx].waves.length - 1));
   }

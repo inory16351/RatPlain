@@ -53,29 +53,56 @@
       if (k >= 1) { clearInterval(el._f); if (done) done(); }
     }, 30);
   }
+  // 곡마다 같은 파일 두 개를 번갈아 씀: 끝나기 XFADE 초 전에 다른 쪽을 처음부터 틀며 겹쳐 넘김 (루프 이음매가 안 들리게)
+  const XFADE = 2.5;
+  let live = null, held = false; // 지금 소리 나는 <audio>, 일시정지 중
+  function deck(name, k) {
+    // loop = 길이를 모를 때(서버가 부분 요청을 못 받는 등) 그냥 처음으로 돌아가는 안전장치
+    const m = music[name] || (music[name] = [0, 1].map(() => Object.assign(new Audio(url(`../audio/bgm/${name}.mp3`)), { loop: true })));
+    return m[k];
+  }
+  function startDeck(name, k, fadeIn) {
+    const el = deck(name, k);
+    el._k = k; el._name = name;
+    el.currentTime = 0; el.volume = 0; el.muted = muted;
+    el.play().catch(() => {});
+    fade(el, BGM_VOL, fadeIn);
+    live = el;
+  }
+  setInterval(() => {
+    const el = live;
+    if (!el || held || !isFinite(el.duration) || el.paused) return;
+    if (el.duration - el.currentTime < XFADE) {
+      startDeck(el._name, 1 - el._k, XFADE * 0.6);
+      fade(el, 0, XFADE, () => el.pause());
+    }
+  }, 100);
   function play(name) {
     want = name;
     if (!ac) return; // 아직 첫 입력 전: 켜지면 want 를 틈
     if (cur === name) return;
-    if (cur) { const old = music[cur]; fade(old, 0, 0.6, () => old.pause()); }
+    if (live) { const old = live; fade(old, 0, 0.6, () => old.pause()); live = null; }
     cur = name;
     if (!name) return;
-    const el = music[name] || (music[name] = Object.assign(new Audio(url(`../audio/bgm/${name}.mp3`)), { loop: true }));
-    el.currentTime = 0; el.volume = 0; el.muted = muted;
-    el.play().catch(() => {});
-    fade(el, BGM_VOL, 0.8);
+    startDeck(name, 0, 0.8);
+  }
+  // 일시정지 동안 곡도 멈춤
+  function hold(v) {
+    held = v;
+    if (!live) return;
+    if (v) live.pause(); else live.play().catch(() => {});
   }
 
   function setMuted(m) {
     muted = m;
     try { localStorage.setItem('ratplain_mute', m ? '1' : '0'); } catch (e) {}
     if (out) out.gain.value = m ? 0 : 1;
-    for (const el of Object.values(music)) el.muted = m;
+    for (const d of Object.values(music)) for (const el of d) el.muted = m;
   }
   addEventListener('keydown', (e) => { if (e.code === 'KeyM') setMuted(!muted); });
 
   // 버튼 소리: 오버레이의 모든 버튼
   addEventListener('click', (e) => { if (e.target.closest('button')) sfx('ui_click'); }, true);
 
-  window.SND = { sfx, play, setMuted, get muted() { return muted; }, BGM, SFX };
+  window.SND = { sfx, play, hold, setMuted, get muted() { return muted; }, BGM, SFX, get now() { return live; } }; // now = 지금 곡 <audio> (확인용)
 })();
