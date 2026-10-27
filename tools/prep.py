@@ -11,6 +11,7 @@ import json
 import os
 
 import numpy as np
+from scipy import ndimage
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -44,7 +45,15 @@ SHEETS = {
     'items': (2, 2, 46, False),
     'clouds': (2, 2, 380, False),
     'islands': (2, 2, 560, False),
+    # 이펙트 2×2: 폭발 · 연기 · 파편 · 깃털/털 (web/game.js 폭발)
+    'fx': (2, 2, 90, False),
+    # 타이틀 화면 키아트
+    'title_art': (1, 1, 640, False),
 }
+# 작은 얼룩(떨어진 조각)을 지울 시트 — 아이콘처럼 한 덩어리인 것만
+CLEAN = {'parts_a', 'parts_b', 'items'}
+# 마젠타 없는 통 배경: 이름 → 게임 속 가로 px
+BACKS = {'title_bg': 1280}
 SCALE = 2
 
 
@@ -57,6 +66,19 @@ def key_magenta(img):
     mag = np.array([255.0, 0.0, 255.0])
     rgb = np.where(alpha[..., None] > 0.02, (a - spill * mag) / np.maximum(alpha[..., None], 0.02), 0)
     return np.dstack([np.clip(rgb, 0, 255), alpha * 255.0]).astype(np.uint8)
+
+
+def drop_specks(rgba, keep=0.15, thr=40):
+    """가장 큰 덩어리의 keep 배 보다 작은 조각은 투명하게"""
+    lab, n = ndimage.label(rgba[..., 3] > thr)
+    if n < 2:
+        return rgba
+    area = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+    small = np.isin(lab, 1 + np.where(area < area.max() * keep)[0])
+    near = ndimage.binary_dilation(~small & (lab > 0), iterations=4)  # 큰 덩어리 가장자리 반투명은 살림
+    out = rgba.copy()
+    out[..., 3][small | (~near & (rgba[..., 3] <= thr) & (lab == 0) & ndimage.binary_dilation(small, iterations=4))] = 0
+    return out
 
 
 def bbox(alpha, thr=40):
@@ -78,6 +100,8 @@ def main():
         H, W = rgba.shape[:2]
         cw, ch = W // cols, H // rows
         cells = [rgba[r * ch:(r + 1) * ch, c * cw:(c + 1) * cw] for r in range(rows) for c in range(cols)]
+        if name in CLEAN:
+            cells = [drop_specks(c) for c in cells]
         boxes = [bbox(c[..., 3]) for c in cells]
         if same:
             u = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
@@ -94,6 +118,17 @@ def main():
             frames.append({'img': fn, 'w': im.width / SCALE, 'h': im.height / SCALE})
         meta[name] = frames
         print(name, [(f['w'], f['h']) for f in frames])
+    for name, width in BACKS.items():
+        p = os.path.join(SRC, name + '.png')
+        if not os.path.exists(p):
+            print('없음', name)
+            continue
+        im = Image.open(p).convert('RGB')
+        im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)  # 배경은 1배 (크게 쓰므로)
+        fn = f'{name}_0.png'
+        im.save(os.path.join(OUT, fn))
+        meta[name] = [{'img': fn, 'w': im.width, 'h': im.height}]
+        print(name, im.size)
     with open(os.path.join(OUT, 'sprites.json'), 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     with open(os.path.join(OUT, 'sprites.js'), 'w', encoding='utf-8') as f:

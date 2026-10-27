@@ -13,7 +13,7 @@ node tools/serve.js
 
 **단일 HTML** (서버 없이 더블클릭): `node tools/build_single.js` → `build/쥐비행기_전투데모.html`
 
-확인용 주소: `?stage=3` = 그 스테이지, `?wave=4` = 그 웨이브부터(4 = 보스), `&god=1` = 무적, `?go=1` = 제목 화면 건너뜀, `&allstages=1` = 스테이지 다 열기. P = 일시정지.
+확인용 주소 (M = 소리 끄기/켜기): `?stage=3` = 그 스테이지, `?wave=4` = 그 웨이브부터(4 = 보스), `&god=1` = 무적, `?go=1` = 제목 화면 건너뜀, `&allstages=1` = 스테이지 다 열기. P = 일시정지.
 
 ## 전투
 - **탑뷰** 자유 공중전. 비행기는 늘 앞으로 날고, **WASD / 방향키 = 날아갈 방향**(그쪽으로 선회), **마우스 = 조준**, 왼쪽 클릭 = 사격(커서 쪽으로), Space = 부스트(게이지)
@@ -65,3 +65,16 @@ C:/Project/underworld-proto/.venv/Scripts/python.exe -I tools/prep.py
 ```
 마젠타 빼기 → 시트 격자 자르기 → 크기 맞춤. 시트 칸 수 · 게임 속 크기는 `prep.py` 의 `SHEETS`.
 그림은 모두 **탑뷰, 기수가 오른쪽** (코드에서 돌림). 처음 만든 옆모습 그림은 `art/src/side/` (탑뷰를 그릴 때 디자인 참조).
+
+## 소리 — `audio/`
+| 위치 | 내용 |
+|---|---|
+| `audio/bgm/title.mp3` | 타이틀 (2:42, 밝은 오케스트라 팝 120 BPM) |
+| `audio/bgm/battle.mp3` | 스테이지 전투 (2:51, 오케스트라 록 150 BPM) |
+| `audio/bgm/boss.mp3` | 보스전 (3:03, 단조 오케스트라 록 160 BPM) |
+| `audio/sfx/*.wav` | 효과음 17개 (사격 · 피격 · 폭발 · 줍기 · 부스트 · 예고 · 번개 · 보스 등장 · 클리어 · 추락 · UI) |
+
+- BGM = Gemini "음악 만들기" (2026-10-27). 앞뒤를 루프로 잇는 처리는 아직 안 함
+- 효과음 = 코드 합성: `C:/Project/underworld-proto/.venv/Scripts/python.exe -I tools/sfx.py` (숫자 고치고 다시 실행)
+- 재생 = `web/audio.js` (`SND.play(곡)` · `SND.sfx(이름)`, 볼륨 · 겹침 간격은 `MIX`). 첫 클릭 · 키 입력 뒤에 소리가 켜짐, **M = 소리 끄기/켜기**
+- 곡: 타이틀 · 격납고 = title, 출격 = battle, 보스 웨이브 = boss, 끝나면 멈추고 클리어 / 추락 소리

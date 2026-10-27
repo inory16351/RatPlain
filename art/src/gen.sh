@@ -10,6 +10,9 @@ refs(){ case $1 in
   player_*|parts_*) echo "-i player.png -i ref_hero.png";;
   e_swift|boss_eagle|boss_owl) echo "-i side/e_hawk.png -i ref_hero.png";;
   e_bomber|boss_ship|boss_king) echo "-i side/boss.png -i ref_cats.png";;
+  fx) echo "-i items.png -i ref_cats.png";;
+  title_art) echo "-i player.png -i side/player.png -i ref_hero.png -i ref_scientist.png -i ref_cats.png";;
+  title_bg) echo "-i clouds.png -i islands.png";;
   *) echo "-i side/player.png -i ref_cats.png";;
 esac; }
 names=${*:-"player e_cat e_hawk boss islands"}

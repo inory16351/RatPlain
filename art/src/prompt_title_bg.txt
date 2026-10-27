@@ -1,0 +1,8 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: title_bg.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached images show our game's art style (clouds and islands from our top-down sky shooter). This is the TITLE SCREEN BACKGROUND.
+
+Image spec:
+- 1536x864 wide landscape (16:9), full-bleed scene, NO magenta, no characters, no planes, no animals.
+- SCENE: a bright wide open sky seen from a slightly high side view: soft pale blue sky fading lighter toward the horizon, big fluffy cream-white cumulus clouds at the bottom and left and right edges, a calm teal sea far below with a few small green islands, and a gentle warm morning sun glow at the upper right. The CENTER and the upper middle stay calm and empty (space for the logo and the hero art on top).
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO text, NO letters, NO logos.

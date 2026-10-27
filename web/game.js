@@ -90,12 +90,12 @@
     cat: { hp: 7, r: 44, spr: 'e_cat', speed: 300, turn: 2.2, gear: 2, coin: 3 },
     hawk: { hp: 5, r: 40, spr: 'e_hawk', speed: 330, turn: 3.0, gear: 1, coin: 2 },
     swift: { hp: 3, r: 32, spr: 'e_swift', speed: 470, turn: 4.0, gear: 1, coin: 1 },   // 제비: 빠르게 지그재그로 스쳐 가며 2발
-    bomber: { hp: 24, r: 62, spr: 'e_bomber', speed: 170, turn: 1.0, gear: 4, coin: 5 }, // 폭격 고양이: 느리고 단단, 원형탄 + 3갈래
-    boss: { boss: true, hp: 360, r: 160, hit: [230, 95], spr: 'boss', speed: 120, turn: 0.7, gear: 15, coin: 30 },          // 1 고양이 비행선
+    bomber: { mat: 'metal', hp: 24, r: 62, spr: 'e_bomber', speed: 170, turn: 1.0, gear: 4, coin: 5 }, // 폭격 고양이: 느리고 단단, 원형탄 + 3갈래
+    boss: { mat: 'metal', boss: true, hp: 360, r: 160, hit: [230, 95], spr: 'boss', speed: 120, turn: 0.7, gear: 15, coin: 30 },          // 1 고양이 비행선
     eagle: { boss: true, hp: 700, r: 105, spr: 'boss_eagle', speed: 300, turn: 2.0, gear: 25, coin: 50 },                    // 2 천둥 독수리
     owl: { boss: true, hp: 1100, r: 115, spr: 'boss_owl', speed: 140, turn: 1.0, gear: 35, coin: 75 },                       // 3 눈보라 부엉이
-    ship: { boss: true, hp: 1800, r: 200, hit: [300, 95], spr: 'boss_ship', speed: 90, turn: 0.35, gear: 50, coin: 110 },   // 4 고양이 공중 전함
-    king: { boss: true, hp: 2800, r: 150, hit: [190, 130], spr: 'boss_king', speed: 160, turn: 1.0, gear: 80, coin: 160 },   // 5 고양이 대왕 로켓
+    ship: { mat: 'metal', boss: true, hp: 1800, r: 200, hit: [300, 95], spr: 'boss_ship', speed: 90, turn: 0.35, gear: 50, coin: 110 },   // 4 고양이 공중 전함
+    king: { mat: 'metal', boss: true, hp: 2800, r: 150, hit: [190, 130], spr: 'boss_king', speed: 160, turn: 1.0, gear: 80, coin: 160 },   // 5 고양이 대왕 로켓
   };
 
   // ── 상태
@@ -123,6 +123,7 @@
     const isBoss = W[i].some(([k]) => FOE[k].boss);
     S.banner = isBoss ? `보스 출현! ${S.st.bossName}` : i === 0 ? S.st.name : `WAVE ${i + 1}`;
     S.bannerT = 2.4;
+    if (running) { SND.play(isBoss ? 'boss' : 'battle'); if (isBoss) SND.sfx('boss_appear'); }
     S.pending = [];
     let delay = 0.8;
     for (const [kind, n] of W[i]) for (let k = 0; k < n; k++) { S.pending.push({ kind, at: delay }); delay += 0.6; }
@@ -149,8 +150,17 @@
       S.fx.push({ type: 'puff', x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: rnd(0.6, 1.2) * size, life, t: 0, col });
     }
   }
-  function boom(x, y, big = 1) {
+  // 그림 이펙트: fx 시트 칸 i (0 폭발 · 1 연기 · 2 파편 · 3 깃털/털), 크기 s0 → s1 로 커지며 사라짐
+  function sprFx(i, x, y, s0, s1, life, spin = 0) {
+    S.fx.push({ type: 'spr', i, x, y, s0, s1, life, t: 0, a: rnd(0, TAU), spin });
+  }
+  // mat = 'feather'(새 · 고양이 털) · 'metal'(비행선 · 폭격기 · 플레이어 비행기)
+  function boom(x, y, big = 1, mat = 'metal') {
     S.fx.push({ type: 'ring', x, y, r: 20 * big, life: 0.35, t: 0 });
+    sprFx(1, x, y, 0.8 * big, 1.9 * big, 0.9, rnd(-0.6, 0.6));
+    sprFx(0, x, y, 0.5 * big, 1.3 * big, 0.4, rnd(-1, 1));
+    sprFx(mat === 'feather' ? 3 : 2, x, y, 0.5 * big, 1.5 * big, 0.7, rnd(-2, 2));
+    SND.sfx(big >= 2 ? 'explode_big' : 'explode');
     burst(x, y, 10 * big, '#ffcf5a', 320 * big, 16 * big, 0.45);
     burst(x, y, 8 * big, '#ef6a3c', 240 * big, 14 * big, 0.55);
     burst(x, y, 6 * big, '#8d8f99', 120 * big, 22 * big, 0.9);
@@ -158,6 +168,7 @@
   }
   // 적 탄: home = 플레이어 쪽으로 꺾는 시간(초), acc = 초당 속도 변화(min · max 사이), shape = 'ball'(대포알) · 'feather' · 'flake'
   function eshot(x, y, a, spd, opts = {}) {
+    SND.sfx('enemy_shoot'); // 여러 발을 한꺼번에 쏴도 간격 제한으로 한 번
     S.eshots.push({
       x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, r: opts.r || 11, col: opts.col || '#ff5c8a', life: opts.life || 4, t: 0, dmg: opts.dmg || 8,
       ball: !!opts.ball, shape: opts.shape || (opts.ball ? 'ball' : null), home: opts.home || 0, homeTurn: opts.homeTurn || 1.6, acc: opts.acc || 0, min: opts.min ?? 60, max: opts.max ?? 900,
@@ -167,9 +178,9 @@
   function fan(x, y, a, n, gap, spd, opts) { for (let i = 0; i < n; i++) eshot(x, y, a + (i - (n - 1) / 2) * gap, spd, opts); }
   function ring(x, y, n, spd, opts, off = rnd(0, TAU)) { for (let i = 0; i < n; i++) eshot(x, y, off + (i * TAU) / n, spd, opts); }
   // 위험 지대: 번개(두 점 사이 선) · 광선(보스 기수에서 뻗는 띠). warn 동안 예고선, 그 뒤 dur 동안 닿으면 피해
-  function bolt(x1, y1, x2, y2, warn = 0.9, dmg = 14) { S.hz.push({ type: 'bolt', x1, y1, x2, y2, w: 30, warn, dur: 0.22, t: 0, dmg }); }
+  function bolt(x1, y1, x2, y2, warn = 0.9, dmg = 14) { SND.sfx('warn'); S.hz.push({ type: 'bolt', x1, y1, x2, y2, w: 30, warn, dur: 0.22, t: 0, dmg }); }
   // spin = 초당 도는 각도 (보스 기수 기준으로 돎)
-  function beam(f, off, rel, len, w, warn, dur, dmg = 12, spin = 0) { S.hz.push({ type: 'beam', f, off, rel, len, w, warn, dur, t: 0, dmg, spin }); }
+  function beam(f, off, rel, len, w, warn, dur, dmg = 12, spin = 0) { SND.sfx('warn'); S.hz.push({ type: 'beam', f, off, rel, len, w, warn, dur, t: 0, dmg, spin }); }
   function segDist(px, py, x1, y1, x2, y2) {
     const dx = x2 - x1, dy = y2 - y1, l = dx * dx + dy * dy || 1;
     const u = clamp(((px - x1) * dx + (py - y1) * dy) / l, 0, 1);
@@ -194,6 +205,7 @@
       p.shieldT = T.shield; p.inv = 0.4;
       S.fx.push({ type: 'ring', x: p.x, y: p.y, r: 30, life: 0.4, t: 0 });
       burst(p.x, p.y, 10, '#9fe0ff', 260, 9, 0.4);
+      SND.sfx('hit', 1, 1.6);
       return;
     }
     d *= S.st.mult.dmg;
@@ -202,6 +214,7 @@
     p.hp -= d; p.hurt = 0; p.inv = 0.4;
     S.cam.shake = Math.max(S.cam.shake, 14);
     burst(p.x, p.y, 8, '#ffffff', 220, 9, 0.35);
+    SND.sfx('hurt');
     if (p.hp <= 0) { p.hp = 0; boom(p.x, p.y, 1.6); endGame(false); }
   }
 
@@ -210,6 +223,8 @@
     const p = S.p;
     const want = wantDir();
     const boosting = input.boost && p.boost > 0.05;
+    if (boosting && !p.boosting) SND.sfx('boost');
+    p.boosting = boosting;
     const prevA = p.a;
     if (want != null) p.a = turnTo(p.a, want, (boosting ? T.turnBoost : T.turn) * dt);
     p.bank = lerp(p.bank, clamp(angDiff(prevA, p.a) / dt / T.turn, -1, 1), 1 - Math.exp(-8 * dt)); // 선회할 때 기울임
@@ -235,6 +250,7 @@
           S.shots.push({ x: nx, y: ny, vx: Math.cos(a) * T.bulletSpd + p.vx * T.inherit, vy: Math.sin(a) * T.bulletSpd + p.vy * T.inherit, life: T.bulletLife, t: 0, dmg: T.bulletDmg, pierce: T.pierce, hits: [] });
         }
         p.flash = 0.05;
+        SND.sfx('shoot');
       }
       // 유도 미사일 (파츠): 가장 가까운 적에게
       p.mcd -= dt;
@@ -347,7 +363,7 @@
     if (f.patT > 0) return false;
     f.pat = (f.pat + 1) % list.length;
     f.patT = list[f.pat][0]; f.cd = 0.5; f.cd2 = 0; f.n = 0;
-    if (list[f.pat][1]) S.warn = { text: list[f.pat][1], t: 1.2 };
+    if (list[f.pat][1]) { S.warn = { text: list[f.pat][1], t: 1.2 }; SND.sfx('warn'); }
     return true;
   }
   let dt0 = 0; // 이번 프레임 dt (nextPat 용)
@@ -512,12 +528,12 @@
   function killFoe(f) {
     const D = FOE[f.kind], R = S.st.mult.reward;
     S.kills++;
-    boom(f.x, f.y, f.boss ? 3 : 1);
+    boom(f.x, f.y, f.boss ? 3 : 1, FOE[f.kind].mat || 'feather');
     dropMany('gear', f, D.gear * R);
     dropMany('coin', f, D.coin * R * (1 + T.coinBonus));
     if (Math.random() < (f.boss ? 1 : 0.15)) drop('wrench', f, 1);
     if (f.boss) {
-      S.foes.forEach((o) => { if (o !== f && o.hp > 0) { o.hp = 0; boom(o.x, o.y); } });
+      S.foes.forEach((o) => { if (o !== f && o.hp > 0) { o.hp = 0; boom(o.x, o.y, 1, FOE[o.kind].mat || 'feather'); } });
       S.eshots = []; S.hz = []; S.wind = { x: 0, y: 0, t: 0 }; S.winAt = S.t + 1.8;
     }
   }
@@ -560,6 +576,7 @@
       for (const f of S.foes) {
         if (f.hp > 0 && f.st !== 'enter' && !b.hits.includes(f) && hitFoe(f, b.x, b.y, 6)) {
           f.hp -= b.dmg; f.hit = 0.08;
+          SND.sfx('hit', 1, f.boss ? 0.8 : 1);
           if (b.pierce > 0) { b.pierce--; b.hits.push(f); } else b.t = 99;
           S.fx.push({ type: 'spark', x: b.x, y: b.y, life: 0.12, t: 0, a: Math.atan2(b.vy, b.vx) });
           if (b.homing) burst(b.x, b.y, 5, '#ffb050', 160, 9, 0.35);
@@ -591,6 +608,7 @@
       if (h.t > h.warn && h.t < h.warn + h.dur && !S.over) {
         const [x1, y1, x2, y2] = hzLine(h);
         if (segDist(p.x, p.y, x1, y1, x2, y2) < h.w / 2 + 16) hurt(h.dmg, h.type);
+        if (!h.zapped) { h.zapped = true; SND.sfx('zap'); }
         if (h.type === 'bolt' && !h.boomed) { h.boomed = true; S.flashT = 0.12; S.cam.shake = Math.max(S.cam.shake, 8); }
       }
     }
@@ -608,6 +626,7 @@
       if (d < 40 && !S.over) {
         q.t = 99;
         if (q.type === 'gear') S.gear += q.v; else if (q.type === 'coin') S.coin += q.v; else p.hp = Math.min(T.hp, p.hp + T.hp * 0.25);
+        SND.sfx(q.type === 'gear' ? 'pickup_gear' : q.type === 'coin' ? 'pickup_coin' : 'pickup_heal');
         S.fx.push({ type: 'pop', x: q.x, y: q.y, life: 0.25, t: 0 });
       }
     }
@@ -877,7 +896,13 @@
 
   function drawFx(e) {
     const k = e.t / e.life;
-    if (e.type === 'puff') {
+    if (e.type === 'spr') {
+      const f = SP.fx[e.i], sc = lerp(e.s0, e.s1, 1 - (1 - k) * (1 - k)); // 처음에 빨리 커지고 천천히
+      ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(e.a + e.spin * e.t);
+      ctx.globalAlpha = k < 0.5 ? 1 : 1 - (k - 0.5) * 2;
+      ctx.drawImage(f.im, -f.w * sc / 2, -f.h * sc / 2, f.w * sc, f.h * sc);
+      ctx.restore(); ctx.globalAlpha = 1;
+    } else if (e.type === 'puff') {
       ctx.globalAlpha = 1 - k;
       ctx.fillStyle = e.col;
       ctx.beginPath(); ctx.arc(e.x, e.y, e.r * (1 + k * 0.6), 0, TAU); ctx.fill();
@@ -971,6 +996,7 @@
   function endGame(win) {
     if (S.over) return;
     S.over = true; S.win = win;
+    SND.play(null); SND.sfx(win ? 'clear' : 'fail');
     const first = win && !UP.save.cleared.includes(S.st.id);
     const [g, c] = UP.bank(S.gear, S.coin, win, stageIdx); // 이기면 전부 + 다음 스테이지 열림, 지면 절반
     const last = stageIdx === STAGES.length - 1, run = S; // 결과는 지금 판 기준 (잠깐 뒤에 띄우는 사이 새 판이 시작될 수 있음)
@@ -990,14 +1016,22 @@
     if (Number.isInteger(i)) UP.pickStage(i);
     stageIdx = pickStage();
     for (const id of ['#title', '#result', '#hangar']) $(id).classList.remove('on');
-    newGame(clamp(Number(qs.get('wave') || 1) - 1, 0, STAGES[stageIdx].waves.length - 1));
     running = true;
+    newGame(clamp(Number(qs.get('wave') || 1) - 1, 0, STAGES[stageIdx].waves.length - 1));
   }
   $('#startBtn').addEventListener('click', () => start());
   $('#againBtn').addEventListener('click', () => start(stageIdx));
   $('#nextBtn').addEventListener('click', () => start(stageIdx + 1));
 
+  // 타이틀 · 결과 화면 그림 (art/sprites/title_*)
+  const tbg = `linear-gradient(rgba(20,30,45,.2), rgba(20,30,45,.55)), url(${SP.title_bg[0].im.src})`;
+  for (const id of ['#title', '#result']) Object.assign($(id).style, { backgroundImage: tbg, backgroundSize: 'cover', backgroundPosition: 'center' });
+  const art = SP.title_art[0].im.cloneNode();
+  art.className = 'keyart';
+  $('#title').prepend(art);
+
   newGame(0);
+  SND.play('title');
   if (qs.has('go') || qs.has('wave')) start();
   let last = performance.now();
   function frame(now) {

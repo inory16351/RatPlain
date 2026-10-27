@@ -149,9 +149,9 @@
     if (d.go !== undefined) return RP.start();
     if (d.reset !== undefined) { if (confirm('격납고를 처음부터 다시 시작할까요? (기체 · 파츠 · 재료 모두 사라짐)')) { UP.reset(); sel = null; } }
     else if (d.use) { UP.useFrame(d.use); }
-    else if (d.buyf) { UP.buyFrame(d.buyf); }
+    else if (d.buyf) { UP.buyFrame(d.buyf); SND.sfx('ui_buy'); }
     else if (d.eq) { UP.equipPart(d.eq); hover = null; }
-    else if (d.buyp) { UP.buyPart(d.buyp); hover = null; }
+    else if (d.buyp) { UP.buyPart(d.buyp); hover = null; SND.sfx('ui_buy'); }
     else if (d.sel) { sel = d.sel; }
     else if (d.stage) { UP.pickStage(+d.stage); }
     render();
@@ -172,6 +172,7 @@
     for (const id of ['#title', '#result']) $(id).classList.remove('on');
     sel = null; hover = null;
     root.classList.add('on');
+    SND.play('title');
     render();
   }
   ready(() => {

@@ -8,11 +8,14 @@ const WEB = path.join(ROOT, 'web');
 const OUT = path.join(ROOT, 'build', '쥐비행기_전투데모.html');
 
 const read = (p) => fs.readFileSync(p, 'utf8');
-const dataUri = (p) => 'data:image/png;base64,' + fs.readFileSync(p).toString('base64');
+const MIME = { '.png': 'image/png', '.mp3': 'audio/mpeg', '.wav': 'audio/wav' };
+const dataUri = (p) => `data:${MIME[path.extname(p)]};base64,` + fs.readFileSync(p).toString('base64');
 
 const assets = {};
 const sprites = JSON.parse(read(path.join(ROOT, 'art/sprites/sprites.json')));
 for (const frames of Object.values(sprites)) for (const f of frames) assets['../art/sprites/' + f.img] = dataUri(path.join(ROOT, 'art/sprites', f.img));
+// 소리 (audio.js 가 같은 이름으로 찾음)
+for (const dir of ['bgm', 'sfx']) for (const f of fs.readdirSync(path.join(ROOT, 'audio', dir))) assets[`../audio/${dir}/${f}`] = dataUri(path.join(ROOT, 'audio', dir, f));
 
 let html = read(path.join(WEB, 'index.html'));
 let first = true;
@@ -25,4 +28,4 @@ html = html.replace(/<script src="([^"]+)"><\/script>/g, (m, src) => {
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, html);
-console.log(OUT, (fs.statSync(OUT).size / 1048576).toFixed(1) + ' MB', Object.keys(assets).length + '개 그림');
+console.log(OUT, (fs.statSync(OUT).size / 1048576).toFixed(1) + ' MB', Object.keys(assets).length + '개 그림 · 소리');

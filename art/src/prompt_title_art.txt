@@ -1,0 +1,10 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: title_art.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached images show our game's characters and art style: a superhero mouse pilot (red cape) and his biplane-glider made by a scientist mouse. This is the TITLE SCREEN KEY ART.
+
+Image spec:
+- 1536x1024 landscape. ONE dynamic heroic subject group centered, filling about 80% of the image, fully inside the image.
+- SUBJECT: the superhero mouse in his red cape flying his small wooden biplane-glider (seen from a 3/4 front-side view, banking upward to the upper right, cape flapping behind), and a smaller scientist mouse in a white lab coat with round glasses riding on the back seat holding a rolled blue blueprint. Behind them at the lower left, two small grumpy flying cats with little propeller backpacks and one hawk chasing them.
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subjects: no sky, no clouds, no ground, no shadow, no vignette, no frame. The subjects must not contain magenta or purple-pink; small soft-pink mouse ears, nose, paws and tail are fine.
+- Animals look fairly natural (realistic proportions), not chibi.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO text, NO letters, NO logos.
