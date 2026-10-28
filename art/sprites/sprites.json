@@ -48,6 +48,69 @@
    "h": 219.5
   }
  ],
+ "player_dive": [
+  {
+   "img": "player_dive_0.png",
+   "w": 130.5,
+   "h": 129.5
+  }
+ ],
+ "player_fbomber": [
+  {
+   "img": "player_fbomber_0.png",
+   "w": 135.5,
+   "h": 131.5
+  }
+ ],
+ "player_swing": [
+  {
+   "img": "player_swing_0.png",
+   "w": 146.0,
+   "h": 142.5
+  }
+ ],
+ "player_drone": [
+  {
+   "img": "player_drone_0.png",
+   "w": 151.0,
+   "h": 150.0
+  }
+ ],
+ "player_shuttle": [
+  {
+   "img": "player_shuttle_0.png",
+   "w": 161.0,
+   "h": 146.0
+  }
+ ],
+ "player_stealth": [
+  {
+   "img": "player_stealth_0.png",
+   "w": 145.5,
+   "h": 137.5
+  }
+ ],
+ "player_orbiter": [
+  {
+   "img": "player_orbiter_0.png",
+   "w": 151.0,
+   "h": 144.0
+  }
+ ],
+ "player_hyper": [
+  {
+   "img": "player_hyper_0.png",
+   "w": 201.0,
+   "h": 193.5
+  }
+ ],
+ "player_carrier": [
+  {
+   "img": "player_carrier_0.png",
+   "w": 236.0,
+   "h": 222.5
+  }
+ ],
  "e_swift": [
   {
    "img": "e_swift_0.png",
@@ -103,6 +166,70 @@
    "img": "boss_king_0.png",
    "w": 402.0,
    "h": 342.0
+  }
+ ],
+ "e_drone": [
+  {
+   "img": "e_drone_0.png",
+   "w": 72.5,
+   "h": 73.0
+  }
+ ],
+ "e_gunship": [
+  {
+   "img": "e_gunship_0.png",
+   "w": 171.0,
+   "h": 168.5
+  }
+ ],
+ "boss_condor": [
+  {
+   "img": "boss_condor_0.png",
+   "w": 272.5,
+   "h": 394.5
+  },
+  {
+   "img": "boss_condor_1.png",
+   "w": 272.5,
+   "h": 394.5
+  }
+ ],
+ "boss_phoenix": [
+  {
+   "img": "boss_phoenix_0.png",
+   "w": 262.0,
+   "h": 271.5
+  },
+  {
+   "img": "boss_phoenix_1.png",
+   "w": 262.0,
+   "h": 271.5
+  }
+ ],
+ "boss_harpy": [
+  {
+   "img": "boss_harpy_0.png",
+   "w": 272.5,
+   "h": 340.0
+  },
+  {
+   "img": "boss_harpy_1.png",
+   "w": 272.5,
+   "h": 340.0
+  }
+ ],
+ "boss_carrier": [
+  {
+   "img": "boss_carrier_0.png",
+   "w": 782.5,
+   "h": 341.5
+  }
+ ],
+ "boss_emperor": [
+  {
+   "img": "boss_emperor_0.png",
+   "w": 452.0,
+   "h": 408.5
   }
  ],
  "parts_a": [
@@ -355,6 +482,159 @@
    "img": "parts_u3_2.png",
    "w": 47.0,
    "h": 39.0
+  }
+ ],
+ "parts_d": [
+  {
+   "img": "parts_d_0.png",
+   "w": 46.5,
+   "h": 34.0
+  },
+  {
+   "img": "parts_d_1.png",
+   "w": 53.0,
+   "h": 36.5
+  }
+ ],
+ "parts_u4": [
+  {
+   "img": "parts_u4_0.png",
+   "w": 46.5,
+   "h": 42.5
+  },
+  {
+   "img": "parts_u4_1.png",
+   "w": 44.0,
+   "h": 36.5
+  },
+  {
+   "img": "parts_u4_2.png",
+   "w": 42.5,
+   "h": 41.5
+  },
+  {
+   "img": "parts_u4_3.png",
+   "w": 40.5,
+   "h": 40.5
+  },
+  {
+   "img": "parts_u4_4.png",
+   "w": 47.5,
+   "h": 32.5
+  },
+  {
+   "img": "parts_u4_5.png",
+   "w": 43.0,
+   "h": 41.5
+  },
+  {
+   "img": "parts_u4_6.png",
+   "w": 46.0,
+   "h": 41.5
+  },
+  {
+   "img": "parts_u4_7.png",
+   "w": 45.0,
+   "h": 39.5
+  },
+  {
+   "img": "parts_u4_8.png",
+   "w": 45.0,
+   "h": 38.0
+  }
+ ],
+ "parts_u5": [
+  {
+   "img": "parts_u5_0.png",
+   "w": 47.0,
+   "h": 36.0
+  },
+  {
+   "img": "parts_u5_1.png",
+   "w": 37.5,
+   "h": 38.5
+  },
+  {
+   "img": "parts_u5_2.png",
+   "w": 40.0,
+   "h": 44.5
+  },
+  {
+   "img": "parts_u5_3.png",
+   "w": 42.5,
+   "h": 39.5
+  },
+  {
+   "img": "parts_u5_4.png",
+   "w": 41.5,
+   "h": 35.0
+  },
+  {
+   "img": "parts_u5_5.png",
+   "w": 39.5,
+   "h": 46.0
+  },
+  {
+   "img": "parts_u5_6.png",
+   "w": 42.5,
+   "h": 41.0
+  },
+  {
+   "img": "parts_u5_7.png",
+   "w": 48.5,
+   "h": 32.0
+  },
+  {
+   "img": "parts_u5_8.png",
+   "w": 49.5,
+   "h": 44.0
+  }
+ ],
+ "parts_u6": [
+  {
+   "img": "parts_u6_0.png",
+   "w": 46.5,
+   "h": 33.5
+  },
+  {
+   "img": "parts_u6_1.png",
+   "w": 42.0,
+   "h": 38.5
+  },
+  {
+   "img": "parts_u6_2.png",
+   "w": 46.5,
+   "h": 42.5
+  },
+  {
+   "img": "parts_u6_3.png",
+   "w": 46.0,
+   "h": 34.0
+  },
+  {
+   "img": "parts_u6_4.png",
+   "w": 46.0,
+   "h": 39.0
+  },
+  {
+   "img": "parts_u6_5.png",
+   "w": 44.5,
+   "h": 43.5
+  },
+  {
+   "img": "parts_u6_6.png",
+   "w": 47.5,
+   "h": 44.0
+  },
+  {
+   "img": "parts_u6_7.png",
+   "w": 44.0,
+   "h": 43.5
+  },
+  {
+   "img": "parts_u6_8.png",
+   "w": 48.0,
+   "h": 46.0
   }
  ],
  "scientist": [

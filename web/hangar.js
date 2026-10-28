@@ -1,4 +1,4 @@
-// 격납고: 탭 3개 — 기체(진화 트리) · 장비(기체별 슬롯에 끼우기) · 연구소(과학자 쥐 제작 의뢰 · 합성)
+// 격납고: 탭 3개 — 기체(진화 트리) · 장비(가진 기체마다 슬롯에 끼우기) · 연구소(과학자 쥐 제작 의뢰 · 합성 · 티어 업 도전)
 // 데이터 · 저장 = upgrades.js, 그림 · 출격 = game.js 의 window.RP
 // 기체 칸 클릭 = 왼쪽에 미리보기(수치 차이) → 진화(구매) / 이 기체로 바꾸기. 장비 줄에 마우스 = 수치 차이 미리보기.
 (function () {
@@ -7,10 +7,10 @@
   const root = $('#hangar');
   let tab = 'frame';   // 'frame' · 'gear' · 'lab'
   let sel = null;      // 기체 탭: 왼쪽에 보이는 기체 id
-  let eqF = null;      // 장비 탭: 장비를 보고 있는 기체 id
+  let eqF = null;      // 장비 탭: 장비를 보고 있는 기체 id (가진 기체만)
   let hover = null;    // 마우스가 올라간 장비 id (수치 미리보기)
-  let coinAmt = 100;   // 연구소: 의뢰에 쓸 코인
-  let last = null;     // 연구소: 방금 나온 장비 { uid, how: '의뢰' | '합성' }
+  let coinAmt = 100;   // 연구소: 의뢰에 쓸 기준 코인 (실제 비용 = × 테크 배율)
+  let last = null;     // 연구소: 방금 나온 장비 { uid, how: '제작 의뢰' | '합성' | '티어 업 성공' | '티어 업 실패' }
   let picks = [];      // 연구소: 합성 재료로 고른 uid
   let talk = '무엇이든 만들어 주지! 재료를 많이 줄수록 좋은 게 나올 확률이 높아진다네.';
 
@@ -24,12 +24,22 @@
   }
   const grade = (t) => UP.GRADES[t];
   const tierTag = (t, label) => `<span class="tier" style="background:${grade(t).col}">${label || grade(t).name}</span>`;
+  // 티어(기술 단계) 표시: 단계별 색
+  const techTag = (t, label) => `<span class="tier" style="background:${UP.TIER_COL[t]}">${label || `T${t}`}</span>`;
   function iconHtml(p, cls = 'ic') {
     const src = p.icon && imgOf(p.icon[0], p.icon[1]);
     return src ? `<img class="${cls}" src="${src}" style="--g:${grade(p.grade).col}">` : `<div class="${cls}" style="--g:${grade(p.grade).col}">${UP.SLOT_TYPES[p.slot].glyph}</div>`;
   }
-  const gradeTxt = (p) => `<span style="color:${grade(p.grade).col};font-size:12px">${grade(p.grade).name}</span>`;
-  const forTxt = (p) => `${UP.FRAME[p.frame].name} · ${UP.SLOT_TYPES[p.slot].name}`;
+  const gradeTxt = (p) => `${techTag(p.tier)}<span style="color:${grade(p.grade).col};font-size:12px">${grade(p.grade).name}</span>`;
+  // 낄 수 있는 기체: 갈래 이름 + 몇 단계 이상
+  const fitTxt = (p) => `${p.lines ? p.lines.map((l) => UP.LINES[l]).join(' · ') : '모든 갈래'} ${p.tier}단계↑`;
+  const forTxt = (p) => `${UP.SLOT_TYPES[p.slot].name} · ${fitTxt(p)}`;
+  // 이 장비를 끼울 기체: 지금 탄 기체가 되면 그것, 아니면 가진 기체 중 가장 높은 단계
+  function bestFrame(p) {
+    const own = p.fits.filter(UP.owns);
+    if (own.includes(UP.save.frame)) return UP.save.frame;
+    return own.sort((a, b) => UP.FRAME[b].tier - UP.FRAME[a].tier)[0] || null;
+  }
 
   // 비행기 그림: 기수가 위로 (격납고에선 세워서 보여 줌)
   function drawPlane(cv, frame) {
@@ -76,8 +86,8 @@
     return `
       <div class="panel" id="hg-prev">
         <canvas></canvas>
-        <div class="nm">${tierTag(f.tier, `${f.tier}단계`)}${f.name}</div>
-        <div class="kd">${f.kind} · ${UP.ERAS[f.tier]}</div>
+        <div class="nm">${techTag(f.tier, `${f.tier}단계`)}${f.name}</div>
+        <div class="kd">${f.kind} · ${f.line ? UP.LINES[f.line] : '시작 기체'} · ${UP.ERAS[f.tier]}</div>
         <div class="ds">${f.desc}<br><span class="slots-line">슬롯 ${f.slots.length}칸 · ${f.slots.map((sl) => UP.SLOT_TYPES[sl].name).join(' · ')}</span></div>
         <div class="stats">${statsHtml(cur, next)}</div>
         ${act}
@@ -95,13 +105,13 @@
     }).join('');
     return `
       <div class="panel wide" id="hg-tree">
-        <h2>비행기 진화</h2>
-        <div class="era">${UP.ERAS.map((e, i) => `<span>${tierTag(i, `${i}단계`)}${e}</span>`).join('')}</div>
+        <h2>비행기 진화 <span class="sub">위 = 전투기 · 가운데 = 다목적기 · 아래 = 폭격기 · 지금 테크 ${UP.tech()}단계</span></h2>
+        <div class="era">${UP.ERAS.map((e, i) => `<span>${techTag(i, `${i}단계`)}${e}</span>`).join('')}</div>
         <div class="grid"><svg></svg>${nodes}</div>
       </div>`;
   }
 
-  // 가진 장비를 장비 id 로 묶음: [{ p, uids, free(장착 안 한 uid) }]
+  // 가진 장비를 장비 id 로 묶음: [{ p, uids, free(장착 · 선택 안 한 uid) }]
   function groups(items) {
     const m = new Map();
     for (const it of items) {
@@ -110,15 +120,15 @@
       g.uids.push(it.uid);
       if (!UP.isEquipped(it.uid) && !picks.includes(it.uid)) g.free.push(it.uid);
     }
-    return [...m.values()].sort((a, b) => b.p.grade - a.p.grade || UP.FRAMES.findIndex((f) => f.id === a.p.frame) - UP.FRAMES.findIndex((f) => f.id === b.p.frame) || a.p.name.localeCompare(b.p.name));
+    return [...m.values()].sort((a, b) => b.p.tier - a.p.tier || b.p.grade - a.p.grade || a.p.slot.localeCompare(b.p.slot) || a.p.name.localeCompare(b.p.name));
   }
 
-  // ── 장비 탭: 가운데 = 슬롯, 오른쪽 = 이 기체용 보관함
+  // ── 장비 탭: 가운데 = 슬롯, 오른쪽 = 이 기체에 낄 수 있는 보관함 (가진 기체만)
   function gearHtml() {
     const s = UP.save, f = UP.FRAME[eqF], eq = UP.equipOf(f.id);
-    const chips = UP.FRAMES.map((fr) => {
-      const n = UP.itemsFor(fr.id).length;
-      return `<button class="chip ${fr.id === f.id ? 'on' : ''} ${s.frames.includes(fr.id) ? '' : 'dim'}" data-eqf="${fr.id}">${fr.name}${n ? ` <b>${n}</b>` : ''}</button>`;
+    const chips = UP.FRAMES.filter((fr) => UP.owns(fr.id)).map((fr) => {
+      const n = UP.itemsFor(fr.id).filter((it) => !UP.isEquipped(it.uid)).length;
+      return `<button class="chip ${fr.id === f.id ? 'on' : ''}" data-eqf="${fr.id}">${fr.tier} · ${fr.name}${n ? ` <b>${n}</b>` : ''}</button>`;
     }).join('');
     const slots = f.slots.map((sl) => {
       const it = UP.itemOf(eq[sl]), p = it && UP.PART[it.id];
@@ -128,26 +138,41 @@
       return `<div class="slot"><h3><span>${UP.SLOT_TYPES[sl].name}</span></h3><div class="part ${p ? 'on' : 'emptyrow'}" style="--g:${p ? grade(p.grade).col : 'transparent'}">${body}</div></div>`;
     }).join('');
     const inv = groups(UP.itemsFor(f.id)).map(({ p, uids }) => {
-      const on = uids.includes(eq[p.slot]);
-      const right = on ? `<span class="tag">장착 중</span>` : `<button data-eq="${uids[0]}">장착</button>`;
-      return `<div class="part ${on ? 'on' : ''}" style="--g:${grade(p.grade).col}" data-hover="${on ? '' : p.id}">
-        ${iconHtml(p)}<div><div class="pn">${p.name} ${gradeTxt(p)}${uids.length > 1 ? ` <span class="cnt">×${uids.length}</span>` : ''}</div><div class="pd">${UP.SLOT_TYPES[p.slot].name} · ${p.desc}</div></div>${right}</div>`;
-    }).join('') || `<p class="none">이 기체용 장비가 아직 없어요.<br>연구소에서 과학자 쥐에게 제작을 의뢰해 보세요.</p>`;
+      const here = uids.find((u) => eq[p.slot] === u);
+      const free = uids.find((u) => !UP.isEquipped(u));
+      const elsewhere = !here && !free && UP.equippedOn(uids[0]);
+      const right = here ? `<span class="tag">장착 중</span>`
+        : free ? `<button data-eq="${free}">장착</button>`
+          : `<button class="small" data-eq="${uids[0]}" title="${UP.FRAME[elsewhere].name}에서 빼서 옮김">옮기기</button>`;
+      const note = elsewhere ? ` · <span class="warn">${UP.FRAME[elsewhere].name}에 장착 중</span>` : '';
+      return `<div class="part ${here ? 'on' : ''}" style="--g:${grade(p.grade).col}" data-hover="${here ? '' : p.id}">
+        ${iconHtml(p)}<div><div class="pn">${p.name} ${gradeTxt(p)}${uids.length > 1 ? ` <span class="cnt">×${uids.length}</span>` : ''}</div><div class="pd">${UP.SLOT_TYPES[p.slot].name} · ${p.desc}${note}</div></div>${right}</div>`;
+    }).join('') || `<p class="none">이 기체에 낄 수 있는 장비가 아직 없어요.<br>연구소에서 과학자 쥐에게 제작을 의뢰해 보세요.</p>`;
     return `
-      <div class="panel" id="hg-slots"><h2>장비 · ${f.name}</h2><div class="chips">${chips}</div>${s.frames.includes(f.id) ? '' : `<p class="note">아직 없는 기체예요. 장비는 미리 끼워 둘 수 있어요.</p>`}${slots}</div>
-      <div class="panel" id="hg-inv"><h2>보관함 · ${f.name} 전용</h2>${inv}</div>`;
+      <div class="panel" id="hg-slots"><h2>장비 · ${f.name}</h2><div class="chips">${chips}</div>
+        <p class="note">장비는 티어 · 등급 · 낄 수 있는 갈래가 따로예요. 낮은 티어 장비는 높은 단계 기체에 낄 수 있지만, 그 반대는 안 돼요.</p>${slots}</div>
+      <div class="panel" id="hg-inv"><h2>보관함 · ${f.name}에 낄 수 있는 것</h2>${inv}</div>`;
   }
 
   // ── 연구소 탭: 왼쪽 = 과학자 쥐, 가운데 = 제작 의뢰 · 결과, 오른쪽 = 전체 보관함 · 합성
   function oddsHtml() {
-    const o = UP.odds(coinAmt), cost = UP.requestCost(coinAmt);
+    const o = UP.odds(coinAmt), cost = UP.requestCost(coinAmt), to = UP.tierOdds();
+    const tiers = to.map((v, t) => [t, v]).filter(([, v]) => v > 0).reverse();
     return `
       <div class="odds">${o.map((v, g) => `
         <div class="orow"><span style="color:${grade(g).col}">${grade(g).name}</span>
           <div class="obar"><i style="width:${v}%;background:${grade(g).col}"></i></div>
-          <b>${v.toFixed(1)}%</b><span class="pool">${UP.POOL[g].length}종</span></div>`).join('')}
+          <b>${v.toFixed(1)}%</b><span class="pool"></span></div>`).join('')}
       </div>
+      <div class="todds"><span class="lb">티어</span>${tiers.map(([t, v]) => `<span>${techTag(t)} ${v.toFixed(v < 10 ? 1 : 0)}%</span>`).join('')}</div>
       <button class="big" data-req ${UP.can(cost) ? '' : 'disabled'}>제작 의뢰 · ${costHtml(cost)}</button>`;
+  }
+  function fuseBtn() {
+    const info = UP.fuseInfo(picks);
+    if (!info) return `<button data-fuse disabled>${picks.length && UP.PART[UP.itemOf(picks[0]).id].grade === 3 ? `전설 ${UP.FUSE_N}개 이상` : '합성'}</button>`;
+    if (info.kind === 'fuse') return `<button data-fuse>합성</button>`;
+    return info.block ? `<button data-fuse disabled title="${info.block}">티어 업 · ${info.block}</button>`
+      : `<button data-fuse class="up">티어 업 도전 · ${info.chance}%</button>`;
   }
   function labHtml() {
     const s = UP.save;
@@ -155,49 +180,53 @@
     if (last) {
       const it = UP.itemOf(last.uid);
       if (it) {
-        const p = UP.PART[it.id], on = UP.isEquipped(it.uid);
+        const p = UP.PART[it.id], on = UP.equippedOn(it.uid), to = bestFrame(p);
         result = `
-          <div class="result g${p.grade}" style="--g:${grade(p.grade).col}">
-            <div class="rh">${last.how} 결과</div>
+          <div class="result g${p.grade} ${last.fail ? 'fail' : ''}" style="--g:${grade(p.grade).col}">
+            <div class="rh">${last.how}</div>
             ${iconHtml(p, 'ric')}
             <div class="rn">${p.name}</div>
-            <div>${tierTag(p.grade)} ${forTxt(p)} 전용</div>
+            <div>${techTag(p.tier, `티어 ${p.tier}`)} ${tierTag(p.grade)} ${forTxt(p)}</div>
             <div class="pd">${p.desc}</div>
-            ${on ? `<span class="tag">장착 중</span>` : `<button data-eq="${it.uid}">${UP.FRAME[p.frame].name}에 바로 장착</button>`}
+            ${on ? `<span class="tag">${UP.FRAME[on].name}에 장착 중</span>` : to ? `<button data-eq="${it.uid}" data-to="${to}">${UP.FRAME[to].name}에 바로 장착</button>` : `<span class="tag">낄 수 있는 기체가 아직 없음</span>`}
           </div>`;
       }
     }
-    // 합성 재료 칸 3개
-    const tray = Array.from({ length: UP.FUSE_N }, (_, i) => {
+    // 합성 재료 칸: 일반~희귀 3칸, 전설(티어 업 도전)은 6칸까지
+    const p0 = picks.length ? UP.PART[UP.itemOf(picks[0]).id] : null;
+    const max = p0 && p0.grade === 3 ? UP.UP_MAX : UP.FUSE_N;
+    const tray = Array.from({ length: max }, (_, i) => {
       const it = UP.itemOf(picks[i]);
       return it ? `<div class="tslot" data-unpick="${it.uid}" title="빼기">${iconHtml(UP.PART[it.id])}</div>` : `<div class="tslot empty">+</div>`;
     }).join('');
-    const pg = picks.length ? UP.PART[UP.itemOf(picks[0]).id].grade : null;
     const inv = groups(s.items).map(({ p, uids, free }) => {
-      const ok = free.length && p.grade < 3 && (pg === null || pg === p.grade) && picks.length < UP.FUSE_N;
+      const ok = free.length && (!p0 || (p0.grade === p.grade && p0.tier === p.tier)) && picks.length < max;
+      const dead = !UP.usable(p);
       return `<div class="part ${ok ? '' : 'lock'}" style="--g:${grade(p.grade).col}">
-        ${iconHtml(p)}<div><div class="pn">${p.name} ${gradeTxt(p)} <span class="cnt">×${uids.length}</span></div><div class="pd">${forTxt(p)}${uids.length > free.length ? ' · 장착 · 선택 제외' : ''}</div></div>
-        ${p.grade < 3 ? `<button class="small" data-pick="${free[0] || ''}" ${ok ? '' : 'disabled'}>재료</button>` : '<span></span>'}</div>`;
+        ${iconHtml(p)}<div><div class="pn">${p.name} ${gradeTxt(p)} <span class="cnt">×${uids.length}</span></div><div class="pd">${forTxt(p)}${dead ? ' · <span class="warn">가진 기체 중 낄 곳 없음</span>' : ''}${uids.length > free.length ? ' · 장착 · 선택 제외' : ''}</div></div>
+        <button class="small" data-pick="${free[0] || ''}" ${ok ? '' : 'disabled'}>재료</button></div>`;
     }).join('') || `<p class="none">아직 장비가 없어요.</p>`;
+    const chances = Object.entries(UP.UP_CHANCE).map(([n, c]) => `${n}개 ${c}%`).join(' · ');
     return `
       <div class="panel" id="lab-sci">
         <img class="sci" src="${imgOf('scientist', 0) || ''}">
         <div class="bubble">${talk}</div>
-        <div class="kd">지금까지 의뢰 ${s.requests}번</div>
+        <div class="kd">지금까지 의뢰 ${s.requests}번 · 티어 업 도전 ${s.tierUps || 0}번</div>
       </div>
       <div class="panel" id="lab-req">
-        <h2>제작 의뢰</h2>
-        <p class="note">어떤 기체의 어떤 장비가 나올지는 완전 랜덤이에요. 쓸 재료를 늘릴수록 높은 등급 확률이 올라가요.</p>
+        <h2>제작 의뢰 <span class="sub">지금 테크 ${UP.tech()}단계 · 비용 ×${UP.reqK().toFixed(1)}</span></h2>
+        <p class="note">가진 기체에 낄 수 있는 장비만 나와요. 테크(가진 기체의 최고 단계) 티어가 주로 나오고, 낮은 티어도 섞여요. 쓸 재료를 늘릴수록 높은 등급 확률이 올라가요.</p>
         <div class="amt">
           <input type="range" min="${UP.REQ.min}" max="${UP.REQ.max}" step="${UP.REQ.step}" value="${coinAmt}" data-amt>
-          <div class="presets">${[30, 100, 250, 600].map((v) => `<button class="small" data-preset="${v}">${v}</button>`).join('')}</div>
+          <div class="presets">${[30, 100, 250, 600].map((v) => `<button class="small" data-preset="${v}">${Math.round(v * UP.reqK())}</button>`).join('')}</div>
         </div>
         <div id="lab-odds">${oddsHtml()}</div>
         ${result}
       </div>
       <div class="panel" id="lab-inv">
-        <h2>합성 <span class="sub">같은 등급 ${UP.FUSE_N}개 → 한 등급 위 장비 하나 (완전 랜덤)</span></h2>
-        <div class="tray">${tray}<button data-fuse ${UP.fusable(picks) ? '' : 'disabled'}>합성</button></div>
+        <h2>합성 <span class="sub">같은 티어 · 같은 등급 ${UP.FUSE_N}개 → 한 등급 위 (랜덤)</span></h2>
+        <p class="note">전설은 ${UP.FUSE_N}~${UP.UP_MAX}개를 넣어 <b>한 티어 위 전설</b>에 도전 (${chances}). 실패하면 같은 티어 전설 하나만 남아요. 한 단계 위 기체가 있어야 도전 가능.</p>
+        <div class="tray">${tray}${fuseBtn()}</div>
         <h2>보관함 <span class="sub">${s.items.length}개</span></h2>
         ${inv}
       </div>`;
@@ -208,16 +237,17 @@
     return STAGES.map((st, i) => {
       const open = i <= s.unlocked, clear = s.cleared.includes(st.id), on = i === s.pick;
       const [num, ...rest] = st.name.split(' · ');
-      return `<div class="stg ${on ? 'on' : ''} ${open ? '' : 'lock'}" ${open ? `data-stage="${i}"` : ''}>
+      const line = st.recLine ? ` · ${UP.LINES[st.recLine]}` : '';
+      return `<div class="stg ${on ? 'on' : ''} ${open ? '' : 'lock'}" ${open ? `data-stage="${i}"` : ''} title="${st.trait ? `${st.trait.name}: ${st.trait.tip}` : ''}">
         <div class="sn">${num}${clear ? ' <span class="ok">✓</span>' : ''}</div>
         <div class="st">${open ? rest.join(' · ') : '🔒 앞 스테이지를 깨면 열림'}</div>
-        <div class="sb">보스 · ${st.bossName} ${tierTag(st.rec, `추천 ${st.rec}단계`)}</div></div>`;
+        <div class="sb">${st.trait ? `<span class="trait">${st.trait.name}</span> ` : ''}${techTag(st.rec, `추천 ${st.rec}단계${line}`)}</div></div>`;
     }).join('');
   }
 
   function render() {
     const s = UP.save;
-    eqF ||= s.frame;
+    if (!eqF || !UP.owns(eqF)) eqF = s.frame;
     const TABS = [['frame', '기체'], ['gear', '장비'], ['lab', '연구소']];
     const body = tab === 'frame' ? prevHtml() + treeHtml() : tab === 'gear' ? prevHtml() + gearHtml() : labHtml();
     root.innerHTML = `
@@ -258,7 +288,9 @@
     ['이건… 내 연구 노트에도 없던 설계야!', '특별한 힘이 깃든 물건이라네. 아껴 쓰게!'],
     ['해냈어! 일생일대의 걸작이야!!', '이 녀석이라면 고양이 대왕도 두렵지 않지!'],
   ];
+  const UP_LINES = [['다음 세대 기술이 완성됐네! 새 시대의 걸작이야!!', '전설을 녹여 더 높은 전설로… 이게 과학이지!'], ['으음… 녹이다가 하나만 겨우 건졌네.', '실패도 연구의 일부라네. 다음엔 더 넣어 보게.']];
   const say = (g) => { const l = LINES[g]; talk = l[Math.floor(Math.random() * l.length)]; };
+  const sayUp = (ok) => { const l = UP_LINES[ok ? 0 : 1]; talk = l[Math.floor(Math.random() * l.length)]; };
 
   root.addEventListener('click', (e) => {
     const t = e.target.closest('[data-tab],[data-sel],[data-use],[data-buyf],[data-eq],[data-uneq],[data-eqf],[data-go],[data-reset],[data-stage],[data-req],[data-preset],[data-pick],[data-unpick],[data-fuse]');
@@ -269,7 +301,7 @@
     else if (d.tab) { tab = d.tab; hover = null; if (tab === 'gear') eqF = UP.save.frame; }
     else if (d.use) { UP.useFrame(d.use); }
     else if (d.buyf) { UP.buyFrame(d.buyf); SND.sfx('ui_buy'); }
-    else if (d.eq) { UP.equipItem(+d.eq); hover = null; SND.sfx('ui_buy', 0.6, 1.3); }
+    else if (d.eq) { if (UP.equipItem(+d.eq, d.to || eqF)) SND.sfx('ui_buy', 0.6, 1.3); hover = null; }
     else if (d.uneq) { UP.unequip(eqF, d.uneq); }
     else if (d.eqf) { eqF = d.eqf; hover = null; }
     else if (d.sel) { sel = d.sel; }
@@ -277,13 +309,18 @@
     else if (d.preset) { coinAmt = +d.preset; }
     else if (d.req !== undefined) {
       const it = UP.request(coinAmt);
-      if (it) { const g = UP.PART[it.id].grade; last = { uid: it.uid, how: '제작 의뢰' }; say(g); SND.sfx(g >= 2 ? 'clear' : 'ui_buy'); }
+      if (it) { const g = UP.PART[it.id].grade; last = { uid: it.uid, how: '제작 의뢰 결과' }; say(g); SND.sfx(g >= 2 ? 'clear' : 'ui_buy'); }
     }
-    else if (d.pick) { if (picks.length < UP.FUSE_N) picks.push(+d.pick); }
+    else if (d.pick) { picks.push(+d.pick); }
     else if (d.unpick) { picks = picks.filter((u) => u !== +d.unpick); }
     else if (d.fuse !== undefined) {
-      const it = UP.fuse(picks);
-      if (it) { const g = UP.PART[it.id].grade; picks = []; last = { uid: it.uid, how: '합성' }; say(g); SND.sfx(g >= 2 ? 'clear' : 'ui_buy'); }
+      const kind = UP.fuseInfo(picks)?.kind, r = UP.fuse(picks);
+      if (r) {
+        const g = UP.PART[r.it.id].grade;
+        picks = [];
+        if (kind === 'up') { last = { uid: r.it.uid, how: r.ok ? '티어 업 성공!' : '티어 업 실패 — 하나만 남음', fail: !r.ok }; sayUp(r.ok); SND.sfx(r.ok ? 'clear' : 'fail'); }
+        else { last = { uid: r.it.uid, how: '합성 결과' }; say(g); SND.sfx(g >= 2 ? 'clear' : 'ui_buy'); }
+      }
     }
     render();
   });

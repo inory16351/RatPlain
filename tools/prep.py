@@ -29,6 +29,16 @@ SHEETS = {
     'player_fort': (1, 1, 175, False),
     'player_super': (1, 1, 135, False),
     'player_flywing': (1, 1, 190, False),
+    # 가운데 갈래(다목적기) · 4~5단계 기체
+    'player_dive': (1, 1, 130, False),
+    'player_fbomber': (1, 1, 135, False),
+    'player_swing': (1, 1, 145, False),
+    'player_drone': (1, 1, 150, False),
+    'player_shuttle': (1, 1, 160, False),
+    'player_stealth': (1, 1, 145, False),
+    'player_orbiter': (1, 1, 150, False),
+    'player_hyper': (1, 1, 200, False),
+    'player_carrier': (1, 1, 235, False),
     # 2~5스테이지 적 · 보스 (web/game.js 의 FOE.spr)
     'e_swift': (2, 1, 70, True),
     'e_bomber': (1, 1, 150, False),
@@ -36,6 +46,14 @@ SHEETS = {
     'boss_owl': (2, 1, 220, True),
     'boss_ship': (1, 1, 640, False),
     'boss_king': (1, 1, 400, False),
+    # 6~10스테이지 적 · 보스
+    'e_drone': (1, 1, 72, False),
+    'e_gunship': (1, 1, 170, False),
+    'boss_condor': (2, 1, 270, True),
+    'boss_phoenix': (2, 1, 260, True),
+    'boss_harpy': (2, 1, 270, True),
+    'boss_carrier': (1, 1, 780, False),
+    'boss_emperor': (1, 1, 450, False),
     # 파츠 아이콘 3×3 (web/upgrades.js 의 PARTS.icon)
     'parts_a': (3, 3, 46, False),
     'parts_b': (3, 3, 46, False),
@@ -44,6 +62,11 @@ SHEETS = {
     'parts_u1': (3, 3, 46, False),
     'parts_u2': (3, 3, 46, False),
     'parts_u3': (3, 1, 46, False),
+    # 무인기 슬롯 일반 · 고급(d), 다목적기 · 4~5단계 고유 장비(u4~u6)
+    'parts_d': (2, 1, 46, False),
+    'parts_u4': (3, 3, 46, False),
+    'parts_u5': (3, 3, 46, False),
+    'parts_u6': (3, 3, 46, False),
     # 연구소(제작 의뢰) 화면의 과학자 쥐
     'scientist': (1, 1, 220, False),
     'e_cat': (1, 1, 130, False),
@@ -58,7 +81,7 @@ SHEETS = {
     'title_art': (1, 1, 640, False),
 }
 # 작은 얼룩(떨어진 조각)을 지울 시트 — 아이콘처럼 한 덩어리인 것만
-CLEAN = {'parts_a', 'parts_b', 'parts_c', 'parts_u1', 'parts_u2', 'parts_u3', 'items'}
+CLEAN = {'parts_a', 'parts_b', 'parts_c', 'parts_d', 'parts_u1', 'parts_u2', 'parts_u3', 'parts_u4', 'parts_u5', 'parts_u6', 'items'}
 # 마젠타 없는 통 배경: 이름 → 게임 속 가로 px
 BACKS = {'title_bg': 1280}
 SCALE = 2

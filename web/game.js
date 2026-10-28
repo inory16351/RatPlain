@@ -102,6 +102,14 @@
     owl: { boss: true, hp: 1100, r: 115, spr: 'boss_owl', speed: 140, turn: 1.0, gear: 35, coin: 75 },                       // 3 눈보라 부엉이
     ship: { mat: 'metal', boss: true, hp: 1800, r: 200, hit: [300, 95], spr: 'boss_ship', speed: 90, turn: 0.35, gear: 50, coin: 110 },   // 4 고양이 공중 전함
     king: { mat: 'metal', boss: true, hp: 2800, r: 150, hit: [190, 130], spr: 'boss_king', speed: 160, turn: 1.0, gear: 80, coin: 160 },   // 5 고양이 대왕 로켓
+    // 6~10스테이지. armor = 주무장 피해를 깎는 비율 (폭탄 · 기수포 · 유도탄 · 레일건 · 철갑탄은 그대로)
+    drone: { mat: 'metal', hp: 2, r: 30, spr: 'e_drone', speed: 430, turn: 3.2, gear: 1, coin: 1 },                     // 고양이 드론: 떼로 몰려와 자폭 돌진
+    gunship: { mat: 'metal', hp: 40, r: 74, spr: 'e_gunship', speed: 140, turn: 0.9, gear: 6, coin: 8, armor: 0.7 },  // 장갑 포함: 느리고 단단, 터지는 대공포탄
+    condor: { boss: true, hp: 4200, r: 120, spr: 'boss_condor', speed: 270, turn: 1.7, gear: 110, coin: 220 },          // 6 모래폭풍 콘도르
+    phoenix: { boss: true, hp: 4400, r: 112, spr: 'boss_phoenix', speed: 290, turn: 1.9, gear: 130, coin: 260 },        // 7 용암 불사조 (한 번 되살아남)
+    harpy: { boss: true, hp: 6000, r: 120, spr: 'boss_harpy', speed: 300, turn: 2.0, gear: 150, coin: 300 },            // 8 밀림 하피 독수리
+    carrier: { mat: 'metal', boss: true, hp: 8000, r: 220, hit: [380, 115], spr: 'boss_carrier', speed: 85, turn: 0.3, gear: 180, coin: 360, armor: 0.3 }, // 9 고양이 하늘 항모
+    emperor: { mat: 'metal', boss: true, hp: 12000, r: 200, spr: 'boss_emperor', speed: 150, turn: 0.9, gear: 260, coin: 520 },  // 10 고양이 황제 모선
   };
 
   // ── 상태
@@ -116,12 +124,16 @@
       st, t: 0, wave, waveT: 0, banner: '', bannerT: 0, over: false, win: false, pending: null, winAt: 0,
       cam: { x: 0, y: 0, shake: 0 },
       p: { x: 0, y: 0, vx: T.speed, vy: 0, a: 0, bank: 0, hp: T.hp, hurt: 9, inv: 0, noFire: 9, cd: 0, mcd: 0, shieldT: 0, boost: T.boostMax, flash: 0, aim: 0,
-        ccd: 0, rcd: 0, tcd: 0, bcd: 0, carpetT: 0, chaffT: 0, nShot: 0 }, // 장비 무기 재사용 시간 (기수포 · 레일건 · 기총탑 · 폭탄 · 융단 폭격 · 채프)
-      foes: [], shots: [], eshots: [], fx: [], drops: [], hz: [], bombs: [], // hz = 예고 뒤 터지는 위험 지대 (번개 · 광선), bombs = 떨어지는 내 폭탄
-      wind: { x: 0, y: 0, t: 0 }, flashT: 0,                     // 눈보라 바람 · 번쩍임
+        ccd: 0, rcd: 0, tcd: 0, bcd: 0, carpetT: 0, chaffT: 0, nShot: 0, // 장비 무기 재사용 시간 (기수포 · 레일건 · 기총탑 · 폭탄 · 융단 폭격 · 채프)
+        healT: T.healPulse, oT: 0, megaT: 0, flameT: 0, dcd: 0, dN: 0 }, // 수리 · 궤도 광선 · 거대 포탄 · 불꽃 꼬리 · 무인기
+      foes: [], shots: [], eshots: [], fx: [], drops: [], hz: [], bombs: [], // hz = 예고 뒤 터지는 위험 지대 (번개 · 광선 · 원), bombs = 떨어지는 내 폭탄
+      fires: [], strikes: [], decoy: null,                       // fires = 적을 태우는 불 (네이팜 · 불꽃 꼬리), strikes = 궤도 광선, decoy = 그림자 엔진 미끼
+      wind: { x: 0, y: 0, t: 0 }, flashT: 0,                     // 눈보라 · 모래폭풍 바람 · 번쩍임
+      traitT: 3,                                                  // 맵 특성(stages.js 의 trait) 다음 발동까지
       gear: 0, coin: 0, kills: 0, taken: 0, dmgBy: {},
     };
     startWave(wave);
+    if (S.st.trait && wave === 0) S.warn = { text: `${S.st.trait.name} — ${S.st.trait.tip}`, t: 3.5 };
   }
   function startWave(i) {
     const W = S.st.waves;
@@ -144,7 +156,8 @@
     const hp = D.boss ? D.hp : Math.round(D.hp * S.st.mult.hp);
     const f = { kind, boss: !!D.boss, x, y, vx: 0, vy: 0, a: a + Math.PI, hp, max: hp, r: D.r, hit: 0, cd: rnd(1, 2), st: 'chase', stT: 0, ph: Math.random() * 10, ram: 0 };
     if (kind === 'hawk') { f.st = 'circle'; f.stT = rnd(1.5, 2.5); f.orbit = Math.random() < 0.5 ? 1 : -1; }
-    if (kind === 'bomber') { f.orbit = Math.random() < 0.5 ? 1 : -1; f.cd2 = rnd(1, 2); }
+    if (kind === 'bomber' || kind === 'gunship') { f.orbit = Math.random() < 0.5 ? 1 : -1; f.cd2 = rnd(1, 2); }
+    if (kind === 'drone') f.cd = rnd(0.5, 1.5);
     if (D.boss) { f.st = 'enter'; f.pat = 0; f.patT = 0; f.spin = 0; f.cd2 = 0; }
     S.foes.push(f);
     return f;
@@ -179,6 +192,7 @@
     S.eshots.push({
       x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, r: opts.r || 11, col: opts.col || '#ff5c8a', life: opts.life || 4, t: 0, dmg: opts.dmg || 8,
       ball: !!opts.ball, shape: opts.shape || (opts.ball ? 'ball' : null), home: opts.home || 0, homeTurn: opts.homeTurn || 1.6, acc: opts.acc || 0, min: opts.min ?? 60, max: opts.max ?? 900,
+      split: opts.split || 0, splitAt: opts.splitAt || 1, // split = splitAt 초 뒤 터져 작은 탄 N 발 (대공포탄)
     });
   }
   // 부채꼴: 가운데 각도 a 에서 n 발을 gap 간격으로
@@ -219,7 +233,9 @@
     }
     // 채프: 맞는 순간 주변 적 탄을 지움 (재사용 시간마다)
     if (T.chaff && p.chaffT <= 0) { p.chaffT = T.chaff; clearEshots(p.x, p.y, 380); }
-    d *= S.st.mult.dmg * T.dmgTaken * (p.boosting ? 1 - T.boostGuard : 1);
+    // 스텔스: 확률로 빗나감
+    if (T.evade && Math.random() < T.evade) { p.inv = 0.25; S.fx.push({ type: 'pop', x: p.x, y: p.y, life: 0.3, t: 0 }); return; }
+    d *= S.st.mult.dmg * T.dmgTaken * (p.boosting ? 1 - T.boostGuard : 1) * (HAZARD.has(src) ? 1 - T.hazardGuard : 1);
     if (qs.has('god')) d = 0;
     S.taken += d; S.dmgBy[src] = (S.dmgBy[src] || 0) + d;
     p.hp -= d; p.hurt = 0; p.inv = 0.4;
@@ -229,16 +245,34 @@
     if (p.hp <= 0) { p.hp = 0; boom(p.x, p.y, 1.6); endGame(false); }
   }
 
+  const HAZARD = new Set(['bolt', 'beam', 'erupt', 'flak', 'twister', 'fire', 'meteor']); // 열 차폐 타일이 줄여 주는 피해
+
   // ── 장비 무기 · 고유 효과 (수치는 upgrades.js 의 BASE 아래쪽)
   // 적에게 피해는 모두 여기로: 치명타 · 처치. by = 맞힌 것 (유도탄 연쇄 판단용)
   function dmgFoe(f, d, by) {
-    if (f.hp <= 0 || f.st === 'enter') return;
+    if (f.hp <= 0 || f.st === 'enter' || f.ghost) return;
+    // 장갑: 주무장 · 기총 · 무인기 탄은 깎임 (철갑탄 armorPierce 만큼 덜)
+    const A = FOE[f.kind].armor;
+    if (A && by && by.hits && by.homing === undefined && !by.cannon) d *= 1 - A * (1 - Math.min(1, T.armorPierce));
+    if (T.burn && by && by.hits && by.homing === undefined) f.burnT = 2;
     if (Math.random() < T.crit) {
       d *= 2;
       S.fx.push({ type: 'pop', x: f.x, y: f.y, life: 0.25, t: 0 });
       if (T.critMissile) missiles(S.p, T.critMissile, f);
     }
-    f.hp -= d; f.hit = 0.08;
+    hpLoss(f, d, by);
+  }
+  // 치명타 · 장갑 없이 바로 깎음 (불 · 도트 피해). 불사조는 한 번 되살아남
+  function hpLoss(f, d, by, flash = true) {
+    if (f.hp <= 0) return;
+    f.hp -= d; if (flash) f.hit = 0.08;
+    if (f.hp <= 0 && f.kind === 'phoenix' && !f.reborn) {
+      f.reborn = true; f.hp = f.max * 0.6; f.pat = -1; f.patT = 0;
+      S.warn = { text: '불사조가 되살아난다!', t: 1.8 }; S.eshots = []; S.cam.shake = 22;
+      ring(f.x, f.y, 36, 300, { col: '#ff7a2a', r: 13, dmg: 9 });
+      boom(f.x, f.y, 2.5, 'feather');
+      return;
+    }
     if (f.hp <= 0) killFoe(f, by);
   }
   function clearEshots(x, y, r) {
@@ -265,6 +299,13 @@
     for (const f of S.foes) if (hitFoe(f, b.x, b.y, b.r)) dmgFoe(f, b.dmg, b);
     boom(b.x, b.y, b.small ? 0.5 : b.big ? 2 : 1);
     if (b.big) clearEshots(b.x, b.y, b.r * 1.5);
+    if (T.napalm) S.fires.push({ x: b.x, y: b.y, r: b.r * 0.8, t: 0, life: T.napalm, dps: b.dmg * 0.6 });
+    // 번개 폭탄창: 가까운 적 N 에게 번개
+    if (T.chainBolt && !b.small) {
+      const near = S.foes.filter((f) => f.hp > 0 && f.st !== 'enter' && Math.hypot(f.x - b.x, f.y - b.y) < 520).sort((u, v) => Math.hypot(u.x - b.x, u.y - b.y) - Math.hypot(v.x - b.x, v.y - b.y)).slice(0, T.chainBolt);
+      for (const f of near) { dmgFoe(f, b.dmg * 0.5, null); S.fx.push({ type: 'arc', x: b.x, y: b.y, x2: f.x, y2: f.y, life: 0.25, t: 0 }); }
+      if (near.length) SND.sfx('zap');
+    }
     if (T.cluster && !b.small) {
       for (let i = 0; i < T.cluster; i++) {
         const a = (i * TAU) / T.cluster + rnd(-0.3, 0.3), d = rnd(80, 140);
@@ -275,8 +316,9 @@
   // 레일건: 조준 방향 일직선 위 적 모두
   function railShot(p) {
     const L = 1500, x2 = p.x + Math.cos(p.aim) * L, y2 = p.y + Math.sin(p.aim) * L;
-    for (const f of S.foes) if (f.hp > 0 && segDist(f.x, f.y, p.x, p.y, x2, y2) < f.r + 20) dmgFoe(f, 25, null);
-    S.fx.push({ type: 'rail', x: p.x, y: p.y, x2, y2, life: 0.3, t: 0 });
+    const w = T.railDmg > 40 ? 60 : 20; // 별똥별 레일 캐논은 굵음
+    for (const f of S.foes) if (f.hp > 0 && segDist(f.x, f.y, p.x, p.y, x2, y2) < f.r + w) dmgFoe(f, T.railDmg, null);
+    S.fx.push({ type: 'rail', x: p.x, y: p.y, x2, y2, life: 0.3, t: 0, w: w / 20 });
     S.cam.shake = Math.max(S.cam.shake, 6);
     SND.sfx('zap');
   }
@@ -298,8 +340,25 @@
       SND.sfx('boost');
       if (T.boostDodge) { p.inv = Math.max(p.inv, 0.6); clearEshots(p.x, p.y, 300); } // 제비꼬리 날개
       if (T.sonic) sonicBoom(p);
+      // 사이렌 날개: 주변 적이 얼어붙음 (보스는 짧게)
+      if (T.stun) for (const f of S.foes) if (dist(p, f) < 380 + f.r) f.stun = T.stun * (f.boss ? 0.35 : 1);
+      if (T.stun) S.fx.push({ type: 'ring', x: p.x, y: p.y, r: 50, life: 0.5, t: 0 });
+      // 급강하 브레이크: 앞쪽 일직선에 폭탄
+      for (let i = 0; i < T.diveBomb; i++) { const d = 160 + i * 120; dropBomb(p.x, p.y, p.x + Math.cos(p.a) * d, p.y + Math.sin(p.a) * d); }
+      // 그림자 엔진: 그 자리에 미끼
+      if (T.phantom) S.decoy = { x: p.x, y: p.y, vx: p.vx * 0.3, vy: p.vy * 0.3, a: p.a, t: T.phantom };
+      // 순간 이동 추진기: 떠난 자리 폭발 + 앞으로
+      if (T.blink) {
+        for (const f of S.foes) if (dist(p, f) < 170 + f.r) dmgFoe(f, 40, null);
+        boom(p.x, p.y, 0.8); p.x += Math.cos(p.a) * T.blink; p.y += Math.sin(p.a) * T.blink; p.inv = Math.max(p.inv, 0.3);
+        S.fx.push({ type: 'ring', x: p.x, y: p.y, r: 30, life: 0.35, t: 0 });
+      }
     }
     p.boosting = boosting;
+    // 불꽃 꼬리 엔진: 부스트 중 지나간 길이 불탐
+    if (T.flameTrail && boosting && (p.flameT -= dt) <= 0) { p.flameT = 0.07; S.fires.push({ x: p.x - Math.cos(p.a) * 50, y: p.y - Math.sin(p.a) * 50, r: 60, t: 0, life: 1.6, dps: T.flameTrail }); }
+    // 천둥 망치 엔진: 부스트 중 부딪힌 적에게 피해
+    if (T.ram && boosting) for (const f of S.foes) if (f.hp > 0 && (f.ramHit || 0) <= 0 && dist(p, f) < f.r + 46) { f.ramHit = 0.5; dmgFoe(f, T.ram, null); burst(f.x, f.y, 6, '#ffd45c', 260, 10, 0.35); S.cam.shake = Math.max(S.cam.shake, 8); }
     // 융단 폭격: 부스트 중 지나간 길에 작은 폭탄
     if (T.carpet && boosting && (p.carpetT -= dt) <= 0) { p.carpetT = 0.12; dropBomb(p.x, p.y, p.x - Math.cos(p.a) * 60, p.y - Math.sin(p.a) * 60, 0.7, true); }
     const prevA = p.a;
@@ -307,10 +366,10 @@
     p.bank = lerp(p.bank, clamp(angDiff(prevA, p.a) / dt / T.turn, -1, 1), 1 - Math.exp(-8 * dt)); // 선회할 때 기울임
     if (boosting) p.boost = Math.max(0, p.boost - dt); else p.boost = Math.min(T.boostMax, p.boost + dt * T.boostRecover);
     const sp = boosting ? T.boostSpeed : T.speed;
-    const k = 1 - Math.exp(-T.accel * dt);
+    const k = 1 - Math.exp(-T.accel * (S.st.trait?.type === 'lowgrav' ? 0.3 : 1) * dt); // 무중력: 관성이 커서 미끄러짐
     p.vx = lerp(p.vx, Math.cos(p.a) * sp, k);
     p.vy = lerp(p.vy, Math.sin(p.a) * sp, k);
-    p.x += (p.vx + S.wind.x) * dt; p.y += (p.vy + S.wind.y) * dt; // 눈보라 바람에 밀림
+    p.x += (p.vx + S.wind.x * T.windK) * dt; p.y += (p.vy + S.wind.y * T.windK) * dt; // 바람에 밀림 (가벼운 기체일수록)
     // 조준 = 마우스가 가리키는 월드 위치
     p.aim = Math.atan2(input.my - VH / 2 + S.cam.y - p.y, input.mx - VW / 2 + S.cam.x - p.x);
     p.cd -= dt; p.ccd -= dt; p.rcd -= dt; p.tcd -= dt; p.bcd -= dt; p.chaffT -= dt;
@@ -319,7 +378,8 @@
     // 자동 기총탑: 쏘지 않아도 가장 가까운 적을 앞질러 겨냥
     if (T.turret && p.tcd <= 0 && !S.over) {
       const tg = nearestFoe(p);
-      if (tg && dist(p, tg) < 900) {
+      if (T.ciws && shootDown(p, 260)) p.tcd = T.turret; // 근접 방어 기관포: 가까운 적 탄이 있으면 그걸 먼저 떨어뜨림
+      else if (tg && dist(p, tg) < 900) {
         p.tcd = T.turret;
         const a = lead(p, tg, 1100);
         for (let i = 0; i < T.turretN; i++) {
@@ -330,6 +390,7 @@
       }
     }
     if (input.fire && !S.over) {
+      const amb = T.ambush && p.noFire > 1.5 ? T.ambush : 1; // 매복 사격: 쉬다가 쏘는 첫 사격
       p.noFire = 0;
       if (p.cd <= 0) {
         p.cd = 1 / (T.fireRate * (zerk ? 1.3 : 1));
@@ -341,8 +402,9 @@
           const ox = -Math.sin(p.aim) * go, oy = Math.cos(p.aim) * go;
           const nx = p.x + Math.cos(p.aim + ga) * 40 + ox, ny = p.y + Math.sin(p.aim + ga) * 40 + oy;
           S.shots.push({ x: nx, y: ny, vx: Math.cos(a) * T.bulletSpd + p.vx * T.inherit, vy: Math.sin(a) * T.bulletSpd + p.vy * T.inherit, life: T.bulletLife, t: 0,
-            dmg: T.bulletDmg * (zerk ? 1.5 : 1) * (tr ? 3 : 1), pierce: T.pierce + (tr ? 3 : 0), hits: [], tracer: tr });
+            dmg: T.bulletDmg * (zerk ? 1.5 : 1) * (tr ? 3 : 1) * amb, pierce: T.pierce + (tr ? 3 : 0), hits: [], tracer: tr || amb > 1, seek: T.homingShots });
         }
+        if (amb > 1) S.fx.push({ type: 'pop', x: p.x + Math.cos(p.aim) * 60, y: p.y + Math.sin(p.aim) * 60, life: 0.3, t: 0 });
         p.flash = 0.05;
         SND.sfx('shoot');
       }
@@ -354,6 +416,17 @@
         SND.sfx('shoot', 1, 0.6);
       }
       if (T.rail && p.rcd <= 0) { p.rcd = T.rail; railShot(p); }
+      // 치즈성 주포: 거대 포탄 (맞으면 큰 폭발 + 적 탄 지움)
+      if (T.mega && (p.megaT -= dt) <= 0) {
+        p.megaT = T.mega;
+        S.shots.push({ x: p.x + Math.cos(p.aim) * 70, y: p.y + Math.sin(p.aim) * 70, vx: Math.cos(p.aim) * 760, vy: Math.sin(p.aim) * 760, life: 1.4, t: 0, dmg: 200, pierce: 0, hits: [], cannon: true, mega: true });
+        S.cam.shake = Math.max(S.cam.shake, 12); SND.sfx('explode_big', 0.6, 0.7);
+      }
+      // 궤도 폭격 지휘기: 조준한 곳에 궤도 광선 (0.5초 예고)
+      if (T.orbital && (p.oT -= dt) <= 0) {
+        p.oT = T.orbital;
+        S.strikes.push({ x: input.mx - VW / 2 + S.cam.x, y: input.my - VH / 2 + S.cam.y, t: 0, warn: 0.5, r: 170, dmg: 80 });
+      }
       // 폭탄: 조준한 곳(최대 450px 앞)에 떨어뜨림
       if (T.bomb && p.bcd <= 0) {
         p.bcd = T.bomb;
@@ -377,6 +450,9 @@
       }
     }
     p.flash -= dt;
+    // 궤도 수리 무인기: N 초마다 체력 8%
+    if (T.healPulse && (p.healT -= dt) <= 0) { p.healT = T.healPulse; if (p.hp < T.hp) { p.hp = Math.min(T.hp, p.hp + T.hp * 0.08); S.fx.push({ type: 'ring', x: p.x, y: p.y, r: 40, life: 0.4, t: 0, col: '#9dffa0' }); } }
+    if (T.drone) updDrones(p, dt);
     // 쏘지 않으면 회복 (시제 엔진은 쏘는 중에도 regenFire 비율만큼)
     const resting = p.noFire > T.regenDelay;
     if (p.hurt > T.regenDelay && (resting || T.regenFire)) p.hp = Math.min(T.hp, p.hp + T.regen * (resting ? 1 : T.regenFire) * dt);
@@ -387,17 +463,46 @@
     }
   }
 
+  // 가까운 적 탄 하나 떨어뜨림 (근접 방어 기관포) — 떨어뜨렸으면 true
+  function shootDown(o, r) {
+    let best = null, bd = r;
+    for (const b of S.eshots) { const d = Math.hypot(b.x - o.x, b.y - o.y); if (d < bd) { bd = d; best = b; } }
+    if (!best) return false;
+    best.t = 99;
+    S.fx.push({ type: 'pop', x: best.x, y: best.y, life: 0.2, t: 0 });
+    S.fx.push({ type: 'arc', x: o.x, y: o.y, x2: best.x, y2: best.y, life: 0.08, t: 0, thin: true });
+    return true;
+  }
+  // 호위 무인기: 비행기 둘레를 돌며 번갈아 가장 가까운 적을 쏨 (레이저 · 유도탄), 방패 무인기는 닿는 적 탄을 막음
+  const droneAt = (p, i) => { const a = S.t * 1.6 + (i * TAU) / T.drone, r = 95 + 12 * Math.sin(S.t * 3 + i); return { x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r, vx: p.vx, vy: p.vy }; };
+  function updDrones(p, dt) {
+    if (T.droneShield) for (let i = 0; i < T.drone; i++) { const d = droneAt(p, i); for (const b of S.eshots) if (b.t < 99 && Math.hypot(b.x - d.x, b.y - d.y) < b.r + 22) { b.t = 99; S.fx.push({ type: 'pop', x: b.x, y: b.y, life: 0.2, t: 0 }); } }
+    if ((p.dcd -= dt) > 0 || S.over) return;
+    p.dcd = T.droneRate / T.drone; // 무인기들이 번갈아 쏨
+    const o = droneAt(p, p.dN++ % T.drone), tg = nearestFoe(o);
+    if (!tg || dist(o, tg) > 850) return;
+    if (T.droneMissile && p.dN % 6 === 0) { missiles(o, 1, tg); return; }
+    const a = lead(o, tg, 1300);
+    if (T.droneLaser) S.shots.push({ x: o.x, y: o.y, vx: Math.cos(a) * 2200, vy: Math.sin(a) * 2200, life: 0.45, t: 0, dmg: T.droneDmg * 2, pierce: 4, hits: [], laser: true });
+    else S.shots.push({ x: o.x, y: o.y, vx: Math.cos(a) * 1300, vy: Math.sin(a) * 1300, life: 0.7, t: 0, dmg: T.droneDmg, pierce: 0, hits: [], thin: true });
+  }
+
   function nearestFoe(o) {
     let best = null, bd = 1100;
-    for (const f of S.foes) { if (f.hp <= 0 || f.st === 'enter') continue; const d = dist(o, f); if (d < bd) { bd = d; best = f; } }
+    for (const f of S.foes) { if (f.hp <= 0 || f.st === 'enter' || f.ghost) continue; const d = dist(o, f); if (d < bd) { bd = d; best = f; } }
     return best;
   }
 
   // ── 적
+  // 적이 노리는 곳: 그림자 엔진 미끼가 있으면 미끼
+  const target = () => (S.decoy && S.decoy.t > 0 ? S.decoy : S.p);
   function updFoe(f, dt) {
-    const p = S.p, D = FOE[f.kind];
-    f.hit -= dt; f.stT -= dt; f.cd -= dt; f.ph += dt; f.ram -= dt;
-    const d = dist(f, p);
+    const D = FOE[f.kind], p = target();
+    f.hit -= dt; f.stT -= dt; f.cd -= dt; f.ph += dt; f.ram -= dt; f.ramHit = (f.ramHit || 0) - dt;
+    if (f.burnT > 0) { f.burnT -= dt; hpLoss(f, T.burn * dt, null, false); if (Math.random() < dt * 12) burst(f.x, f.y, 1, '#ff8a3d', 60, 8, 0.4); }
+    // 얼어붙음 (사이렌): 미끄러지기만 함
+    if (f.stun > 0) { f.stun -= dt; f.vx *= Math.exp(-3 * dt); f.vy *= Math.exp(-3 * dt); f.x += f.vx * dt; f.y += f.vy * dt; return; }
+    const d = dist(f, p), dr = dist(f, S.p); // d = 노리는 곳까지, dr = 진짜 플레이어까지 (부딪힘 판정)
     if (f.kind === 'cat') {
       // 꼬리 물기: 플레이어를 앞질러 겨냥, 너무 붙으면 잠깐 이탈
       let want = lead(f, p, 520);
@@ -429,7 +534,7 @@
         if (f.stT <= 0) { f.st = 'dive'; f.stT = 0.8; f.vx = Math.cos(f.a) * 820; f.vy = Math.sin(f.a) * 820; }
       } else if (f.st === 'dive') {
         if (f.stT <= 0) { f.st = 'circle'; f.stT = rnd(1.8, 3); }
-        if (d < f.r + 20) { hurt(10, 'dive'); f.st = 'circle'; f.stT = 2.5; f.a += Math.PI; }
+        if (dr < f.r + 20) { hurt(10, 'dive'); f.st = 'circle'; f.stT = 2.5; f.a += Math.PI; }
       }
     } else if (f.kind === 'swift') {
       // 제비: 좌우로 흔들며 돌진 → 가까우면 2발 쏘고 그대로 스쳐 지나감 → 돌아옴
@@ -447,19 +552,39 @@
       f.cd2 -= dt;
       if (d < 900 && f.cd <= 0) { f.cd = rnd(1.4, 1.9); fan(f.x, f.y, lead(f, p, 380), 3, 0.2, 380, { col: '#ff8a3d', r: 12, dmg: 8 }); }
       if (d < 900 && f.cd2 <= 0) { f.cd2 = rnd(3.5, 4.5); ring(f.x, f.y, 12, 230, { col: '#ffd45c', r: 12, dmg: 7 }); }
+    } else if (f.kind === 'drone') {
+      // 고양이 드론: 쫓다가 → 가까우면 멈칫하며 깜빡(예고) → 그 방향으로 돌진, 부딪히면 자폭
+      if (f.st === 'chase') {
+        f.a = turnTo(f.a, Math.atan2(p.y - f.y, p.x - f.x) + Math.sin(f.ph * 5) * 0.5, D.turn * dt);
+        f.vx = Math.cos(f.a) * D.speed; f.vy = Math.sin(f.a) * D.speed;
+        if (d < 340 && f.cd <= 0) { f.st = 'arm'; f.stT = 0.5; }
+      } else if (f.st === 'arm') {
+        f.vx *= Math.exp(-6 * dt); f.vy *= Math.exp(-6 * dt);
+        f.a = turnTo(f.a, Math.atan2(p.y - f.y, p.x - f.x), 10 * dt);
+        if (f.stT <= 0) { f.st = 'dash'; f.stT = 0.7; f.vx = Math.cos(f.a) * 950; f.vy = Math.sin(f.a) * 950; }
+      } else if (f.stT <= 0) { f.st = 'chase'; f.cd = rnd(1.5, 2.5); }
+      if (f.st === 'dash' && dr < f.r + 30) { hurt(12, 'drone'); f.hp = 0; boom(f.x, f.y, 0.6); }
+    } else if (f.kind === 'gunship') {
+      // 장갑 포함: 멀찍이 맴돌며 터지는 대공포탄 + 2연발
+      const oa = Math.atan2(f.y - p.y, f.x - p.x) + f.orbit * 0.4 * dt;
+      f.a = turnTo(f.a, Math.atan2(p.y + Math.sin(oa) * 600 - f.y, p.x + Math.cos(oa) * 600 - f.x), D.turn * dt);
+      f.vx = Math.cos(f.a) * D.speed; f.vy = Math.sin(f.a) * D.speed;
+      f.cd2 -= dt;
+      if (d < 950 && f.cd <= 0) { f.cd = rnd(2, 2.6); eshot(f.x, f.y, lead(f, p, 300), 300, { r: 17, col: '#3b3f4a', dmg: 10, ball: true, split: 8, splitAt: 1.0, life: 5 }); }
+      if (d < 900 && f.cd2 <= 0) { f.cd2 = rnd(0.9, 1.3); fan(f.x, f.y, lead(f, p, 420), 2, 0.15, 420, { col: '#ff8a3d', r: 10, dmg: 7 }); }
     } else if (D.boss) {
-      bossMove(f, dt, d);
-      if (f.st !== 'enter') BOSS[f.kind](f, dt, d, f.hp < f.max * 0.5);
+      bossMove(f, dt, dr);
+      if (f.st !== 'enter') BOSS[f.kind](f, dt, dr, f.hp < f.max * 0.5);
     }
     f.x += f.vx * dt; f.y += f.vy * dt;
-    // 몸통 박치기
-    if (!f.boss && d < f.r + 36 && f.ram <= 0) { f.ram = 1; hurt(5, 'ram'); }
+    // 몸통 박치기 (천둥 망치 엔진 부스트 중엔 안 받음)
+    if (!f.boss && dr < f.r + 36 && f.ram <= 0 && !(T.ram && S.p.boosting)) { f.ram = 1; hurt(5, 'ram'); }
   }
 
   // ── 보스 공통 움직임: 플레이어에게서 R 만큼 떨어져 천천히 맴돌며 플레이어 쪽을 봄 (f.free 동안은 각 보스가 직접 움직임)
-  const BOSS_R = { boss: 470, eagle: 520, owl: 480, ship: 560, king: 500 };
+  const BOSS_R = { boss: 470, eagle: 520, owl: 480, ship: 560, king: 500, condor: 540, phoenix: 520, harpy: 540, carrier: 620, emperor: 560 };
   function bossMove(f, dt, d) {
-    const p = S.p, D = FOE[f.kind];
+    const p = target(), D = FOE[f.kind];
     if (f.st === 'enter' && d < 800) { f.st = 'fight'; f.patT = 1.2; }
     if (f.free) return;
     const ang = Math.atan2(f.y - p.y, f.x - p.x) + 0.25 * dt;
@@ -485,13 +610,33 @@
     for (let i = 0; i < n; i++) { const c = spawn(kind); c.x = f.x - Math.cos(f.a) * 150 + rnd(-60, 60); c.y = f.y - Math.sin(f.a) * 150 + rnd(-60, 60); c.a = f.a + Math.PI + rnd(-0.6, 0.6); }
   }
 
+  // 급강하 돌진 (독수리 · 콘도르 · 불사조): 예고(노려봄) → 돌진하며 trail() → 잠깐 쉼. 패턴 시간이 남으면 다시 노려봄
+  function diveDash(f, dt, d, trail) {
+    const p = target();
+    if (!f.free) { f.free = true; f.stT = 0.8; f.dash = 0; f.aimA = Math.atan2(p.y - f.y, p.x - f.x); }
+    if (f.dash === 0) {
+      f.vx *= Math.exp(-4 * dt); f.vy *= Math.exp(-4 * dt);
+      f.aimA = turnTo(f.aimA, Math.atan2(p.y - f.y, p.x - f.x), 3 * dt); f.a = f.aimA;
+      if (f.stT <= 0) { f.dash = 1; f.stT = 0.9; f.vx = Math.cos(f.a) * 1150; f.vy = Math.sin(f.a) * 1150; S.cam.shake = 12; }
+    } else if (f.dash === 1) {
+      if (f.cd <= 0) { f.cd = 0.07; trail(); }
+      if (d < f.r + 30) hurt(16, 'dive');
+      if (f.stT <= 0) { f.dash = 2; f.stT = 0.6; }
+    } else if (f.stT <= 0) f.free = false;
+  }
+  // 원 모양 위험 지대: warn 초 예고(점선 원) 뒤 dur 초 동안 닿으면 피해. kind = 'erupt' · 'flak' · 'meteor' · 'fire' · 'twister'(움직이며 끌어당김)
+  function zone(x, y, r, warn, dur, dmg, kind, extra) {
+    if (warn > 0.3) SND.sfx('warn');
+    S.hz.push({ type: 'zone', kind, x, y, r, warn, dur, dmg, t: 0, ...extra });
+  }
+
   const BOSS = {
     // 1 고양이 비행선: 대포 두 문 → 나선 탄막 → 원형 탄 + 졸개
     boss: (f, dt, d, rage) => updAirship(f, dt, d, rage),
 
     // 2 천둥 독수리: 깃털 부채 → 번개(예고선 뒤 내리침) → 급강하 돌진(뒤로 깃털)
     eagle(f, dt, d, rage) {
-      const p = S.p;
+      const p = target();
       nextPat(f, [[3.2], [3.4, '번개가 온다!'], [3.0, '급강하!']]);
       if (f.pat === 0) {
         if (f.cd <= 0) { f.cd = rage ? 0.45 : 0.65; fan(f.x, f.y, lead(f, p, 430), rage ? 7 : 5, 0.16, 430, { shape: 'feather', col: '#c8873a', r: 11, dmg: 8 }); }
@@ -502,26 +647,14 @@
           const n = rage ? 3 : 2, tx = p.x + p.vx * 0.9, ty = p.y + p.vy * 0.9;
           for (let i = 0; i < n; i++) { const a = rnd(0, TAU), o = rnd(-120, 120); bolt(tx + Math.cos(a) * 900 - Math.sin(a) * o, ty + Math.sin(a) * 900 + Math.cos(a) * o, tx - Math.cos(a) * 900 - Math.sin(a) * o, ty - Math.sin(a) * 900 + Math.cos(a) * o, 0.85, 14); }
         }
-      } else {
-        // 예고(노려봄) → 돌진 → 지나간 자리에 옆으로 깃털
-        if (!f.free) { f.free = true; f.stT = 0.8; f.dash = 0; f.aimA = Math.atan2(p.y - f.y, p.x - f.x); }
-        if (f.dash === 0) {
-          f.vx *= Math.exp(-4 * dt); f.vy *= Math.exp(-4 * dt);
-          f.aimA = turnTo(f.aimA, Math.atan2(p.y - f.y, p.x - f.x), 3 * dt); f.a = f.aimA;
-          if (f.stT <= 0) { f.dash = 1; f.stT = 0.9; f.vx = Math.cos(f.a) * 1150; f.vy = Math.sin(f.a) * 1150; S.cam.shake = 12; }
-        } else if (f.dash === 1) {
-          if (f.cd <= 0) { f.cd = 0.07; for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * Math.PI / 2, 160, { shape: 'feather', col: '#e0b060', r: 10, dmg: 7, acc: 90, max: 330 }); }
-          if (d < f.r + 30) hurt(16, 'dive');
-          if (f.stT <= 0) { f.dash = 2; f.stT = 0.6; }
-        } else if (f.stT <= 0) f.free = false; // 패턴 시간이 남았으면 다음 프레임에 다시 노려봄
-      }
+      } else diveDash(f, dt, d, () => { for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * Math.PI / 2, 160, { shape: 'feather', col: '#e0b060', r: 10, dmg: 7, acc: 90, max: 330 }); });
       if (f.pat !== 2) f.free = false;
       if (rage && f.pat === 0 && nearCats('swift') < 3 && Math.random() < dt * 0.4) minion(f, 'swift', 2);
     },
 
     // 3 눈보라 부엉이: 눈꽃 이중 나선 → 유도 얼음 구슬 → 눈보라(바람에 밀림 + 한쪽에서 얼음 벽)
     owl(f, dt, d, rage) {
-      const p = S.p;
+      const p = target();
       if (nextPat(f, [[3.6], [3.2, '얼음 구슬!'], [4.2, '눈보라!']]) && f.pat === 2) {
         const a = rnd(0, TAU); S.wind = { x: Math.cos(a) * 170, y: Math.sin(a) * 170, t: 4.2, a };
       }
@@ -548,7 +681,7 @@
 
     // 4 고양이 공중 전함: 포탑 4문 → 측면 일제 사격 → 함수 주포 광선(예고 뒤 휩쓸기) / 분노하면 폭격기 호출
     ship(f, dt, d, rage) {
-      const p = S.p, ca = Math.cos(f.a), sa = Math.sin(f.a);
+      const p = target(), ca = Math.cos(f.a), sa = Math.sin(f.a);
       nextPat(f, [[3.6], [3.0, '측면 일제 사격!'], [3.4, '주포 충전!']]);
       const at = (u, v) => ({ x: f.x + ca * u - sa * v, y: f.y + sa * u + ca * v, vx: f.vx, vy: f.vy });
       if (f.pat === 0) {
@@ -571,9 +704,120 @@
       if (rage && nearCats('bomber') < 2 && Math.random() < dt * 0.2) minion(f, 'bomber', 1);
     },
 
+    // 6 모래폭풍 콘도르: 흔들리는 깃털 부채 → 모래 회오리(끌어당김) + 모래 고리 → 급강하(옆으로 깃털) / 분노하면 드론 호출
+    condor(f, dt, d, rage) {
+      const p = target();
+      if (nextPat(f, [[3.4], [4.2, '모래 회오리!'], [3.2, '급강하!']]) && f.pat === 1) {
+        for (let i = 0; i < (rage ? 4 : 3); i++) {
+          const a = rnd(0, TAU), x = p.x + Math.cos(a) * 560, y = p.y + Math.sin(a) * 560, b = Math.atan2(p.y - y, p.x - x) + rnd(-0.4, 0.4);
+          zone(x, y, 105, 0.7, 5, 10, 'twister', { vx: Math.cos(b) * 150, vy: Math.sin(b) * 150, pull: 190 });
+        }
+      }
+      if (f.pat === 0) {
+        if (f.cd <= 0) { f.cd = rage ? 0.32 : 0.45; f.spin += 0.5; fan(f.x, f.y, Math.atan2(p.y - f.y, p.x - f.x) + Math.sin(f.spin) * 0.7, rage ? 7 : 5, 0.14, 420, { shape: 'feather', col: '#7a5a3e', r: 11, dmg: 8 }); }
+      } else if (f.pat === 1) {
+        if (f.cd <= 0) { f.cd = 1.3; ring(f.x, f.y, rage ? 20 : 14, 200, { col: '#d9b06a', r: 12, dmg: 8 }); }
+      } else diveDash(f, dt, d, () => { for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * Math.PI / 2, 160, { shape: 'feather', col: '#c8a060', r: 10, dmg: 8, acc: 90, max: 330 }); });
+      if (f.pat !== 2) f.free = false;
+      if (rage && nearCats('drone') < 6 && Math.random() < dt * 0.4) minion(f, 'drone', 3);
+    },
+
+    // 7 용암 불사조: 불꽃 부채 → 불꽃 고리(빠르기 번갈아) → 화염 돌진(지나간 길이 불탐) → 불꽃 비(원 예고) / 쓰러지면 한 번 되살아나 계속 분노
+    phoenix(f, dt, d, rage) {
+      const p = target();
+      rage = rage || f.reborn;
+      nextPat(f, [[3.2], [3.6, '불꽃 고리!'], [3.0, '화염 돌진!'], [3.6, '불꽃 비!']]);
+      if (f.pat === 0) {
+        if (f.cd <= 0) { f.cd = rage ? 0.38 : 0.55; fan(f.x, f.y, lead(f, p, 420), rage ? 7 : 5, 0.17, 420, { col: '#ff7a2a', r: 12, dmg: 9 }); }
+      } else if (f.pat === 1) {
+        if (f.cd <= 0) { f.cd = rage ? 0.45 : 0.6; f.n++; ring(f.x, f.y, 18, f.n % 2 ? 170 : 260, { col: f.n % 2 ? '#ffc04a' : '#ff5a2a', r: 12, dmg: 9, life: 6 }); }
+      } else if (f.pat === 2) diveDash(f, dt, d, () => zone(f.x, f.y, 70, 0, 2.2, 8, 'fire'));
+      else if (f.cd <= 0) { f.cd = rage ? 0.3 : 0.42; zone(p.x + p.vx * 0.8 + rnd(-220, 220), p.y + p.vy * 0.8 + rnd(-220, 220), 110, 1.0, 0.35, 14, 'erupt'); }
+      if (f.pat !== 2) f.free = false;
+    },
+
+    // 8 밀림 하피 독수리: 3갈래 깃털 → 안개 속으로 사라졌다가 화면 밖에서 노려보고(빨간 점선) 꿰뚫고 지나감 → 깃털 폭풍(나선 + 유도 깃털)
+    harpy(f, dt, d, rage) {
+      const p = target();
+      if (nextPat(f, [[3.4], [5.0, '사라졌다…!'], [3.6, '깃털 폭풍!']])) { f.ghost = false; f.free = false; f.sub = 0; f.aimLine = false; }
+      if (f.pat === 0) {
+        if (f.cd <= 0) { f.cd = rage ? 0.4 : 0.55; for (const o of [-0.5, 0, 0.5]) fan(f.x, f.y, lead(f, p, 440) + o, 3, 0.08, 440, { shape: 'feather', col: '#5a6070', r: 11, dmg: 8 }); }
+      } else if (f.pat === 1) {
+        f.free = true;
+        if (f.sub === 0) {
+          f.ghost = true; f.vx *= Math.exp(-3 * dt); f.vy *= Math.exp(-3 * dt);
+          if (f.cd <= 0) { const a = rnd(0, TAU); f.x = p.x + Math.cos(a) * 720; f.y = p.y + Math.sin(a) * 720; f.vx = f.vy = 0; f.a = a + Math.PI; f.sub = 1; f.stT = rage ? 0.6 : 0.8; f.aimLine = true; SND.sfx('warn'); }
+        } else if (f.sub === 1) {
+          f.ghost = false; f.a = turnTo(f.a, Math.atan2(p.y - f.y, p.x - f.x), 4 * dt);
+          if (f.stT <= 0) { f.sub = 2; f.stT = 1.0; f.aimLine = false; f.vx = Math.cos(f.a) * 1300; f.vy = Math.sin(f.a) * 1300; S.cam.shake = 10; }
+        } else {
+          if (f.cd <= 0) { f.cd = 0.08; for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * Math.PI / 2, 150, { shape: 'feather', col: '#5a6070', r: 10, dmg: 8, acc: 80, max: 300 }); }
+          if (d < f.r + 30) hurt(18, 'dive');
+          if (f.stT <= 0) { f.sub = 0; f.cd = 0.4; }
+        }
+      } else {
+        f.free = false;
+        if (f.cd <= 0) { f.cd = 0.11; f.spin += 0.27; for (let i = 0; i < 3; i++) eshot(f.x, f.y, f.spin + (i * TAU) / 3, 230, { shape: 'feather', col: '#3f4656', r: 10, dmg: 8, life: 6 }); }
+        if ((f.cd2 -= dt) <= 0) { f.cd2 = rage ? 1.0 : 1.4; for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * 1.4, 200, { col: '#8fd06a', r: 15, dmg: 11, home: 2.2, homeTurn: 1.6, acc: 70, max: 420, life: 6 }); }
+      }
+      if (rage && nearCats('swift') < 4 && Math.random() < dt * 0.3) minion(f, 'swift', 2);
+    },
+
+    // 9 고양이 하늘 항모: 갑판 포 6문 + 대공포탄 → 함재기(드론) 발진 + 측면 사격 → 유도 미사일 일제 발사 / 분노하면 함수 광선 · 장갑 포함
+    carrier(f, dt, d, rage) {
+      const p = target(), ca = Math.cos(f.a), sa = Math.sin(f.a);
+      const at = (u, v) => ({ x: f.x + ca * u - sa * v, y: f.y + sa * u + ca * v, vx: f.vx, vy: f.vy });
+      if (nextPat(f, [[3.6], [3.2, '함재기 발진!'], [3.4, '미사일 일제 발사!']]) && f.pat === 2 && rage) beam(f, 380, 0, 1900, 60, 1.0, 1.4, 14);
+      if (f.pat === 0) {
+        if (f.cd <= 0) {
+          f.cd = rage ? 0.22 : 0.32; f.n = (f.n + 1) % 6;
+          const g = at([260, 140, 0, -140, -260, 60][f.n], f.n % 2 ? 70 : -70);
+          eshot(g.x, g.y, lead(g, p, 440) + rnd(-0.05, 0.05), 440, { r: 14, col: '#3b3f4a', dmg: 10, ball: true, life: 5 });
+          burst(g.x, g.y, 3, '#c9c4b8', 110, 10, 0.4);
+        }
+        if ((f.cd2 -= dt) <= 0) { f.cd2 = 1.6; eshot(f.x, f.y, lead(f, p, 280), 280, { r: 18, col: '#3b3f4a', dmg: 10, ball: true, split: 10, splitAt: 1.1, life: 5 }); }
+      } else if (f.pat === 1) {
+        if (f.cd <= 0 && f.n === 0) { f.n = 1; if (nearCats('drone') < 10) minion(f, 'drone', rage ? 6 : 4); if (rage && nearCats('gunship') < 1) minion(f, 'gunship', 1); }
+        if ((f.cd2 -= dt) <= 0) { f.cd2 = 0.6; for (let u = -300; u <= 300; u += 100) for (const s of [-1, 1]) { const g = at(u, s * 100); eshot(g.x, g.y, f.a + s * Math.PI / 2 + rnd(-0.04, 0.04), 240, { r: 11, col: '#ff5c8a', dmg: 8, life: 5 }); } }
+      } else if (f.cd <= 0 && f.n < (rage ? 12 : 8)) {
+        f.cd = 0.28; f.n++;
+        const s = f.n % 2 ? 1 : -1, g = at(rnd(-200, 200), s * 90);
+        eshot(g.x, g.y, f.a + s * 1.5, 220, { col: '#ffcf5a', r: 15, dmg: 11, home: 2.0, homeTurn: 1.8, acc: 90, max: 470, life: 6 });
+      }
+    },
+
+    // 10 고양이 황제 모선: 체력 3구간 — 꽃 탄막 · 번개 · 유성우 / 회전 광선 · 근위 함대 · 유도 왕관탄 / 분노(역회전 광선 + 원형) · 유성우 · 원형 연발
+    emperor(f, dt, d) {
+      const p = target(), k = f.hp / f.max, phase = k > 0.66 ? 0 : k > 0.33 ? 1 : 2;
+      if (phase !== f.phase) { f.phase = phase; f.pat = -1; f.patT = 0; if (phase) { S.warn = { text: phase === 1 ? '황제가 일어섰다!' : '황제 최후의 발악!', t: 1.6 }; S.eshots = []; S.cam.shake = 22; } }
+      nextPat(f, [[[3.4], [3.2, '황제의 번개!'], [3.4, '유성우!']], [[3.6, '회전 광선!'], [3.0, '근위 함대!'], [3.2, '유도 왕관탄!']], [[4.0, '황제의 분노!'], [3.2, '유성우!'], [3.0, '원형 연발!']]][phase]);
+      const kind = [['flower', 'bolt', 'meteor'], ['spin', 'guard', 'homing'], ['fury', 'meteor', 'rings']][phase][f.pat] || 'flower';
+      if (kind === 'flower') {
+        if (f.cd <= 0) { f.cd = 0.15; f.spin += 0.19; for (let i = 0; i < 5; i++) { const a = f.spin + (i * TAU) / 5; eshot(f.x, f.y, a, 240, { col: '#ffd45c', r: 12, dmg: 9, life: 6 }); eshot(f.x, f.y, -a, 170, { col: '#7aa8ff', r: 10, dmg: 9, life: 7 }); } }
+      } else if (kind === 'bolt') {
+        if (f.cd <= 0) { f.cd = 0.7; for (let i = 0; i < 3; i++) { const a = rnd(0, TAU), tx = p.x + p.vx * 0.8 + rnd(-90, 90), ty = p.y + p.vy * 0.8 + rnd(-90, 90); bolt(tx + Math.cos(a) * 900, ty + Math.sin(a) * 900, tx - Math.cos(a) * 900, ty - Math.sin(a) * 900, 0.8, 16); } }
+        if ((f.cd2 -= dt) <= 0) { f.cd2 = 1.0; fan(f.x, f.y, Math.atan2(p.y - f.y, p.x - f.x), 11, 0.13, 300, { col: '#ff5c8a', r: 11, dmg: 9 }); }
+      } else if (kind === 'meteor') {
+        if (f.cd <= 0) { f.cd = phase ? 0.28 : 0.38; zone(p.x + p.vx * 0.9 + rnd(-260, 260), p.y + p.vy * 0.9 + rnd(-260, 260), 120, 1.0, 0.35, 15, 'meteor'); }
+        if ((f.cd2 -= dt) <= 0) { f.cd2 = 1.4; ring(f.x, f.y, 16, 220, { col: '#c9a8ff', r: 12, dmg: 9 }); }
+      } else if (kind === 'spin') {
+        if (f.n === 0) { f.n = 1; for (let i = 0; i < 3; i++) beam(f, 0, (i * TAU) / 3, 1500, 44, 1.1, 2.8, 13, 0.75); }
+        if (f.cd <= 0) { f.cd = 0.45; fan(f.x, f.y, Math.atan2(p.y - f.y, p.x - f.x), 3, 0.25, 360, { col: '#ff8a3d', r: 11, dmg: 9 }); }
+      } else if (kind === 'guard') {
+        if (f.cd <= 0) { f.cd = 9; ring(f.x, f.y, 30, 270, { col: '#ffd45c', r: 12, dmg: 9 }); if (nearCats('drone') < 8) minion(f, 'drone', 6); if (nearCats('gunship') < 2) minion(f, 'gunship', 1); }
+      } else if (kind === 'homing') {
+        if (f.cd <= 0) { f.cd = 0.4; for (const s of [-1, 1]) eshot(f.x, f.y, f.a + s * 1.3, 220, { col: '#ffcf5a', r: 16, dmg: 12, home: 2.2, homeTurn: 1.8, acc: 80, max: 470, life: 6 }); }
+      } else if (kind === 'fury') {
+        if (f.n === 0) { f.n = 1; for (let i = 0; i < 4; i++) beam(f, 0, (i * TAU) / 4, 1500, 42, 1.1, 3.0, 13, -0.85); }
+        if (f.cd <= 0) { f.cd = 0.7; ring(f.x, f.y, 16, 250, { col: '#ff5c8a', r: 12, dmg: 9 }); }
+      } else if (kind === 'rings') {
+        if (f.cd <= 0) { f.cd = 0.34; ring(f.x, f.y, 22, 260, { col: f.n++ % 2 ? '#7aa8ff' : '#ffd45c', r: 12, dmg: 9, life: 6 }); }
+      }
+    },
+
     // 5 고양이 대왕 로켓: 체력 3구간 — 꽃 탄막 / 번개 + 유도탄 + 졸개 / 분노(회전 광선 + 원형탄 연발)
     king(f, dt, d) {
-      const p = S.p, k = f.hp / f.max, phase = k > 0.66 ? 0 : k > 0.33 ? 1 : 2;
+      const p = target(), k = f.hp / f.max, phase = k > 0.66 ? 0 : k > 0.33 ? 1 : 2;
       if (phase !== f.phase) { f.phase = phase; f.pat = -1; f.patT = 0; if (phase) { S.warn = { text: phase === 1 ? '대왕이 화났다!' : '대왕 최후의 발악!', t: 1.6 }; S.eshots = []; S.cam.shake = 20; } }
       const L = [[[3.4], [3.0, '번개 지팡이!']], [[3.0, '번개 지팡이!'], [3.2, '유도 왕관탄!'], [2.6]], [[3.8, '회전 광선!'], [3.0, '원형 연발!']]][phase];
       nextPat(f, L);
@@ -599,7 +843,7 @@
   };
 
   function updAirship(f, dt, d, rage) {
-    const p = S.p;
+    const p = target();
     const ca = Math.cos(f.a), sa = Math.sin(f.a);
     nextPat(f, [[3.2], [3.6, '나선 탄막!'], [2.2, '졸개 출동!']]);
     if (f.pat === 0) {
@@ -664,6 +908,32 @@
     S.drops.push({ type, v, x: f.x, y: f.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, t: 0, ph: rnd(0, TAU) });
   }
 
+  // 맵 특성: 다음 발동까지 시간(S.traitT)을 정하고 한 번 일으킴
+  const TRAIT = {
+    // 모래폭풍: 몇 초 동안 한쪽으로 센 바람 (가벼운 기체일수록 밀림, T.windK)
+    sandstorm() { S.traitT = rnd(7, 10); const a = rnd(0, TAU); S.wind = { x: Math.cos(a) * 240, y: Math.sin(a) * 240, t: 3.8, dur: 3.8, a, sand: true }; S.warn = { text: '모래폭풍!', t: 1 }; SND.sfx('warn'); },
+    // 분화: 갈 곳 근처에 용암 기둥 (원 예고 뒤 터지며 돌 조각)
+    eruption(p) { S.traitT = rnd(2, 3.2); for (let i = 0; i < (Math.random() < 0.4 ? 2 : 1); i++) zone(p.x + p.vx * 1.1 + rnd(-260, 260), p.y + p.vy * 1.1 + rnd(-260, 260), 140, 1.2, 0.35, 16, 'erupt'); },
+    // 대공포: 갈 곳에 짧은 예고 뒤 터짐
+    flak(p) { S.traitT = rnd(0.9, 1.5); zone(p.x + p.vx * 0.8 + rnd(-140, 140), p.y + p.vy * 0.8 + rnd(-140, 140), 95, 0.8, 0.22, 12, 'flak'); },
+    // 무중력: 화면 밖에서 큰 유성이 천천히 가로지름 (관성은 updPlayer)
+    lowgrav(p) { S.traitT = rnd(1.4, 2.4); const a = rnd(0, TAU), x = p.x + Math.cos(a) * 1100, y = p.y + Math.sin(a) * 1100; eshot(x, y, Math.atan2(p.y - y + rnd(-250, 250), p.x - x + rnd(-250, 250)), rnd(180, 260), { shape: 'rock', r: rnd(26, 40), dmg: 15, life: 12, col: '#8a8698' }); },
+    fog() { S.traitT = 99; }, // 안개는 그리기(drawFog)만
+  };
+  // 원 모양 위험 지대 한 프레임: 움직임 · 끌어당김(회오리) · 닿으면 피해, 터지는 순간 이펙트
+  function updZone(h, p, dt) {
+    if (h.vx) { h.x += h.vx * dt; h.y += h.vy * dt; }
+    if (h.t <= h.warn || h.t >= h.warn + h.dur || S.over) return;
+    const dd = Math.hypot(p.x - h.x, p.y - h.y) || 1;
+    if (h.pull && dd < h.r * 3.2) { const k = h.pull * (1 - dd / (h.r * 3.2)) * T.windK * dt; p.x += (h.x - p.x) / dd * k; p.y += (h.y - p.y) / dd * k; }
+    if (dd < h.r + 16) hurt(h.dmg, h.kind);
+    if (!h.boomed && h.kind !== 'twister' && h.kind !== 'fire') {
+      h.boomed = true;
+      boom(h.x, h.y, h.r / 110, 'metal');
+      if (h.kind === 'erupt') ring(h.x, h.y, 6, 200, { shape: 'rock', r: 12, dmg: 8, col: '#5a4440' });
+    }
+  }
+
   // ── 한 프레임
   function update(dt) {
     if (S.stop > 0) { S.stop -= dt; return; }
@@ -688,6 +958,13 @@
         if (b.homing) a = turnTo(a, Math.atan2(b.homing.y - b.y, b.homing.x - b.x), 6 * dt);
         b.vx = Math.cos(a) * sp; b.vy = Math.sin(a) * sp;
         if (Math.random() < dt * 40) S.fx.push({ type: 'puff', x: b.x, y: b.y, vx: 0, vy: 0, r: 5, life: 0.4, t: 0, col: 'rgba(255,240,220,.8)' });
+      } else if (b.seek) {
+        // 유도 플라스마탄: 가까운 적 쪽으로 조금씩 휨
+        if (!b.tg || b.tg.hp <= 0) b.tg = nearestFoe(b);
+        if (b.tg && dist(b, b.tg) < 650) {
+          const sp = Math.hypot(b.vx, b.vy), a = turnTo(Math.atan2(b.vy, b.vx), Math.atan2(b.tg.y - b.y, b.tg.x - b.x), b.seek * dt);
+          b.vx = Math.cos(a) * sp; b.vy = Math.sin(a) * sp;
+        }
       }
       b.x += b.vx * dt; b.y += b.vy * dt;
       for (const f of S.foes) {
@@ -700,6 +977,10 @@
           dmgFoe(f, b.dmg, b);
           // 37mm 기수포: 맞은 곳 폭발 (주변 적에게 절반)
           if (b.boom) { boom(b.x, b.y, 0.6); for (const o of S.foes) if (o !== f && hitFoe(o, b.x, b.y, 90)) dmgFoe(o, b.dmg * 0.5, b); }
+          // 로켓 포드 · 활공탄: 유도탄이 맞은 곳 폭발
+          if (b.homing !== undefined && T.missileBoom) { boom(b.x, b.y, T.missileBoom / 150); for (const o of S.foes) if (o !== f && hitFoe(o, b.x, b.y, T.missileBoom)) dmgFoe(o, b.dmg * 0.5, null); }
+          // 치즈성 주포: 큰 폭발 + 적 탄 지움
+          if (b.mega) { boom(b.x, b.y, 2.2); clearEshots(b.x, b.y, 320); for (const o of S.foes) if (o !== f && hitFoe(o, b.x, b.y, 240)) dmgFoe(o, b.dmg * 0.6, null); }
           break;
         }
       }
@@ -724,7 +1005,8 @@
         b.vx = Math.cos(a) * sp; b.vy = Math.sin(a) * sp;
       }
       b.x += b.vx * dt; b.y += b.vy * dt;
-      if (!S.over && Math.hypot(b.x - p.x, b.y - p.y) < b.r + 24) { hurt(b.dmg, b.ball ? 'cannon' : 'bullet'); b.t = 99; }
+      if (b.split && b.t >= b.splitAt && b.t < 99) { b.t = 99; ring(b.x, b.y, b.split, 240, { col: '#ffd45c', r: 10, dmg: 7 }); burst(b.x, b.y, 5, '#c9c4b8', 140, 12, 0.4); continue; }
+      if (!S.over && Math.hypot(b.x - p.x, b.y - p.y) < b.r + 24) { hurt(b.dmg, b.shape === 'rock' ? 'meteor' : b.ball ? 'cannon' : 'bullet'); b.t = 99; }
     }
     S.eshots = S.eshots.filter((b) => b.t < b.life);
     // 위험 지대: 예고 시간이 지나면 닿는 동안 피해
@@ -732,6 +1014,7 @@
       h.t += dt;
       if (h.spin) h.rel += h.spin * dt;
       if (h.f && h.f.hp <= 0) h.t = 99;
+      if (h.type === 'zone') { updZone(h, p, dt); continue; }
       if (h.t > h.warn && h.t < h.warn + h.dur && !S.over) {
         const [x1, y1, x2, y2] = hzLine(h);
         if (segDist(p.x, p.y, x1, y1, x2, y2) < h.w / 2 + 16) hurt(h.dmg, h.type);
@@ -740,6 +1023,19 @@
       }
     }
     S.hz = S.hz.filter((h) => h.t < h.warn + h.dur);
+    // 불 (네이팜 · 불꽃 꼬리): 안에 있는 적이 탐
+    for (const q of S.fires) { q.t += dt; for (const f of S.foes) if (f.st !== 'enter' && !f.ghost && hitFoe(f, q.x, q.y, q.r)) hpLoss(f, q.dps * dt, null, false); }
+    S.fires = S.fires.filter((q) => q.t < q.life);
+    // 궤도 광선: 예고 뒤 원 안의 적에게 한 번
+    for (const q of S.strikes) {
+      q.t += dt;
+      if (q.t >= q.warn && !q.done) { q.done = true; for (const f of S.foes) if (hitFoe(f, q.x, q.y, q.r)) dmgFoe(f, q.dmg, null); boom(q.x, q.y, 1.2); S.flashT = 0.06; SND.sfx('zap'); }
+    }
+    S.strikes = S.strikes.filter((q) => q.t < q.warn + 0.4);
+    if (S.decoy && (S.decoy.t -= dt) > 0) { S.decoy.x += S.decoy.vx * dt; S.decoy.y += S.decoy.vy * dt; } else S.decoy = null;
+    // 맵 특성 (stages.js 의 trait)
+    const tr = S.st.trait;
+    if (tr && !S.over && (S.traitT -= dt) <= 0) TRAIT[tr.type](p);
     if (S.wind.t > 0) { S.wind.t -= dt; if (S.wind.t <= 0) S.wind = { x: 0, y: 0, t: 0 }; }
     S.flashT -= dt;
     if (S.warn) S.warn.t -= dt;
@@ -874,6 +1170,14 @@
       ctx.fill();
       ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, b.r * 0.4, 0, TAU); ctx.fill();
       ctx.restore();
+    } else if (b.shape === 'rock') {
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.t * 1.5);
+      ctx.fillStyle = 'rgba(255,120,60,.35)'; ctx.beginPath(); ctx.arc(0, 0, b.r * 1.25, 0, TAU); ctx.fill(); // 위험 표시 테두리
+      ctx.fillStyle = b.col; ctx.beginPath();
+      for (let i = 0; i < 8; i++) { const r = b.r * (0.8 + 0.2 * Math.sin(i * 2.7)), a = (i * TAU) / 8; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+      ctx.fill();
+      ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.beginPath(); ctx.arc(b.r * 0.25, b.r * 0.2, b.r * 0.3, 0, TAU); ctx.fill();
+      ctx.restore();
     } else {
       ctx.fillStyle = b.col; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, TAU); ctx.fill();
       ctx.fillStyle = b.ball ? 'rgba(255,255,255,.35)' : '#fff';
@@ -883,7 +1187,32 @@
     }
   }
   // 위험 지대: 예고 = 붉은 점선(점점 진해짐), 터짐 = 번개(지그재그 흰 심 + 푸른 빛) · 광선(넓은 분홍 띠 + 흰 심)
+  const ZONE_COL = { erupt: '#ff7a2a', meteor: '#c9a8ff', flak: '#ffd45c', fire: '#ff8a3d', twister: '#d9b06a' };
+  function drawZone(h) {
+    const col = ZONE_COL[h.kind] || '#ff4f6d';
+    ctx.save();
+    if (h.t < h.warn) {
+      const k = h.t / h.warn;
+      ctx.globalAlpha = 0.15 + 0.25 * k; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(h.x, h.y, h.r * (0.3 + 0.7 * k), 0, TAU); ctx.fill();
+      ctx.globalAlpha = 0.4 + 0.5 * k; ctx.strokeStyle = '#ff4f6d'; ctx.lineWidth = 4; ctx.setLineDash([16, 12]); ctx.lineDashOffset = -S.t * 80;
+      ctx.beginPath(); ctx.arc(h.x, h.y, h.r, 0, TAU); ctx.stroke();
+    } else if (h.kind === 'twister') {
+      // 모래 회오리: 도는 호 여러 겹
+      const k = clamp((h.warn + h.dur - h.t) / 0.4, 0, 1);
+      ctx.globalAlpha = 0.18 * k; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(h.x, h.y, h.r * 1.3, 0, TAU); ctx.fill();
+      ctx.strokeStyle = '#b08a52'; ctx.lineCap = 'round';
+      for (let i = 0; i < 5; i++) { ctx.globalAlpha = 0.7 * k; ctx.lineWidth = 9 - i; const r = h.r * (0.25 + i * 0.22), a = S.t * (7 - i) + i; ctx.beginPath(); ctx.arc(h.x, h.y, r, a, a + 3.6); ctx.stroke(); }
+    } else {
+      const k = 1 - (h.t - h.warn) / h.dur;
+      const g = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, h.r);
+      g.addColorStop(0, h.kind === 'fire' ? 'rgba(255,220,120,.7)' : '#fff6d0'); g.addColorStop(0.5, col); g.addColorStop(1, 'rgba(255,90,40,0)');
+      ctx.globalAlpha = h.kind === 'fire' ? 0.55 * Math.min(1, k * 3) : k; ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(h.x, h.y, h.r * (h.kind === 'fire' ? 1 : 1.1 - 0.1 * k), 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+  }
   function drawHz(h) {
+    if (h.type === 'zone') return drawZone(h);
     const [x1, y1, x2, y2] = hzLine(h);
     ctx.save();
     ctx.lineCap = 'round';
@@ -914,10 +1243,10 @@
   // 눈보라: 바람 방향으로 흩날리는 눈 (화면 기준)
   function drawBlizzard() {
     if (S.wind.t <= 0) return;
-    const k = clamp(S.wind.t / 0.5, 0, 1) * clamp((4.2 - S.wind.t) / 0.5, 0, 1);
-    const a = Math.atan2(S.wind.y, S.wind.x), dx = Math.cos(a), dy = Math.sin(a);
-    ctx.save(); ctx.globalAlpha = 0.75 * k; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-    ctx.fillStyle = 'rgba(230,240,255,.18)'; ctx.fillRect(0, 0, VW, VH);
+    const k = clamp(S.wind.t / 0.5, 0, 1) * clamp(((S.wind.dur || 4.2) - S.wind.t) / 0.5, 0, 1);
+    const a = Math.atan2(S.wind.y, S.wind.x), dx = Math.cos(a), dy = Math.sin(a), sand = S.wind.sand; // 모래폭풍은 누런 모래
+    ctx.save(); ctx.globalAlpha = 0.75 * k; ctx.strokeStyle = sand ? '#f0d6a0' : '#fff'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ctx.fillStyle = sand ? 'rgba(210,170,100,.32)' : 'rgba(230,240,255,.18)'; ctx.fillRect(0, 0, VW, VH);
     ctx.beginPath();
     for (let i = 0; i < 120; i++) {
       const s = 500 + hash(i, 3) * 700, x = ((hash(i, 1) * 2200 + dx * S.t * s) % 2200 + 2200) % 2200 - 300, y = ((hash(i, 2) * 1500 + dy * S.t * s) % 1500 + 1500) % 1500 - 300;
@@ -925,6 +1254,16 @@
     }
     ctx.stroke(); ctx.restore();
   }
+
+  // 안개: 플레이어 둘레 시야(레이더) 밖은 짙은 안개
+  function drawFog() {
+    if (S.st.trait?.type !== 'fog') return;
+    const p = S.p, x = p.x - S.cam.x + VW / 2, y = p.y - S.cam.y + VH / 2, r = T.vision;
+    const g = ctx.createRadialGradient(x, y, r * 0.55, x, y, r * 1.08);
+    g.addColorStop(0, 'rgba(200,215,205,0)'); g.addColorStop(1, 'rgba(185,200,192,.94)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
+  }
+  const inFog = (o) => S.st.trait?.type === 'fog' && Math.hypot(o.x - S.p.x, o.y - S.p.y) > T.vision;
 
   function draw() {
     const c = S.cam, p = S.p;
@@ -947,7 +1286,21 @@
       const bob = Math.sin(S.t * 4 + q.ph) * 3;
       if (!(q.t > 11 && Math.sin(q.t * 20) > 0)) sprite('items', i, q.x, q.y + bob, q.type === 'gear' ? S.t * 2 : 0, 0.9, 0.9);
     }
-    for (const h of S.hz) if (h.t < h.warn) drawHz(h); // 예고선은 적 밑에
+    for (const h of S.hz) if (h.t < h.warn || h.kind === 'fire' || h.kind === 'twister') drawHz(h); // 예고선 · 바닥 불 · 회오리는 적 밑에
+    // 내 불 (네이팜 · 불꽃 꼬리)
+    for (const q of S.fires) {
+      const k = 1 - q.t / q.life, g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, q.r);
+      g.addColorStop(0, `rgba(255,230,140,${0.6 * k})`); g.addColorStop(0.6, `rgba(255,120,40,${0.45 * k})`); g.addColorStop(1, 'rgba(255,80,30,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (0.9 + 0.1 * Math.sin(S.t * 12 + q.x)), 0, TAU); ctx.fill();
+    }
+    // 궤도 광선 예고: 하늘색 점선 원이 좁혀짐
+    for (const q of S.strikes) if (!q.done) {
+      const k = q.t / q.warn;
+      ctx.strokeStyle = `rgba(127,212,255,${0.4 + 0.5 * k})`; ctx.lineWidth = 4; ctx.setLineDash([12, 10]);
+      ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (1.4 - 0.4 * k), 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    }
+    // 그림자 엔진 미끼: 반투명 비행기
+    if (S.decoy) { ctx.globalAlpha = 0.4 + 0.15 * Math.sin(S.t * 10); sprite(L.spr, 0, S.decoy.x, S.decoy.y, S.decoy.a, L.scale, L.scale, 'saturate(0) brightness(1.6)'); ctx.globalAlpha = 1; }
     // 내 폭탄: 떨어질 곳에 점선 원 + 떨어지며 작아지는 폭탄
     for (const b of S.bombs) {
       const k = b.t / b.fuse;
@@ -966,6 +1319,14 @@
         ctx.strokeStyle = `rgba(150,220,255,${0.45 + Math.sin(S.t * 5) * 0.15})`; ctx.lineWidth = 4;
         ctx.beginPath(); ctx.arc(p.x, p.y, 80 * L.scale, 0, TAU); ctx.stroke();
       }
+      // 호위 무인기: 작은 원반 + 프로펠러 4개
+      for (let i = 0; i < T.drone; i++) {
+        const d = droneAt(p, i);
+        ctx.fillStyle = 'rgba(11,42,69,.22)'; ctx.beginPath(); ctx.arc(d.x + 12, d.y + 18, 13, 0, TAU); ctx.fill();
+        ctx.fillStyle = '#c9d2dc'; for (const [u, v] of [[-9, -9], [9, -9], [-9, 9], [9, 9]]) { ctx.beginPath(); ctx.arc(d.x + u, d.y + v, 6, 0, TAU); ctx.fill(); }
+        ctx.fillStyle = T.droneShield ? '#7fd3ff' : '#8a96a6'; ctx.beginPath(); ctx.arc(d.x, d.y, 9, 0, TAU); ctx.fill();
+        ctx.fillStyle = '#ff5a4e'; ctx.beginPath(); ctx.arc(d.x, d.y, 3, 0, TAU); ctx.fill();
+      }
       if (p.flash > 0) {
         ctx.fillStyle = '#fff3b0';
         ctx.beginPath(); ctx.arc(p.x + Math.cos(p.aim) * 44, p.y + Math.sin(p.aim) * 44, 11, 0, TAU); ctx.fill();
@@ -982,6 +1343,12 @@
         ctx.restore();
         continue;
       }
+      if (b.laser) { ctx.strokeStyle = '#7fd4ff'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(b.x - b.vx * 0.03, b.y - b.vy * 0.03); ctx.lineTo(b.x, b.y); ctx.stroke(); continue; }
+      if (b.mega) { // 치즈성 주포: 큰 치즈색 포탄
+        ctx.fillStyle = '#fff6c2'; ctx.beginPath(); ctx.arc(b.x, b.y, 26, 0, TAU); ctx.fill();
+        ctx.fillStyle = '#ffb627'; ctx.beginPath(); ctx.arc(b.x, b.y, 19, 0, TAU); ctx.fill();
+        continue;
+      }
       if (b.cannon) { // 기수포: 굵은 쇳덩이
         ctx.fillStyle = '#fff6c2'; ctx.beginPath(); ctx.arc(b.x, b.y, 11, 0, TAU); ctx.fill();
         ctx.fillStyle = '#5b5f68'; ctx.beginPath(); ctx.arc(b.x, b.y, 7.5, 0, TAU); ctx.fill();
@@ -993,10 +1360,17 @@
       ctx.strokeStyle = b.tracer ? '#ff5a3c' : T.pierce > 0 ? '#6fd0ff' : '#ffb627'; ctx.lineWidth = 3 * w;
       ctx.beginPath(); ctx.moveTo(b.x - b.vx * l, b.y - b.vy * l); ctx.lineTo(b.x, b.y); ctx.stroke();
     }
-    for (const h of S.hz) if (h.t >= h.warn) drawHz(h);
+    for (const h of S.hz) if (h.t >= h.warn && h.kind !== 'fire' && h.kind !== 'twister') drawHz(h);
+    // 궤도 광선: 하늘에서 내리꽂는 굵은 빛
+    for (const q of S.strikes) if (q.done) {
+      const k = 1 - (q.t - q.warn) / 0.4;
+      ctx.globalAlpha = k; ctx.fillStyle = 'rgba(127,212,255,.5)'; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * 0.4 * k, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    }
     for (const e of S.fx) drawFx(e);
     ctx.restore();
     drawClouds(c);
+    drawFog();
     drawBlizzard();
     if (S.flashT > 0) { ctx.fillStyle = `rgba(255,255,240,${S.flashT * 2.5})`; ctx.fillRect(0, 0, VW, VH); } // 번개 번쩍
     drawVignette();
@@ -1025,7 +1399,11 @@
     const white = !shadow && f.hit > 0 ? (f.boss ? 'brightness(1.18)' : 'brightness(1.6)') : null; // 맞으면 살짝 밝게
     const put = shadow ? shadowOf : (n, i, x, y, a, sx, sy) => sprite(n, i, x, y, a, sx, sy, white);
     const D = FOE[f.kind], flap = (rate) => (SP[D.spr].length > 1 && Math.sin(f.ph * rate) < 0 ? 1 : 0); // 날갯짓 컷
-    if (f.kind === 'cat' || f.kind === 'bomber') put(D.spr, 0, f.x, f.y, f.a, 1, 1);
+    if (f.kind === 'cat' || f.kind === 'bomber' || f.kind === 'gunship') put(D.spr, 0, f.x, f.y, f.a, 1, 1);
+    else if (f.kind === 'drone') {
+      const arm = !shadow && f.st === 'arm' && Math.sin(S.t * 40) > 0; // 돌진 예고: 빨갛게 깜빡
+      (shadow ? shadowOf : (n, i, x, y, a, sx, sy) => sprite(n, i, x, y, a, sx, sy, arm ? 'sepia(1) saturate(6) hue-rotate(-40deg)' : white))(D.spr, 0, f.x, f.y, f.a + S.t * 2, 1, 1);
+    }
     else if (f.kind === 'swift') put(D.spr, flap(16), f.x, f.y, f.a, 1, 1);
     else if (f.kind === 'hawk') {
       const fr = f.st === 'dive' ? 1 : (Math.sin(f.ph * 13) > 0 ? 0 : 1);
@@ -1041,10 +1419,19 @@
         ctx.restore();
       }
     } else if (f.boss) {
-      const fr = f.kind === 'eagle' && f.dash === 1 ? 1 : flap(f.kind === 'eagle' ? 7 : 4);
-      const a = f.kind === 'eagle' && f.dash === 1 ? Math.atan2(f.vy, f.vx) : f.a + Math.sin(f.ph * 0.8) * 0.02;
+      const dashing = f.dash === 1 && f.free || f.sub === 2, bird = SP[D.spr].length > 1;
+      const fr = dashing && bird ? 1 : flap(bird && f.kind !== 'owl' ? 7 : 4);
+      const a = dashing ? Math.atan2(f.vy, f.vx) : f.a + Math.sin(f.ph * 0.8) * 0.02;
+      if (f.ghost) ctx.globalAlpha = shadow ? 0 : 0.12; // 하피: 안개 속으로 사라짐
       put(D.spr, fr, f.x, f.y, a, 1, 1);
+      ctx.globalAlpha = 1;
+      if (!shadow && f.aimLine) {
+        // 하피 기습 예고: 노리는 쪽으로 빨간 점선
+        ctx.save(); ctx.setLineDash([14, 12]); ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(230,60,60,.8)';
+        ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.lineTo(f.x + Math.cos(f.a) * 1500, f.y + Math.sin(f.a) * 1500); ctx.stroke(); ctx.restore();
+      }
     }
+    if (!shadow && f.stun > 0) { ctx.strokeStyle = '#9fe0ff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(f.x, f.y, f.r * 0.8 + Math.sin(S.t * 20) * 4, 0, TAU); ctx.stroke(); }
   }
 
   function drawFx(e) {
@@ -1060,9 +1447,13 @@
       ctx.fillStyle = e.col;
       ctx.beginPath(); ctx.arc(e.x, e.y, e.r * (1 + k * 0.6), 0, TAU); ctx.fill();
       ctx.globalAlpha = 1;
+    } else if (e.type === 'arc') { // 번개 튐 · 근접 방어 기관포: 지그재그 줄
+      ctx.globalAlpha = 1 - k; ctx.strokeStyle = e.thin ? '#fff6c2' : '#ffe36a'; ctx.lineWidth = e.thin ? 2 : 5; ctx.beginPath(); ctx.moveTo(e.x, e.y);
+      for (let i = 1; i < 6; i++) { const u = i / 6; ctx.lineTo(lerp(e.x, e.x2, u) + (hash(i, e.x | 0, 3) - 0.5) * (e.thin ? 0 : 50), lerp(e.y, e.y2, u) + (hash(i, e.y | 0, 4) - 0.5) * (e.thin ? 0 : 50)); }
+      ctx.lineTo(e.x2, e.y2); ctx.stroke(); ctx.globalAlpha = 1;
     } else if (e.type === 'ring') {
       ctx.globalAlpha = 1 - k;
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 8 * (1 - k) + 1;
+      ctx.strokeStyle = e.col || '#fff'; ctx.lineWidth = 8 * (1 - k) + 1;
       ctx.beginPath(); ctx.arc(e.x, e.y, e.r + k * e.r * 5, 0, TAU); ctx.stroke();
       ctx.globalAlpha = 1;
     } else if (e.type === 'spark') {
@@ -1072,9 +1463,9 @@
       ctx.restore(); ctx.globalAlpha = 1;
     } else if (e.type === 'rail') { // 레일건: 굵은 흰 줄이 가늘어지며 사라짐
       ctx.globalAlpha = 1 - k; ctx.lineCap = 'round';
-      ctx.strokeStyle = '#7fd4ff'; ctx.lineWidth = 26 * (1 - k) + 2;
+      ctx.strokeStyle = '#7fd4ff'; ctx.lineWidth = (26 * (1 - k) + 2) * (e.w || 1);
       ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x2, e.y2); ctx.stroke();
-      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 10 * (1 - k) + 1;
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = (10 * (1 - k) + 1) * (e.w || 1);
       ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(e.x2, e.y2); ctx.stroke();
       ctx.globalAlpha = 1;
     } else if (e.type === 'pop') {
@@ -1121,7 +1512,7 @@
     if (boss) {
       ctx.fillStyle = '#fff'; ctx.font = `bold 20px ${FONT}`; ctx.fillText(S.st.bossName, VW / 2, VH - 62);
       bar(VW / 2 - 400, VH - 44, 800, 18, boss.hp / boss.max, boss.hp < boss.max / 2 ? '#ff4f6d' : '#ffb03b');
-      if (boss.kind === 'king') for (const k of [1 / 3, 2 / 3]) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(VW / 2 - 400 + 800 * k - 1.5, VH - 46, 3, 22); } // 구간 표시
+      if (boss.kind === 'king' || boss.kind === 'emperor') for (const k of [1 / 3, 2 / 3]) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(VW / 2 - 400 + 800 * k - 1.5, VH - 46, 3, 22); } // 구간 표시
     }
     // 보스 패턴 예고 문구
     if (S.warn && S.warn.t > 0) {
@@ -1132,14 +1523,15 @@
     }
     // 화면 밖 적 화살표
     for (const f of S.foes) {
+      if (!f.boss && inFog(f) || f.ghost) continue; // 안개 속 적은 화살표도 안 보임 (보스만)
       const dx = f.x - S.cam.x, dy = f.y - S.cam.y;
       if (Math.abs(dx) < VW / 2 - 20 && Math.abs(dy) < VH / 2 - 20) continue;
       const a = Math.atan2(dy, dx);
       const s = Math.min((VW / 2 - 40) / Math.abs(Math.cos(a) || 1e-6), (VH / 2 - 40) / Math.abs(Math.sin(a) || 1e-6));
       const x = VW / 2 + Math.cos(a) * s, y = VH / 2 + Math.sin(a) * s;
       ctx.save(); ctx.translate(x, y); ctx.rotate(a);
-      ctx.fillStyle = f.boss ? '#ff4f6d' : { hawk: '#c8873a', swift: '#5d7bd6', bomber: '#ffd45c' }[f.kind] || '#ff9a3d';
-      const z = f.boss ? 1.6 : f.kind === 'bomber' ? 1.25 : 1;
+      ctx.fillStyle = f.boss ? '#ff4f6d' : { hawk: '#c8873a', swift: '#5d7bd6', bomber: '#ffd45c', gunship: '#9aa3ad', drone: '#ff5a4e' }[f.kind] || '#ff9a3d';
+      const z = f.boss ? 1.6 : f.kind === 'bomber' || f.kind === 'gunship' ? 1.25 : f.kind === 'drone' ? 0.75 : 1;
       ctx.beginPath(); ctx.moveTo(18 * z, 0); ctx.lineTo(-10 * z, -13 * z); ctx.lineTo(-4 * z, 0); ctx.lineTo(-10 * z, 13 * z); ctx.fill();
       ctx.restore();
     }

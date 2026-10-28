@@ -32,8 +32,14 @@
   #hangar button.small { font-size: 13px; padding: 5px 12px; background: #4a5566; box-shadow: 0 3px 0 #2f3744; }
   #hangar button:disabled { background: #4a5566; box-shadow: 0 3px 0 #2f3744; opacity: .6; cursor: default; }
   /* 스테이지 고르기 */
-  #hg-stages { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-  .stg { background: rgba(255,255,255,.06); border: 2px solid rgba(255,255,255,.1); border-radius: 14px; padding: 8px 12px; cursor: pointer; }
+  #hg-stages { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px 10px; }
+  .stg .trait { color: #ffd45c; }
+  .warn { color: #ffb0a0; }
+  .todds { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 13px; margin: 8px 0 12px; }
+  .todds .lb { font-weight: bold; opacity: .7; }
+  #hangar button.up { background: #d9822b; box-shadow: 0 3px 0 #9a5a1c; }
+  .result.fail { filter: saturate(.5); }
+  .stg { background: rgba(255,255,255,.06); border: 2px solid rgba(255,255,255,.1); border-radius: 12px; padding: 5px 10px; cursor: pointer; }
   .stg:hover { border-color: rgba(255,255,255,.35); }
   .stg.on { border-color: #ffd45c; background: rgba(255,212,92,.12); }
   .stg.lock { opacity: .4; cursor: default; }
@@ -53,12 +59,13 @@
   .tier { display: inline-block; font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 999px; color: #1d2633; margin-right: 6px; vertical-align: middle; }
   /* 가운데: 진화 트리 */
   #hg-tree { position: relative; }
-  #hg-tree .grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 150px); gap: 14px 26px; }
-  #hg-tree .era { text-align: center; font-size: 13px; opacity: .6; margin-bottom: 6px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+  #hg-tree .grid { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(3, 138px); gap: 12px 22px; }
+  #hg-tree .era { text-align: center; font-size: 12px; opacity: .7; margin-bottom: 6px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 22px; }
+  .hg h2 .sub { font-size: 12px; font-weight: normal; opacity: .6; margin-left: 6px; }
   #hg-tree svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
   .node { position: relative; z-index: 1; background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.12); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform .1s; }
   .node:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.35); }
-  .node canvas { width: 100%; height: 84px; }
+  .node canvas { width: 100%; height: 74px; }
   .node .nm { font-size: 14px; font-weight: bold; }
   .node .st { font-size: 12px; opacity: .8; }
   .node.own { background: rgba(90,160,110,.18); }

@@ -1,0 +1,18 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: parts_u4.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached image is our player plane (a cute toy-like biplane piloted by a superhero mouse). Make a SHEET of airplane LEGENDARY and RARE UNIQUE EQUIPMENT (each one special and distinctive, a bit more ornate and precious-looking) ICONS for its workshop/hangar screen.
+
+Image spec:
+- 1536x1536 square, an evenly spaced 3 columns x 3 rows grid of 9 separate icons, each icon centered in its own cell, each filling about 65% of its cell width, with wide empty magenta gaps between icons (nothing touches or crosses cell borders). No grid lines drawn.
+- Each icon is ONE object seen in a slight 3/4 view, in reading order (left to right, top to bottom):
+1. a pair of wings with a small siren horn propeller attached
+2. a perforated dive-brake flap with a bomb clip
+3. a heavy hammer-shaped propeller engine with a cheese-yellow cowling
+4. a rocket pod with seven rocket tips in a honeycomb
+5. a fat orange fire bomb canister with a flame-shaped fin
+6. a machine gun with a belt of glowing-free red-tipped armor-piercing rounds
+7. a variable-sweep wing with a little gear hinge
+8. a terrain radar dish with a green wavy screen
+9. a combined weapon control box with many small switches and a missile on top
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no ground, no sea, no shadow, no clouds, no vignette, no frame. The subject itself must not contain magenta or purple-pink; small soft-pink mouse ears, nose, paws and tail are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images (from our mobile game): soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO speed effects, NO text, NO letters, NO logos, NO numbers, NO insignia.
