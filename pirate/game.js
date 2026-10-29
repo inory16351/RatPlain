@@ -169,6 +169,11 @@
       G.fx.push({ x: px + nx * 12, y: py + ny * 12, flash: true, t: 0.09, a: Math.atan2(ny, nx), big: kind !== 'ball' });
     }
   }
+  // 포탄이 t 초 뒤 있을 곳 (projectiles() 와 같은 물리: 폭풍이면 바람이 계속 밂). 조준선 · 착탄 표시가 씀
+  function flightAt(x, y, vx, vy, t, noWind) {
+    const ax = G.S.trait === 'storm' && !noWind ? Math.cos(G.wind.a) * G.wind.v * 0.8 : 0, ay = G.S.trait === 'storm' && !noWind ? Math.sin(G.wind.a) * G.wind.v * 0.8 : 0;
+    return { x: x + vx * t + ax * t * t / 2, y: y + vy * t + ay * t * t / 2 };
+  }
   function shot(x, y, vx, vy, life, dmg, foe, kind = 'ball') { G.balls.push({ x, y, vx, vy, life, max: life, dmg, foe, h: 0, kind, trail: [] }); }
   const reloadNow = () => st().reload * (1 - Math.min(st().crewMax, G.me.crew) * st().crewReload);
   function fire(side, kind = 'ball') {
@@ -879,10 +884,10 @@
     // 고리는 떨어질 때가 가까울수록 작아지고 진해짐 → 언제 어디에 떨어지는지 한눈에
     for (const b of G.balls) {
       if (b.kind === 'plane' || b.life <= 0) continue;
-      const lx = b.x + b.vx * b.life - cam.x, ly = b.y + b.vy * b.life - cam.y, q0 = 1 - b.life / b.max, near = q0;
+      const L = flightAt(b.x, b.y, b.vx, b.vy, b.life), lx = L.x - cam.x, ly = L.y - cam.y, q0 = 1 - b.life / b.max, near = q0;
       const col = b.foe ? '255,80,64' : '255,214,90', a = b.foe ? 0.6 + 0.4 * near : 0.35 + 0.35 * near;
       ctx.strokeStyle = `rgba(${col},${a * 0.8})`; ctx.lineWidth = b.foe ? 3 : 2; ctx.setLineDash([5, 7]); ctx.lineDashOffset = -G.t * 30; ctx.beginPath();
-      for (let k = 0; k <= 10; k++) { const u = k / 10, tt = b.life * u, q = q0 + (1 - q0) * u, px = b.x + b.vx * tt - cam.x, py = b.y + b.vy * tt - cam.y - Math.sin(q * Math.PI) * 24; k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+      for (let k = 0; k <= 10; k++) { const q = flightAt(b.x, b.y, b.vx, b.vy, b.life * k / 10, b.kind === 'plane'); k ? ctx.lineTo(q.x - cam.x, q.y - cam.y) : ctx.moveTo(q.x - cam.x, q.y - cam.y); }
       ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
       const r = 10 + 14 * (1 - near);
       ctx.fillStyle = `rgba(${col},${a * 0.22})`; ctx.strokeStyle = `rgba(${col},${a})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(lx, ly, r, 0, 7); ctx.fill(); ctx.stroke();
@@ -909,22 +914,22 @@
       if (f.bolt) { ctx.strokeStyle = `rgba(255,255,220,${f.t / 0.35})`; ctx.lineWidth = 5; ctx.beginPath(); let px = x, py = y - 700; ctx.moveTo(px, py); while (py < y) { px += rnd(-30, 30); py += rnd(40, 80); ctx.lineTo(px, Math.min(py, y)); } ctx.stroke(); }
       if (f.txt) { const age = (f.crit ? 1.1 : 0.8) - f.t, sc = f.crit ? (age < 0.12 ? age / 0.12 * 1.4 : 1.4 - Math.min(0.4, age)) : 1; ctx.save(); ctx.translate(x, y - age * 46); ctx.scale(sc, sc); ctx.font = `${f.crit ? 22 : 17}px ${FONT}`; ctx.textAlign = 'center'; ctx.strokeStyle = '#000'; ctx.lineWidth = 4; ctx.strokeText(f.txt, 0, 0); ctx.fillStyle = f.col; ctx.fillText(f.txt, 0, 0); ctx.restore(); }
     }
-    // 조준 띠: 마우스 쪽 뱃전, 장전되면 금빛
+    // 조준선: broadside() 와 똑같은 계산(대포 자리 · 배 속도 · 회전 선속도 · 폭풍 바람)으로 대포 한 문마다 실제 날아갈 길을 점선으로, 끝 = 떨어질 곳
+    // 장전되면 금빛, 장전 중이면 흐린 빨강. 무작위 퍼짐(±0.04)만 빠짐
     if (!G.over) {
-      const side = sideToward(), fx = Math.cos(me.a), fy = Math.sin(me.a), nx = -fy * side, ny = fx * side, r = st().ballSpd * 0.75 * st().range, ready = me.cd[side > 0 ? 1 : 0] <= 0;
-      const ox = me.x - cam.x, oy = me.y - cam.y, hw = me.len * 0.3;
-      // 떨어지는 곳 = 옆 방향 사거리 + 배 속도 × 비행 시간 (달리면 띠가 앞으로 기욺)
-      const life = 0.75 * st().range, sv = shipVel(me), ex = ox + nx * r + sv.x * life, ey = oy + ny * r + sv.y * life;
-      ctx.fillStyle = ready ? 'rgba(255,220,100,.12)' : 'rgba(255,100,80,.07)'; ctx.beginPath(); ctx.moveTo(ox + fx * hw + nx * 24, oy + fy * hw + ny * 24); ctx.lineTo(ex + fx * hw * 1.4, ey + fy * hw * 1.4); ctx.lineTo(ex - fx * hw * 1.4, ey - fy * hw * 1.4); ctx.lineTo(ox - fx * hw + nx * 24, oy - fy * hw + ny * 24); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = ready ? 'rgba(255,220,100,.55)' : 'rgba(255,100,80,.25)'; ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.beginPath(); ctx.moveTo(ex + fx * hw * 1.4, ey + fy * hw * 1.4); ctx.lineTo(ex - fx * hw * 1.4, ey - fy * hw * 1.4); ctx.stroke(); ctx.setLineDash([]);
-      // 쏘기 전 미리보기: 앞 · 가운데 · 뒤 대포에서 떨어질 곳까지 점선 포물선 + 가운데 착탄 고리
-      ctx.strokeStyle = ready ? 'rgba(255,220,100,.5)' : 'rgba(255,100,80,.22)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 7]); ctx.lineDashOffset = -G.t * 24; ctx.beginPath();
-      for (const o of [-1, 0, 1]) {
-        const sx = ox + fx * hw * o + nx * 24, sy = oy + fy * hw * o + ny * 24, tx = ex + fx * hw * 1.4 * o, ty = ey + fy * hw * 1.4 * o;
-        for (let k = 0; k <= 10; k++) { const u = k / 10, px = sx + (tx - sx) * u, py = sy + (ty - sy) * u - Math.sin(u * Math.PI) * 24; k ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
+      const s = st(), side = sideToward(), ready = me.cd[side > 0 ? 1 : 0] <= 0, n = s.guns, life = 0.75 * s.range;
+      const fx = Math.cos(me.a), fy = Math.sin(me.a), nx = -fy * side, ny = fx * side, sv = shipVel(me), w = me.av || 0;
+      const ends = [];
+      ctx.strokeStyle = ready ? 'rgba(255,220,100,.75)' : 'rgba(255,110,90,.35)'; ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.lineDashOffset = -G.t * 40; ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const along = (n === 1 ? 0 : (i / (n - 1) - 0.5)) * me.len * 0.6, ox = fx * along + nx * me.len * 0.15, oy = fy * along + ny * me.len * 0.15;
+        const x0 = me.x + ox, y0 = me.y + oy, vx = nx * s.ballSpd + (sv.x - w * oy) * INHERIT, vy = ny * s.ballSpd + (sv.y + w * ox) * INHERIT;
+        for (let k = 0; k <= 12; k++) { const q = flightAt(x0, y0, vx, vy, life * k / 12); k ? ctx.lineTo(q.x - cam.x, q.y - cam.y) : ctx.moveTo(q.x - cam.x, q.y - cam.y); if (k === 12) ends.push(q); }
       }
       ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset = 0;
-      ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(ex, ey, 9, 0, 7); ctx.stroke();
+      // 떨어지는 줄 + 대포마다 착탄 점
+      ctx.lineWidth = 3; ctx.beginPath(); ends.forEach((q, i) => (i ? ctx.lineTo(q.x - cam.x, q.y - cam.y) : ctx.moveTo(q.x - cam.x, q.y - cam.y))); ctx.stroke();
+      ctx.fillStyle = ctx.strokeStyle; for (const q of ends) { ctx.beginPath(); ctx.arc(q.x - cam.x, q.y - cam.y, 4, 0, 7); ctx.fill(); }
     }
     ctx.restore();
     // 안개: 시야 밖은 뿌옇게
