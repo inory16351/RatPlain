@@ -1,0 +1,20 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: parts_a.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached images are from our mobile game: cut-out body parts of our characters (a brown PIRATE RAT with a black tricorn hat with gold trim and an eye patch, tuxedo / fluffy / white cats, a cute blue cartoon shark) and two TOP-DOWN airplanes from our previous top-down game, which show exactly how a vehicle with an animal crew must be drawn from directly above in our style. This is a new top-down PIRATE SHIP naval battle game.
+
+Make a SHEET of PIRATE SHIP EQUIPMENT ICONS for the ship workshop screen of the pirate rat.
+
+Image spec:
+- 1536x1536 square, an evenly spaced 3 columns x 3 rows GRID of 9 separate icons, each icon centered in its own cell, each filling about 65% of its cell, with wide empty magenta gaps between icons (nothing touches or crosses cell borders). No grid lines drawn.
+- Each icon is ONE object seen in a slight 3/4 view, in reading order (left to right, top to bottom):
+1. a short bronze ship CANNON on a wooden carriage with small wheels
+2. a long iron CANNON with a long barrel (long range)
+3. a pair of small fast-loading brass swivel guns
+4. a cream canvas SAIL with a round cheese-yellow mouse-ear emblem, puffed by wind
+5. a big triangular racing sail with a slim mast
+6. a wooden ship RUDDER shaped like a pink rat tail
+7. a stack of riveted iron HULL ARMOR plates
+8. a thick oak hull plank bundle tied with rope
+9. a carved wooden RAT HEAD ship figurehead with round ears
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no sea, no water, no waves, no wake, no shadow, no vignette, no frame. The subject itself must not contain magenta or purple-pink; small soft-pink rat ears, nose, paws and tail are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images: soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO text, NO letters, NO numbers, NO logos. Animals look fairly natural (realistic proportions), not chibi.
