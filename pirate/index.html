@@ -4,8 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>쥐 해적 — 일곱 바다 정복</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
-  html, body { margin: 0; height: 100%; background: #10222d; overflow: hidden; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; }
+  html, body { margin: 0; height: 100%; background: #10222d; overflow: hidden; font-family: 'Jua', 'Malgun Gothic', sans-serif; }
+  /* Jua 는 굵기가 하나뿐 → 굵게(bold)를 흉내 내지 않게 */
+  * { font-synthesis: none; }
+  button, input, select { font-family: inherit; }
   #cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .ov { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; background: rgba(12, 28, 38, .6); text-align: center; gap: 14px; cursor: default; z-index: 10; }
   .ov.on { display: flex; }
@@ -87,6 +93,19 @@
   #port .tabb { background: transparent; box-shadow: none; font-size: 16px; padding: 6px 18px; }
   #port .tabb.on { background: #2f8f9d; box-shadow: 0 3px 0 #1f6570; }
   #port .wide { grid-column: 2 / -1; }
+  /* Codex UI 그림 (html.art = ui_frames 있음): 단추는 그림을 border-image 로 늘림 (가운데는 늘고 둥근 끝은 그대로) */
+  .art .ov button, .art #port button { border-style: solid; border-color: transparent; border-width: 9px 16px; border-image: var(--btnR) 45% 30% fill / 9px 16px stretch; background: none; box-shadow: none; text-shadow: 0 2px 0 rgba(0,0,0,.3); filter: drop-shadow(0 3px 0 rgba(0,0,0,.25)); }
+  .art .ov button { padding: 2px 20px; }
+  .art #port button { padding: 0 8px; }
+  .art .ov button:active, .art #port button:active { transform: translateY(2px); filter: none; }
+  .art .ov button.sub, .art #port button.up { border-image-source: var(--btnG); }
+  .art #port button.small, .art #port .chip { border-image-source: var(--btnW); color: #4a2e14; text-shadow: none; border-width: 6px 12px; padding: 0 4px; }
+  .art #port button:disabled { filter: grayscale(.8) brightness(.8); opacity: .7; }
+  .art #port .tabb { border-image: none; border-color: transparent; filter: none; display: flex; align-items: center; gap: 6px; }
+  .art #port .tabb.on { border-image: var(--tabF) 40% 22% fill / 6px 16px stretch; }
+  #port nav .ui { width: 26px; height: 26px; object-fit: contain; }
+  #port header h1 { display: flex; align-items: center; gap: 8px; }
+  #port header h1 .hi { width: 40px; height: 40px; object-fit: contain; }
 
   /* 왼쪽: 배 미리보기 */
   #pt-prev canvas { width: 100%; height: 170px; display: block; background: radial-gradient(ellipse at 50% 55%, rgba(90,170,190,.3), transparent 70%); border-radius: 12px; }
@@ -165,6 +184,7 @@
 
   /* 의뢰 · 합성 */
   #lab-npc { text-align: center; }
+  #lab-npc canvas.npc { display: block; width: 100%; height: 40vh; }
   #lab-npc .npc { width: 100%; max-height: 40vh; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.3)); }
   #lab-npc .npc.glyph { display: flex; justify-content: center; padding-top: 30px; max-height: none; }
   #lab-npc .kd { opacity: .6; font-size: 13px; margin-top: 8px; }

@@ -50,8 +50,18 @@
     if (own.includes(SY.save.ship)) return SY.save.ship;
     return own.sort((a, b) => SY.SHIP[b].tier - SY.SHIP[a].tier)[0] || null;
   }
+  // ── 같은 그림체 UI 그림 (Codex): 판넬 = 나무판, 단추 = 빨강 · 초록 · 나무 단추, 탭 = 천 리본 (ui_frames 칸). 문서 전체(타이틀 · 결과 화면 포함)에 CSS 변수로 깔고, 그림이 있을 때만 html.art
+  const UI_ART = { '--wood': 0, '--parch': 1, '--btnR': 2, '--btnG': 3, '--btnW': 4, '--slotF': 5, '--tabF': 8 };
+  function uiArt() {
+    const de = document.documentElement;
+    for (const [k, i] of Object.entries(UI_ART)) { const u = img('ui_frames', i); de.style.setProperty(k, u ? `url("${u}")` : 'none'); }
+    de.classList.toggle('art', !!img('ui_frames', 2));
+  }
+  // 작은 아이콘 그림 (탭 · 머리글 · HUD 와 같은 그림). 없으면 빈 글자
+  const uiIc = (n, i, cls = 'ui') => { const u = img(n, i); return u ? `<img class="${cls}" src="${u}" alt="">` : ''; };
   function capHtml(cls, i = 0) {
-    const s = img('crew_rat', i);
+    const c = i === 0 && PG.capOf ? PG.capOf(SY.SHIP[SY.save.ship] ? SY.SHIP[SY.save.ship].tier : 0) : { sheet: 'crew_rat', i }; // 선장 = 지금 배 단계의 옷차림
+    const s = img(c.sheet, c.i);
     return s ? `<img class="${cls}" src="${s}" alt="">` : `<div class="${cls} glyph"><div class="rat-glyph">${i === 0 ? '<b></b><i></i>' : ''}</div></div>`;
   }
 
@@ -310,9 +320,9 @@
     const chances = Object.entries(SY.UP_CHANCE).map(([n, c]) => `${n}개 ${c}%`).join(' · ');
     return `
       <div class="panel" id="lab-npc">
-        ${capHtml('npc', 2)}
+        ${SY.save && img(...wright()) ? `<canvas class="npc" data-npc title="${WRIGHT_ERA[SY.tech()] || ''}"></canvas>` : capHtml('npc', 2)}
         <div class="bubble">${talk}</div>
-        <div class="kd">조선공 쥐 · 지금까지 의뢰 ${s.requests}번 · 티어 업 도전 ${s.tierUps || 0}번</div>
+        <div class="kd">조선공 쥐 (${WRIGHT_ERA[SY.tech()] || ""}) · 지금까지 의뢰 ${s.requests}번 · 티어 업 도전 ${s.tierUps || 0}번</div>
       </div>
       <div class="panel" id="lab-req">
         <h2>제작 의뢰 <span class="sub">지금 테크 ${SY.tech()}단계 · 비용 ×${SY.reqK().toFixed(1)}</span></h2>
@@ -338,11 +348,10 @@
     // 같은 그림체 UI 그림: 바다 지도 = 양피지 해도(map_chart), 판넬 = 나무판(ui_frames 0). 없으면 CSS 색 그대로
     const css = (n, i) => { const u = img(n, i); return u ? `url("${u}")` : 'none'; };
     root.style.setProperty('--chart', css('map_chart', 0));
-    root.style.setProperty('--wood', css('ui_frames', 0));
-    root.style.setProperty('--parch', css('ui_frames', 1));
+    uiArt();
     if (!eqS || !SY.owns(eqS)) eqS = s.ship;
     if (sel && !SY.SHIP[sel]) sel = null;
-    const TABS = [['sea', '출항'], ['ship', '조선소'], ['gear', '장비'], ['lab', '의뢰 · 합성']];
+    const TABS = [['sea', '출항', 5], ['ship', '조선소', 6], ['gear', '장비', 7], ['lab', '의뢰 · 합성', 8]]; // [id, 이름, ui_icons 칸]
     const body = tab === 'sea' ? mapHtml() + seaHtml()
       : tab === 'ship' ? prevHtml() + treeHtml()
         : tab === 'gear' ? prevHtml() + gearHtml() : labHtml();
@@ -350,8 +359,8 @@
     root.innerHTML = `
       <div class="hg tab-${tab}">
         <header>
-          <h1>항구</h1>
-          <nav>${TABS.map(([id, n]) => `<button class="tabb ${tab === id ? 'on' : ''}" data-tab="${id}">${n}</button>`).join('')}</nav>
+          <h1>${uiIc('ui_icons', 4, 'hi')}항구</h1>
+          <nav>${TABS.map(([id, n, ic]) => `<button class="tabb ${tab === id ? 'on' : ''}" data-tab="${id}">${uiIc('ui_icons', ic)}${n}</button>`).join('')}</nav>
           <span class="money" title="목재">${plankIc()} ${s.plank} <span class="lb">목재</span></span>
           <span class="money" title="치즈 금화">${coinIc()} ${s.coin} <span class="lb">치즈 금화</span></span>
           <button class="small" data-reset>처음부터</button>
@@ -385,6 +394,27 @@
       return `<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${on ? '#8ef08a' : 'rgba(255,255,255,.25)'}" stroke-width="4" ${on ? '' : 'stroke-dasharray="8 8"'}/>`;
     }).join('');
   }
+
+  // ── 조선공 쥐: 테크(가진 배의 최고 단계)에 따라 옷차림 · 연장이 바뀜 (crew_wright 칸 = 단계), 리깅으로 움직임
+  // 평소 = 숨쉬기 · 깜빡임, 의뢰 · 합성 = 망치질, 희귀 이상 = 망치질 뒤 만세
+  const WRIGHT_ERA = ['갤리 시대 목수 · 나무 메', '대항해 시대 목수 · 망치', '범선 시대 조선 장인 · 톱', '증기선 기관사 · 렌치', '강철함 리벳공 · 리벳 망치', '현대 조선 기술자 · 태블릿'];
+  const wright = () => (img('crew_wright', SY.tech()) ? ['crew_wright', SY.tech()] : ['crew_wright', 0]);
+  const npc = { t: 0, act: 'idle', at: 0, dur: 0, fl: 0, ch: 0, cheer: false };
+  const npcWork = (cheer) => { Object.assign(npc, { act: 'hammer', at: 0, dur: 1.1, ch: 0, cheer }); };
+  let npcLast = 0;
+  function npcLoop(now) {
+    requestAnimationFrame(npcLoop);
+    const dt = Math.min(0.05, (now - (npcLast || now)) / 1000); npcLast = now;
+    const cv = tab === 'lab' && root.classList.contains('on') && $('canvas[data-npc]', root);
+    if (!cv) return;
+    npc.t += dt; npc.at += dt; npc.ch = Math.max(0, npc.ch - dt);
+    if (npc.act === 'hammer' && npc.at > npc.dur) { npc.act = 'idle'; npc.at = 0; if (npc.cheer) npc.ch = 0.9; }
+    const r = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2), W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+    if (cv.width !== W || cv.height !== H) { cv.width = Math.max(1, W); cv.height = Math.max(1, H); }
+    const [sh, i] = wright();
+    PG.drawChar(cv, sh, i, npc);
+  }
+  requestAnimationFrame(npcLoop);
 
   // 조선공 쥐 대사 (결과 등급별)
   const TALK = [
@@ -420,7 +450,7 @@
     else if (d.preset) { coinAmt = +d.preset; }
     else if (d.req !== undefined) {
       const it = SY.request(coinAmt);
-      if (it) { const g = SY.PART[it.id].grade; last = { uid: it.uid, how: '제작 의뢰 결과' }; say(g); sfx(g >= 2 ? 'clear' : 'ui_buy'); }
+      if (it) { const g = SY.PART[it.id].grade; last = { uid: it.uid, how: '제작 의뢰 결과' }; say(g); sfx(g >= 2 ? 'clear' : 'ui_buy'); npcWork(g >= 2); }
     }
     else if (d.pick) { picks.push(+d.pick); }
     else if (d.unpick) { picks = picks.filter((u) => u !== +d.unpick); }
@@ -429,6 +459,7 @@
       if (r) {
         const g = SY.PART[r.it.id].grade;
         picks = [];
+        npcWork(kind === 'up' ? r.ok : g >= 2);
         if (kind === 'up') { last = { uid: r.it.uid, how: r.ok ? '티어 업 성공!' : '티어 업 실패 — 하나만 남음', fail: !r.ok }; sayUp(r.ok); sfx(r.ok ? 'clear' : 'fail'); }
         else { last = { uid: r.it.uid, how: '합성 결과' }; say(g); sfx(g >= 2 ? 'clear' : 'ui_buy'); }
       }
@@ -546,6 +577,7 @@
 
   PG.onEnd = onEnd;
   ready(() => {
+    uiArt();
     PG.onEnd = onEnd;
     window.PORT = { open: openPort, title: openTitle, render };
     const q = new URLSearchParams(location.search);

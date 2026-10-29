@@ -2,7 +2,8 @@
 # Codex 로 플랫 그림 생성: bash gen_flat.sh 이름...  (BATCH 개씩 동시에)
 # Codex 는 그림을 ~/.codex/generated_images 에 만들고 복사는 샌드박스 때문에 실패할 때가 많음 → 로그에서 경로를 찾아 직접 복사
 cd "$(dirname "$0")"
-export PATH="/c/Users/user/.codex/.sandbox-bin:$PATH"
+# codex 가 PATH 에 없을 때만 옛 샌드박스 사본을 씀 (그 사본은 이미지 생성 도구가 안 뜰 때가 있음)
+command -v codex >/dev/null || export PATH="/c/Users/user/.codex/.sandbox-bin:$PATH"
 BATCH=${BATCH:-6}
 i=0
 for n in "$@"; do
