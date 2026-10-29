@@ -1,0 +1,11 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: shark_fin.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached images show our mobile game's art style and characters (cute flat mice and cats). This is for a NEW top-down naval battle game: a one-eyed PIRATE MOUSE captain wants to conquer the sea, fighting the CAT NAVY, rival rat pirates and sharks.
+
+Image spec:
+- 1536x1536 square divided into a 2x1 grid (left half, right half), ONE subject centered in each half, nothing crossing the middle.
+- SUBJECT: a shark swimming UNDER the water so that ONLY its dorsal fin sticks out, seen from directly ABOVE (strict top-down): a blue triangular dorsal fin pointing RIGHT (seen from above it is a thin pointed blue shape), with a white foam splash ring and a V-shaped white foam trail behind it to the LEFT. LEFT half: a normal shark fin (small). RIGHT half: the GIANT boss shark's fin, bigger, darker blue with scars and a notch.
+- Only blue fin and white foam, nothing else.
+- solid flat MAGENTA background (#FF00FF) everywhere behind the subject: no water, no sea, no waves, no wake, no shadow, no vignette, no frame. The subject itself must not contain magenta or purple-pink; soft-pink mouse ears, noses, paws and tails are fine.
+- ART STYLE (most important): EXACTLY the art style of the attached reference images: soft flat 2D vector illustration, muted natural colors, simple rounded shapes, flat fills with only one subtle soft shadow tone, very fine subtle paper-like texture at most, NO black outlines, NO line art, NO glow, NO gradients, NO anime style, NO motion lines, NO text, NO letters, NO numbers, NO logos.
+- MATCH THE REFERENCE RENDERING (very important): the same muted, slightly desaturated warm natural palette as the attached top-down plane images (soft wood browns, dusty creams, muted reds and blues, never neon or saturated yellow). Big simple shapes with FEW small details: no tiny props, no barrels, crates, coiled ropes or lanterns clutter, no shiny highlights, no 3D rendering, no plastic toy look, no dark outlines.
