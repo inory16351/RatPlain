@@ -15,6 +15,16 @@ node tools/serve.js
 
 확인용 주소 (M = 소리 끄기/켜기): `?stage=3` = 그 스테이지, `?wave=4` = 그 웨이브부터(4 = 보스), `&god=1` = 무적, `?go=1` = 제목 화면 건너뜀, `&allstages=1` = 스테이지 다 열기, `&allframes=1` = 기체 다 갖기. P · Esc = 일시정지 (창을 벗어나면 자동).
 
+## Unity 이식 · MCP 연결
+`unity/` = Unity 프로젝트 자리(아직 빈 껍데기). Claude Code 가 Unity 에디터를 직접 만지도록 [MCP for Unity](https://github.com/CoplayDev/unity-mcp) (v10.3.0) 를 미리 넣어 둠.
+
+1. 준비: Unity 2021.3 LTS ~ 6.x, Python 3.10+ 과 [`uv`](https://docs.astral.sh/uv/) (`uv --version` 이 돼야 함)
+2. Unity Hub → Add project from disk → `unity/` 폴더 → 원하는 에디터 버전으로 열기 (패키지는 `unity/Packages/manifest.json` 에서 자동 설치)
+3. Unity 에서 `Window → MCP for Unity` → 서버 시작 (HTTP, `localhost:8080`)
+4. 이 저장소 루트에서 `claude` 실행 → 루트 `.mcp.json` 의 `unityMCP` 를 승인 → `/mcp` 에서 connected 확인
+
+연결이 안 되면 `Window → MCP for Unity` 의 상태 칸, 포트(8080)가 `.mcp.json` 주소와 같은지 확인. 2D 렌더러 · UGUI · Input System 같은 패키지는 에디터 버전에 맞춰 Package Manager 로 추가.
+
 ## 전투
 - **탑뷰** 자유 공중전. 비행기는 늘 앞으로 날고, **WASD / 방향키 = 날아갈 방향**(그쪽으로 선회), **마우스 = 조준**, 왼쪽 클릭 = 사격(커서 쪽으로), Space = 부스트(게이지)
 - **쏘지 않으면 체력 회복**. 하늘에 있는 느낌은 바다 위 그림자 · 위를 지나가는 구름(그림자도 바다에)
