@@ -31,14 +31,16 @@ SHEETS = {
     'crew_rat': (3, 2, 24), 'crew_cat': (3, 2, 24), 'crew_boss': (2, 2, 34),
     # 배 단계(시대)마다 선원 모습: t0 갤리 노꾼, (t1~2 = crew_rat 해적), t3 증기선, t4 강철 군함, t5 현대. 선장은 같은 인물
     'crew_rat_t0': (3, 2, 24), 'crew_rat_t3': (3, 2, 24), 'crew_rat_t4': (3, 2, 24), 'crew_rat_t5': (3, 2, 24), 'crew_rival': (3, 2, 24),
+    # 시대별 선장 (칸 = 배 단계 0~5) · 조선공 쥐 (칸 = 테크 0~5)
+    'crew_capt': (3, 2, 24), 'crew_wright': (3, 2, 24),
     'items': (2, 2, 40), 'parts_a': (3, 3, 46), 'parts_u': (3, 3, 46),
     # 바다 장식 · UI (같은 그림체)
-    'islands': (2, 2, 300), 'sea_deco': (3, 3, 70), 'ui_icons': (3, 3, 48), 'ui_frames': (3, 3, 160),
+    'islands': (2, 2, 300), 'sea_deco': (3, 3, 70), 'ui_icons': (3, 3, 48), 'ui_frames': (3, 3, 160), 'ui_hud': (4, 4, 48),
 }
-CLEAN = {'items', 'parts_a', 'parts_u', 'crew_rat', 'crew_cat', 'crew_boss', 'shark_fin', 'crew_rat_t0', 'crew_rat_t3', 'crew_rat_t4', 'crew_rat_t5', 'crew_rival',
-         'islands', 'sea_deco', 'ui_icons', 'ui_frames'}
+CLEAN = {'items', 'parts_a', 'parts_u', 'crew_rat', 'crew_cat', 'crew_boss', 'shark_fin', 'crew_rat_t0', 'crew_rat_t3', 'crew_rat_t4', 'crew_rat_t5', 'crew_rival', 'crew_capt', 'crew_wright',
+         'islands', 'sea_deco', 'ui_icons', 'ui_frames', 'ui_hud'}
 # 칸마다 크기가 제각각인 시트 → 첫 칸 기준이 아니라 칸마다 긴 변 = width
-EACH = {'islands', 'sea_deco', 'ui_icons', 'ui_frames', 'parts_a', 'parts_u', 'items'}
+EACH = {'islands', 'sea_deco', 'ui_icons', 'ui_frames', 'ui_hud', 'parts_a', 'parts_u', 'items'}
 BACKS = {'title_art': 1280, 'map_chart': 1280}
 # 바다 바닥 무늬: 격자 칸을 그대로 잘라 (마젠타 없음) 정사각 타일로
 TILES = {'sea_tiles': (4, 2, 256)}

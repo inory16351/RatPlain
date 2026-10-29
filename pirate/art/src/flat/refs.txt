@@ -42,3 +42,6 @@ sea_deco -i ref_style_top.png -i ref_pirate.png
 ui_icons -i ref_style_top.png -i ref_pirate.png
 ui_frames -i ref_style_top.png -i ref_pirate.png
 map_chart -i ref_style_top.png -i ref_pirate.png
+crew_capt -i ref_crew.png -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_wright -i ref_crew.png -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+ui_hud -i ref_icons.png -i ref_style_top.png -i ref_pirate.png

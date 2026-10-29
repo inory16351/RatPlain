@@ -38,6 +38,8 @@ def refs_for(n):
         return REF_CAT
     if 'shark' in n:
         return ['ref_shark.png', 'ref_style_top.png']
+    if n in ('crew_capt', 'crew_wright'):  # 시대별 선장 · 조선공: 지금 선원 시트(ref_crew)를 붙여 같은 인물 · 그림체 유지
+        return ['ref_crew.png'] + REF_CREW
     if n.startswith('crew'):
         return REF_CREW
     return REF_SHIP
@@ -45,7 +47,9 @@ def refs_for(n):
 
 def main():
     items = json.load(open(sys.argv[1], encoding='utf-8'))
-    refs = []
+    # refs.txt 는 다른 그림 줄을 남기고 이번 그림 줄만 바꿈
+    rp = os.path.join(HERE, 'refs.txt')
+    refs = dict(l.split(' ', 1) for l in open(rp, encoding='utf-8').read().splitlines() if l.strip()) if os.path.exists(rp) else {}
     for n, deck, subj in items:
         p = HEAD.format(name=n) + 'Image spec:\n' + subj.strip() + '\n'
         if n.startswith('ship_'):
@@ -67,9 +71,9 @@ def main():
         p += '\n' + STYLE + '\n'
         with open(os.path.join(HERE, f'prompt_{n}.txt'), 'w', encoding='utf-8') as fp:
             fp.write(p)
-        refs.append(n + ' ' + ' '.join('-i ' + r for r in refs_for(n)))
-    with open(os.path.join(HERE, 'refs.txt'), 'w', encoding='utf-8') as fp:
-        fp.write('\n'.join(refs) + '\n')
+        refs[n] = ' '.join('-i ' + r for r in refs_for(n))
+    with open(rp, 'w', encoding='utf-8') as fp:
+        fp.write(''.join(f'{k} {v}\n' for k, v in refs.items()))
     print(len(items), 'prompts')
 
 

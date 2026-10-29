@@ -4,8 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>쥐 해적 — 일곱 바다 정복</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 <style>
-  html, body { margin: 0; height: 100%; background: #10222d; overflow: hidden; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; }
+  html, body { margin: 0; height: 100%; background: #10222d; overflow: hidden; font-family: 'Jua', 'Malgun Gothic', sans-serif; }
+  /* Jua 는 굵기가 하나뿐 → 굵게(bold)를 흉내 내지 않게 */
+  * { font-synthesis: none; }
+  button, input, select { font-family: inherit; }
   #cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .ov { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; background: rgba(12, 28, 38, .6); text-align: center; gap: 14px; cursor: default; z-index: 10; }
   .ov.on { display: flex; }
@@ -55,7 +61,7 @@
 
   /* ── 항구 */
   #port { background: rgba(11, 26, 35, .96); justify-content: flex-start; gap: 0; overflow: auto; }
-  #port .hg { width: min(1500px, 100%); box-sizing: border-box; padding: 14px 20px 20px; display: grid; grid-template-columns: 320px 1fr 400px; grid-template-rows: auto 1fr; gap: 14px; text-align: left; }
+  #port .hg { width: min(1500px, 100%); box-sizing: border-box; padding: 14px 20px 20px; display: grid; grid-template-columns: minmax(240px, 320px) minmax(360px, 1fr) minmax(300px, 400px); grid-template-rows: auto 1fr; gap: 14px; text-align: left; }
   #port header { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   #port header h1 { font-size: 32px; margin-right: auto; }
   .money { display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: bold; background: rgba(255,255,255,.08); padding: 5px 14px; border-radius: 999px; }
@@ -68,7 +74,8 @@
   .warn { color: #ffb0a0; }
   .panel { background: rgba(255,255,255,.06); border-radius: 16px; padding: 14px 16px; min-width: 0; }
   /* 나무판 그림(ui_frames 0)이 있으면 판넬 바탕으로 — 글씨가 읽히게 어둡게 덮음 */
-  .panel:not(#pt-map) { background-image: linear-gradient(rgba(14,22,30,.82), rgba(14,22,30,.82)), var(--wood, none); background-size: cover; }
+  /* 나무판 그림(ui_frames 0)은 테두리로만 9조각으로 늘리고, 안쪽은 어두운 단색 → 그림 무늬가 글자 뒤에 걸치지 않음 */
+  .art .panel:not(#pt-map) { background: rgba(22, 17, 12, .94); border: 12px solid transparent; border-image: var(--wood) 9% / 12px stretch; border-radius: 6px; padding: 8px 10px; background-clip: padding-box; }
   .panel h2 { margin: 0 0 10px; font-size: 19px; opacity: .9; }
   .hg h2 .sub { font-size: 12px; font-weight: normal; opacity: .6; margin-left: 6px; }
   #port .none, #port .note { font-size: 13px; opacity: .7; line-height: 1.6; margin: 4px 0 10px; }
@@ -87,6 +94,19 @@
   #port .tabb { background: transparent; box-shadow: none; font-size: 16px; padding: 6px 18px; }
   #port .tabb.on { background: #2f8f9d; box-shadow: 0 3px 0 #1f6570; }
   #port .wide { grid-column: 2 / -1; }
+  /* Codex UI 그림 (html.art = ui_frames 있음): 단추는 그림을 border-image 로 늘림 (가운데는 늘고 둥근 끝은 그대로) */
+  .art .ov button, .art #port button { border-style: solid; border-color: transparent; border-width: 9px 16px; border-image: var(--btnR) 45% 30% fill / 9px 16px stretch; background: none; box-shadow: none; text-shadow: 0 2px 0 rgba(0,0,0,.3); filter: drop-shadow(0 3px 0 rgba(0,0,0,.25)); }
+  .art .ov button { padding: 2px 20px; }
+  .art #port button { padding: 0 8px; }
+  .art .ov button:active, .art #port button:active { transform: translateY(2px); filter: none; }
+  .art .ov button.sub, .art #port button.up { border-image-source: var(--btnG); }
+  .art #port button.small, .art #port .chip { border-image-source: var(--btnW); color: #4a2e14; text-shadow: none; border-width: 6px 12px; padding: 0 4px; }
+  .art #port button:disabled { filter: grayscale(.8) brightness(.8); opacity: .7; }
+  .art #port .tabb { border-image: none; border-color: transparent; filter: none; display: flex; align-items: center; gap: 6px; }
+  .art #port .tabb.on { border-image: var(--tabF) 40% 22% fill / 6px 16px stretch; }
+  #port nav .ui { width: 26px; height: 26px; object-fit: contain; }
+  #port header h1 { display: flex; align-items: center; gap: 8px; }
+  #port header h1 .hi { width: 40px; height: 40px; object-fit: contain; }
 
   /* 왼쪽: 배 미리보기 */
   #pt-prev canvas { width: 100%; height: 170px; display: block; background: radial-gradient(ellipse at 50% 55%, rgba(90,170,190,.3), transparent 70%); border-radius: 12px; }
@@ -100,7 +120,7 @@
   #pt-prev button { width: 100%; }
 
   /* 출항 탭: 바다 지도 */
-  #port .hg.tab-sea { grid-template-columns: 1fr 400px; }
+  #port .hg.tab-sea { grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); }
   #pt-sea .mini { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; background: rgba(0,0,0,.18); border-radius: 12px; padding: 8px; margin-bottom: 12px; }
   #pt-sea .mini canvas { width: 150px; height: 80px; display: block; background: radial-gradient(ellipse at 50% 55%, rgba(90,170,190,.3), transparent 70%); border-radius: 10px; }
   #pt-sea .mini .nm { font-size: 16px; font-weight: bold; }
@@ -165,6 +185,7 @@
 
   /* 의뢰 · 합성 */
   #lab-npc { text-align: center; }
+  #lab-npc canvas.npc { display: block; width: 100%; height: 40vh; }
   #lab-npc .npc { width: 100%; max-height: 40vh; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.3)); }
   #lab-npc .npc.glyph { display: flex; justify-content: center; padding-top: 30px; max-height: none; }
   #lab-npc .kd { opacity: .6; font-size: 13px; margin-top: 8px; }
@@ -200,6 +221,36 @@
   .tslot.empty { border: 2px dashed rgba(255,255,255,.2); opacity: .6; cursor: default; font-size: 20px; }
   .tslot .ic { width: 46px; height: 46px; object-fit: contain; border: 2px solid var(--g); border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--g); }
   .tray button { margin-left: auto; }
+  /* 좁은 화면: 칸이 쪼그라들지 않게 접음. 단추 글자는 한 줄 */
+  #port button, .ov button { white-space: nowrap; }
+  #port .hg > .panel { min-width: 0; }
+  #lab-req .presets { flex-wrap: wrap; }
+  @media (max-width: 1180px) {
+    #port .hg { grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); padding: 10px 12px 16px; }
+    #port .hg.tab-sea { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); }
+    #port .hg.tab-lab #lab-inv, #port .hg.tab-gear #pt-inv { grid-column: 1 / -1; }
+    #lab-npc canvas.npc { height: 30vh; }
+    #port header { gap: 8px; }
+    #port header h1 { font-size: 26px; }
+    #port .tabb { padding: 4px 10px; font-size: 15px; }
+    .money { font-size: 17px; padding: 4px 10px; }
+    .money .lb { display: none; }
+  }
+  @media (max-width: 1180px) {
+    #port header nav { order: 9; width: 100%; justify-content: space-between; }
+    #port header nav .tabb { flex: 1; justify-content: center; }
+  }
+  @media (max-width: 820px) {
+    #port .hg, #port .hg.tab-sea { grid-template-columns: minmax(0, 1fr); }
+    #port .wide { grid-column: 1 / -1; }
+    #lab-npc { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center; text-align: left; }
+    #lab-npc canvas.npc { height: 140px; }
+    #lab-npc .bubble { margin-top: 0; }
+    #lab-npc .bubble::before { display: none; }
+    #lab-npc .kd { grid-column: 1 / -1; }
+    #pt-map .seas { grid-template-columns: repeat(2, 1fr); }
+    #port nav .ui { width: 20px; height: 20px; }
+  }
 </style>
 </head>
 <body>
