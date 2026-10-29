@@ -1,0 +1,10 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: OUTFILE (in the current working directory). Do not write code to draw it; it must be a generated image. Do NOT edit or post-process the image with code. After saving, reply only with the file name.
+
+The attached image is a character sprite sheet (a grid of cute top-down characters on a magenta background). Make a COLOR-CODED PART MAP of it for 2D rigging: EXACTLY the attached image - the same grid, the same characters, the same poses, outlines, sizes and positions - only repainted with flat solid colors per body part. Every pixel of each character gets ONE of these flat colors, no shading, no lines, no texture:
+- HEAD = pure RED #FF0000 (head, both ears, face, nose, eyes, eye patch, visor and any hat, cap, helmet or bandana)
+- BODY = pure BLUE #0000FF (torso with clothes, belt, epaulettes and both feet)
+- FRONT ARM = pure GREEN #00FF00 (the near arm from the shoulder to the paw)
+- BACK ARM = pure YELLOW #FFFF00 (the visible parts of the far arm and paw)
+- TAIL = pure CYAN #00FFFF
+- HELD TOOL = pure PURPLE #8000FF (any sword, oar, drum, shovel, shell, spyglass, binoculars, paddles, tablet or other object held in a paw)
+Background = pure WHITE #FFFFFF (replace all magenta). Keep the borders between parts exactly where they are in the attached image.

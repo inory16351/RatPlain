@@ -1,0 +1,742 @@
+{
+ "ship_galley": [
+  {
+   "img": "ship_galley_0.png",
+   "w": 152.0,
+   "h": 80.0
+  }
+ ],
+ "ship_caravel": [
+  {
+   "img": "ship_caravel_0.png",
+   "w": 163.0,
+   "h": 90.0
+  }
+ ],
+ "ship_clipper": [
+  {
+   "img": "ship_clipper_0.png",
+   "w": 188.0,
+   "h": 97.0
+  }
+ ],
+ "ship_paddle": [
+  {
+   "img": "ship_paddle_0.png",
+   "w": 199.0,
+   "h": 94.5
+  }
+ ],
+ "ship_torpedo": [
+  {
+   "img": "ship_torpedo_0.png",
+   "w": 210.0,
+   "h": 49.0
+  }
+ ],
+ "ship_missile": [
+  {
+   "img": "ship_missile_0.png",
+   "w": 217.0,
+   "h": 73.5
+  }
+ ],
+ "ship_carrack": [
+  {
+   "img": "ship_carrack_0.png",
+   "w": 173.5,
+   "h": 98.0
+  }
+ ],
+ "ship_frigate": [
+  {
+   "img": "ship_frigate_0.png",
+   "w": 199.0,
+   "h": 65.5
+  }
+ ],
+ "ship_steamfrigate": [
+  {
+   "img": "ship_steamfrigate_0.png",
+   "w": 213.5,
+   "h": 121.0
+  }
+ ],
+ "ship_cruiser": [
+  {
+   "img": "ship_cruiser_0.png",
+   "w": 228.0,
+   "h": 90.5
+  }
+ ],
+ "ship_submarine": [
+  {
+   "img": "ship_submarine_0.png",
+   "w": 224.5,
+   "h": 68.0
+  }
+ ],
+ "ship_galleon": [
+  {
+   "img": "ship_galleon_0.png",
+   "w": 188.0,
+   "h": 87.0
+  }
+ ],
+ "ship_ofline": [
+  {
+   "img": "ship_ofline_0.png",
+   "w": 231.5,
+   "h": 101.5
+  }
+ ],
+ "ship_ironclad": [
+  {
+   "img": "ship_ironclad_0.png",
+   "w": 224.5,
+   "h": 102.0
+  }
+ ],
+ "ship_dreadnought": [
+  {
+   "img": "ship_dreadnought_0.png",
+   "w": 271.5,
+   "h": 95.0
+  }
+ ],
+ "ship_carrier": [
+  {
+   "img": "ship_carrier_0.png",
+   "w": 343.5,
+   "h": 117.0
+  }
+ ],
+ "e_cat_sloop": [
+  {
+   "img": "e_cat_sloop_0.png",
+   "w": 137.5,
+   "h": 61.5
+  }
+ ],
+ "e_cat_frigate": [
+  {
+   "img": "e_cat_frigate_0.png",
+   "w": 188.0,
+   "h": 66.0
+  }
+ ],
+ "e_cat_mortar": [
+  {
+   "img": "e_cat_mortar_0.png",
+   "w": 152.0,
+   "h": 73.0
+  }
+ ],
+ "e_cat_speeder": [
+  {
+   "img": "e_cat_speeder_0.png",
+   "w": 90.5,
+   "h": 31.5
+  }
+ ],
+ "e_cat_ironclad": [
+  {
+   "img": "e_cat_ironclad_0.png",
+   "w": 202.5,
+   "h": 63.0
+  }
+ ],
+ "e_rat_rival": [
+  {
+   "img": "e_rat_rival_0.png",
+   "w": 166.5,
+   "h": 74.5
+  }
+ ],
+ "e_shark": [
+  {
+   "img": "e_shark_0.png",
+   "w": 60.5,
+   "h": 33.5
+  }
+ ],
+ "boss_admiral": [
+  {
+   "img": "boss_admiral_0.png",
+   "w": 380.0,
+   "h": 151.0
+  }
+ ],
+ "boss_rival": [
+  {
+   "img": "boss_rival_0.png",
+   "w": 380.0,
+   "h": 173.0
+  }
+ ],
+ "boss_megashark": [
+  {
+   "img": "boss_megashark_0.png",
+   "w": 231.0,
+   "h": 162.0
+  }
+ ],
+ "boss_fortress": [
+  {
+   "img": "boss_fortress_0.png",
+   "w": 542.5,
+   "h": 273.5
+  }
+ ],
+ "shark_fin": [
+  {
+   "img": "shark_fin_0.png",
+   "w": 34.5,
+   "h": 20.0
+  },
+  {
+   "img": "shark_fin_1.png",
+   "w": 41.0,
+   "h": 26.5
+  }
+ ],
+ "crew_rat": [
+  {
+   "img": "crew_rat_0.png",
+   "w": 24.5,
+   "h": 30.5
+  },
+  {
+   "img": "crew_rat_1.png",
+   "w": 31.0,
+   "h": 30.5
+  },
+  {
+   "img": "crew_rat_2.png",
+   "w": 25.5,
+   "h": 30.0
+  },
+  {
+   "img": "crew_rat_3.png",
+   "w": 31.0,
+   "h": 29.5
+  },
+  {
+   "img": "crew_rat_4.png",
+   "w": 28.0,
+   "h": 29.0
+  },
+  {
+   "img": "crew_rat_5.png",
+   "w": 31.5,
+   "h": 30.5
+  }
+ ],
+ "crew_cat": [
+  {
+   "img": "crew_cat_0.png",
+   "w": 24.0,
+   "h": 19.5
+  },
+  {
+   "img": "crew_cat_1.png",
+   "w": 24.0,
+   "h": 20.0
+  },
+  {
+   "img": "crew_cat_2.png",
+   "w": 24.0,
+   "h": 20.0
+  },
+  {
+   "img": "crew_cat_3.png",
+   "w": 24.0,
+   "h": 20.5
+  },
+  {
+   "img": "crew_cat_4.png",
+   "w": 23.5,
+   "h": 21.0
+  },
+  {
+   "img": "crew_cat_5.png",
+   "w": 23.5,
+   "h": 21.0
+  }
+ ],
+ "crew_boss": [
+  {
+   "img": "crew_boss_0.png",
+   "w": 34.5,
+   "h": 39.0
+  },
+  {
+   "img": "crew_boss_1.png",
+   "w": 36.0,
+   "h": 39.0
+  },
+  {
+   "img": "crew_boss_2.png",
+   "w": 33.5,
+   "h": 39.0
+  },
+  {
+   "img": "crew_boss_3.png",
+   "w": 38.5,
+   "h": 39.0
+  }
+ ],
+ "crew_rat_t0": [
+  {
+   "img": "crew_rat_t0_0.png",
+   "w": 24.5,
+   "h": 30.0
+  },
+  {
+   "img": "crew_rat_t0_1.png",
+   "w": 31.0,
+   "h": 30.0
+  },
+  {
+   "img": "crew_rat_t0_2.png",
+   "w": 23.5,
+   "h": 30.0
+  },
+  {
+   "img": "crew_rat_t0_3.png",
+   "w": 29.0,
+   "h": 31.0
+  },
+  {
+   "img": "crew_rat_t0_4.png",
+   "w": 24.5,
+   "h": 33.0
+  },
+  {
+   "img": "crew_rat_t0_5.png",
+   "w": 25.5,
+   "h": 30.5
+  }
+ ],
+ "crew_rat_t3": [
+  {
+   "img": "crew_rat_t3_0.png",
+   "w": 24.5,
+   "h": 23.5
+  },
+  {
+   "img": "crew_rat_t3_1.png",
+   "w": 28.5,
+   "h": 25.0
+  },
+  {
+   "img": "crew_rat_t3_2.png",
+   "w": 21.5,
+   "h": 22.0
+  },
+  {
+   "img": "crew_rat_t3_3.png",
+   "w": 27.0,
+   "h": 27.0
+  },
+  {
+   "img": "crew_rat_t3_4.png",
+   "w": 26.5,
+   "h": 23.0
+  },
+  {
+   "img": "crew_rat_t3_5.png",
+   "w": 22.0,
+   "h": 23.5
+  }
+ ],
+ "crew_rat_t4": [
+  {
+   "img": "crew_rat_t4_0.png",
+   "w": 24.5,
+   "h": 23.0
+  },
+  {
+   "img": "crew_rat_t4_1.png",
+   "w": 29.5,
+   "h": 23.0
+  },
+  {
+   "img": "crew_rat_t4_2.png",
+   "w": 21.5,
+   "h": 23.5
+  },
+  {
+   "img": "crew_rat_t4_3.png",
+   "w": 24.5,
+   "h": 23.5
+  },
+  {
+   "img": "crew_rat_t4_4.png",
+   "w": 23.5,
+   "h": 24.5
+  },
+  {
+   "img": "crew_rat_t4_5.png",
+   "w": 21.5,
+   "h": 23.5
+  }
+ ],
+ "crew_rat_t5": [
+  {
+   "img": "crew_rat_t5_0.png",
+   "w": 24.5,
+   "h": 33.0
+  },
+  {
+   "img": "crew_rat_t5_1.png",
+   "w": 29.0,
+   "h": 33.0
+  },
+  {
+   "img": "crew_rat_t5_2.png",
+   "w": 22.0,
+   "h": 33.0
+  },
+  {
+   "img": "crew_rat_t5_3.png",
+   "w": 26.5,
+   "h": 33.5
+  },
+  {
+   "img": "crew_rat_t5_4.png",
+   "w": 24.0,
+   "h": 33.5
+  },
+  {
+   "img": "crew_rat_t5_5.png",
+   "w": 26.5,
+   "h": 34.0
+  }
+ ],
+ "crew_rival": [
+  {
+   "img": "crew_rival_0.png",
+   "w": 24.5,
+   "h": 21.5
+  },
+  {
+   "img": "crew_rival_1.png",
+   "w": 26.0,
+   "h": 22.0
+  },
+  {
+   "img": "crew_rival_2.png",
+   "w": 22.0,
+   "h": 21.0
+  },
+  {
+   "img": "crew_rival_3.png",
+   "w": 25.5,
+   "h": 19.5
+  },
+  {
+   "img": "crew_rival_4.png",
+   "w": 26.5,
+   "h": 20.5
+  },
+  {
+   "img": "crew_rival_5.png",
+   "w": 22.5,
+   "h": 20.5
+  }
+ ],
+ "items": [
+  {
+   "img": "items_0.png",
+   "w": 38.5,
+   "h": 40.5
+  },
+  {
+   "img": "items_1.png",
+   "w": 39.5,
+   "h": 40.5
+  },
+  {
+   "img": "items_2.png",
+   "w": 35.0,
+   "h": 40.5
+  },
+  {
+   "img": "items_3.png",
+   "w": 40.5,
+   "h": 34.5
+  }
+ ],
+ "parts_a": [
+  {
+   "img": "parts_a_0.png",
+   "w": 47.0,
+   "h": 41.0
+  },
+  {
+   "img": "parts_a_1.png",
+   "w": 45.0,
+   "h": 47.0
+  },
+  {
+   "img": "parts_a_2.png",
+   "w": 41.5,
+   "h": 47.0
+  },
+  {
+   "img": "parts_a_3.png",
+   "w": 42.5,
+   "h": 47.0
+  },
+  {
+   "img": "parts_a_4.png",
+   "w": 47.0,
+   "h": 22.0
+  },
+  {
+   "img": "parts_a_5.png",
+   "w": 44.5,
+   "h": 47.0
+  },
+  {
+   "img": "parts_a_6.png",
+   "w": 47.0,
+   "h": 45.5
+  },
+  {
+   "img": "parts_a_7.png",
+   "w": 47.0,
+   "h": 35.5
+  },
+  {
+   "img": "parts_a_8.png",
+   "w": 47.0,
+   "h": 39.5
+  }
+ ],
+ "parts_u": [
+  {
+   "img": "parts_u_0.png",
+   "w": 46.5,
+   "h": 39.5
+  },
+  {
+   "img": "parts_u_1.png",
+   "w": 40.0,
+   "h": 46.5
+  },
+  {
+   "img": "parts_u_2.png",
+   "w": 47.0,
+   "h": 44.0
+  },
+  {
+   "img": "parts_u_3.png",
+   "w": 46.5,
+   "h": 42.0
+  },
+  {
+   "img": "parts_u_4.png",
+   "w": 47.0,
+   "h": 33.5
+  },
+  {
+   "img": "parts_u_5.png",
+   "w": 47.0,
+   "h": 46.0
+  },
+  {
+   "img": "parts_u_6.png",
+   "w": 46.5,
+   "h": 35.5
+  },
+  {
+   "img": "parts_u_7.png",
+   "w": 46.5,
+   "h": 42.0
+  },
+  {
+   "img": "parts_u_8.png",
+   "w": 47.0,
+   "h": 45.0
+  }
+ ],
+ "islands": [
+  {
+   "img": "islands_0.png",
+   "w": 299.0,
+   "h": 303.5
+  },
+  {
+   "img": "islands_1.png",
+   "w": 303.0,
+   "h": 284.5
+  },
+  {
+   "img": "islands_2.png",
+   "w": 303.0,
+   "h": 285.5
+  },
+  {
+   "img": "islands_3.png",
+   "w": 303.5,
+   "h": 291.0
+  }
+ ],
+ "sea_deco": [
+  {
+   "img": "sea_deco_0.png",
+   "w": 71.5,
+   "h": 67.5
+  },
+  {
+   "img": "sea_deco_1.png",
+   "w": 71.5,
+   "h": 52.5
+  },
+  {
+   "img": "sea_deco_2.png",
+   "w": 71.5,
+   "h": 63.5
+  },
+  {
+   "img": "sea_deco_3.png",
+   "w": 71.5,
+   "h": 68.5
+  },
+  {
+   "img": "sea_deco_4.png",
+   "w": 66.0,
+   "h": 71.5
+  },
+  {
+   "img": "sea_deco_5.png",
+   "w": 71.5,
+   "h": 70.5
+  },
+  {
+   "img": "sea_deco_6.png",
+   "w": 71.5,
+   "h": 66.0
+  },
+  {
+   "img": "sea_deco_7.png",
+   "w": 71.5,
+   "h": 71.5
+  },
+  {
+   "img": "sea_deco_8.png",
+   "w": 71.0,
+   "h": 58.0
+  }
+ ],
+ "ui_icons": [
+  {
+   "img": "ui_icons_0.png",
+   "w": 49.0,
+   "h": 49.0
+  },
+  {
+   "img": "ui_icons_1.png",
+   "w": 49.0,
+   "h": 38.5
+  },
+  {
+   "img": "ui_icons_2.png",
+   "w": 49.0,
+   "h": 38.5
+  },
+  {
+   "img": "ui_icons_3.png",
+   "w": 49.0,
+   "h": 39.5
+  },
+  {
+   "img": "ui_icons_4.png",
+   "w": 44.5,
+   "h": 49.0
+  },
+  {
+   "img": "ui_icons_5.png",
+   "w": 49.0,
+   "h": 40.0
+  },
+  {
+   "img": "ui_icons_6.png",
+   "w": 49.0,
+   "h": 49.0
+  },
+  {
+   "img": "ui_icons_7.png",
+   "w": 49.0,
+   "h": 39.0
+  },
+  {
+   "img": "ui_icons_8.png",
+   "w": 49.0,
+   "h": 48.5
+  }
+ ],
+ "ui_frames": [
+  {
+   "img": "ui_frames_0.png",
+   "w": 162.5,
+   "h": 106.0
+  },
+  {
+   "img": "ui_frames_1.png",
+   "w": 163.0,
+   "h": 109.5
+  },
+  {
+   "img": "ui_frames_2.png",
+   "w": 163.0,
+   "h": 84.0
+  },
+  {
+   "img": "ui_frames_3.png",
+   "w": 162.5,
+   "h": 85.0
+  },
+  {
+   "img": "ui_frames_4.png",
+   "w": 162.5,
+   "h": 85.0
+  },
+  {
+   "img": "ui_frames_5.png",
+   "w": 163.0,
+   "h": 162.5
+  },
+  {
+   "img": "ui_frames_6.png",
+   "w": 161.0,
+   "h": 60.5
+  },
+  {
+   "img": "ui_frames_7.png",
+   "w": 163.5,
+   "h": 158.5
+  },
+  {
+   "img": "ui_frames_8.png",
+   "w": 162.5,
+   "h": 51.5
+  }
+ ],
+ "title_art": [
+  {
+   "img": "title_art_0.jpg",
+   "w": 1280,
+   "h": 853
+  }
+ ],
+ "map_chart": [
+  {
+   "img": "map_chart_0.jpg",
+   "w": 1280,
+   "h": 655
+  }
+ ]
+}

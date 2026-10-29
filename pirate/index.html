@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>쥐 해적 — 일곱 바다 정복</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #10222d; overflow: hidden; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; }
+  #cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ov { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; color: #fff; background: rgba(12, 28, 38, .6); text-align: center; gap: 14px; cursor: default; z-index: 10; }
+  .ov.on { display: flex; }
+  .ov h1 { margin: 0; font-size: 46px; letter-spacing: 1px; text-shadow: 0 3px 0 rgba(0,0,0,.25); }
+  .ov p { margin: 0; font-size: 17px; line-height: 1.7; opacity: .92; }
+  .ov .keys { background: rgba(255,255,255,.12); border-radius: 12px; padding: 12px 22px; font-size: 15px; }
+  .ov button { font: inherit; font-size: 20px; padding: 10px 34px; border: 0; border-radius: 999px; background: #e9503f; color: #fff; cursor: pointer; box-shadow: 0 4px 0 #a8342a; }
+  .ov button:active { transform: translateY(3px); box-shadow: 0 1px 0 #a8342a; }
+  .ov .row { display: flex; gap: 14px; }
+  .ov button.sub { background: #2f8f9d; box-shadow: 0 4px 0 #1f6570; }
+  .ov button.sub:active { box-shadow: 0 1px 0 #1f6570; }
+  #title h1, #title p, #result h1, #result p, #story p { text-shadow: 0 2px 6px rgba(0,0,0,.45); }
+
+  /* ── 타이틀 */
+  #title { background: radial-gradient(ellipse at 50% 35%, #2f6f83 0%, #173a4b 55%, #0c1d27 100%); }
+  #title.art { background: #0c1d27 center / cover no-repeat; }
+  #title.art::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,24,32,0) 40%, rgba(10,24,32,.85) 100%); }
+  #title > * { position: relative; }
+  #title .tbox { margin-top: auto; margin-bottom: 7vh; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  #title:not(.art) .tbox { margin-top: auto; margin-bottom: auto; }
+  #title h1 { font-size: 54px; }
+  #title h1 small { display: block; font-size: 22px; letter-spacing: 6px; opacity: .8; margin-bottom: 4px; }
+
+  /* ── 스토리 */
+  #story { background: linear-gradient(#0b1a22, #13303e); }
+  #story .cap { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.4)); }
+  #story .cap.glyph { display: flex; align-items: center; justify-content: center; }
+  #story .lines { display: flex; flex-direction: column; gap: 10px; min-height: 200px; max-width: 760px; }
+  #story .lines p { font-size: 21px; opacity: 0; transform: translateY(8px); transition: opacity .6s, transform .6s; }
+  #story .lines p.on { opacity: 1; transform: none; }
+  #story .who { font-size: 14px; opacity: .6; letter-spacing: 2px; }
+  #story .hint { font-size: 13px; opacity: .5; }
+
+  /* 그림이 없을 때 대신 쓰는 모양 */
+  .rat-glyph { position: relative; width: 120px; height: 120px; border-radius: 50%; background: #9aa3ad; box-shadow: inset -10px -10px 0 rgba(0,0,0,.12); }
+  .rat-glyph::before, .rat-glyph::after { content: ''; position: absolute; top: -18px; width: 54px; height: 54px; border-radius: 50%; background: #9aa3ad; z-index: -1; }
+  .rat-glyph::before { left: -14px; } .rat-glyph::after { right: -14px; }
+  .rat-glyph i { position: absolute; top: 38px; left: 26px; width: 30px; height: 18px; background: #1d1d1d; border-radius: 4px; transform: rotate(-12deg); }
+  .rat-glyph b { position: absolute; top: -34px; left: 0; right: 0; height: 30px; background: #2b2b2b; border-radius: 50% 50% 10px 10px; }
+
+  /* ── 결과 */
+  #result { background: rgba(10, 24, 32, .72); }
+  #result.lose h1 { color: #ffb0a0; }
+  #result .loot { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  #result .loot > span { background: rgba(255,255,255,.1); border-radius: 12px; padding: 8px 16px; font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+  #result .half { font-size: 14px; opacity: .75; }
+
+  /* ── 항구 */
+  #port { background: rgba(11, 26, 35, .96); justify-content: flex-start; gap: 0; overflow: auto; }
+  #port .hg { width: min(1500px, 100%); box-sizing: border-box; padding: 14px 20px 20px; display: grid; grid-template-columns: 320px 1fr 400px; grid-template-rows: auto 1fr; gap: 14px; text-align: left; }
+  #port header { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  #port header h1 { font-size: 32px; margin-right: auto; }
+  .money { display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: bold; background: rgba(255,255,255,.08); padding: 5px 14px; border-radius: 999px; }
+  .money .mi, .money img { width: 26px; height: 26px; object-fit: contain; }
+  .money .lb { font-size: 12px; font-weight: normal; opacity: .65; }
+  #port button { font-size: 17px; padding: 8px 22px; }
+  #port button.small { font-size: 13px; padding: 5px 12px; background: #4a5a66; box-shadow: 0 3px 0 #2f3a44; }
+  #port button:disabled { background: #4a5a66; box-shadow: 0 3px 0 #2f3a44; opacity: .6; cursor: default; }
+  #port button.up { background: #d9822b; box-shadow: 0 3px 0 #9a5a1c; }
+  .warn { color: #ffb0a0; }
+  .panel { background: rgba(255,255,255,.06); border-radius: 16px; padding: 14px 16px; min-width: 0; }
+  /* 나무판 그림(ui_frames 0)이 있으면 판넬 바탕으로 — 글씨가 읽히게 어둡게 덮음 */
+  .panel:not(#pt-map) { background-image: linear-gradient(rgba(14,22,30,.82), rgba(14,22,30,.82)), var(--wood, none); background-size: cover; }
+  .panel h2 { margin: 0 0 10px; font-size: 19px; opacity: .9; }
+  .hg h2 .sub { font-size: 12px; font-weight: normal; opacity: .6; margin-left: 6px; }
+  #port .none, #port .note { font-size: 13px; opacity: .7; line-height: 1.6; margin: 4px 0 10px; }
+  .tier { display: inline-block; font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 999px; color: #10222d; margin-right: 6px; vertical-align: middle; }
+  .up { color: #8ef08a; } .dn { color: #ff8a7a; }
+  /* 재화 아이콘 (그림 없으면 CSS 모양) */
+  .mi { display: inline-block; vertical-align: middle; flex: none; }
+  .mi.plank { width: 26px; height: 14px !important; border-radius: 4px; background: repeating-linear-gradient(90deg, #a5713e 0 9px, #8a5a2e 9px 10px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2); margin: 6px 0; }
+  .mi.coin { border-radius: 50%; background: radial-gradient(circle at 40% 35%, #ffe28a, #f0b52c 60%, #b8801a); box-shadow: inset 0 0 0 2px #c88d1e; }
+  .cost { white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+  .cost .mi, .cost img { width: 16px; height: 16px; object-fit: contain; }
+  .cost .mi.plank { width: 18px; height: 9px !important; margin: 0; }
+
+  /* 탭 */
+  #port nav { display: flex; gap: 6px; background: rgba(255,255,255,.06); padding: 4px; border-radius: 999px; }
+  #port .tabb { background: transparent; box-shadow: none; font-size: 16px; padding: 6px 18px; }
+  #port .tabb.on { background: #2f8f9d; box-shadow: 0 3px 0 #1f6570; }
+  #port .wide { grid-column: 2 / -1; }
+
+  /* 왼쪽: 배 미리보기 */
+  #pt-prev canvas { width: 100%; height: 170px; display: block; background: radial-gradient(ellipse at 50% 55%, rgba(90,170,190,.3), transparent 70%); border-radius: 12px; }
+  #pt-prev .nm { font-size: 22px; font-weight: bold; margin-top: 8px; }
+  #pt-prev .kd { opacity: .75; font-size: 14px; }
+  #pt-prev .ds { font-size: 13px; line-height: 1.55; opacity: .85; margin: 8px 0 10px; min-height: 40px; }
+  .slots-line { color: #ffd45c; }
+  .stats { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 10px; font-size: 14px; margin-bottom: 12px; }
+  .stats .v { text-align: right; font-weight: bold; }
+  .stats .d { min-width: 44px; text-align: right; font-weight: bold; }
+  #pt-prev button { width: 100%; }
+
+  /* 출항 탭: 바다 지도 */
+  #port .hg.tab-sea { grid-template-columns: 1fr 400px; }
+  #pt-sea .mini { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: center; background: rgba(0,0,0,.18); border-radius: 12px; padding: 8px; margin-bottom: 12px; }
+  #pt-sea .mini canvas { width: 150px; height: 80px; display: block; background: radial-gradient(ellipse at 50% 55%, rgba(90,170,190,.3), transparent 70%); border-radius: 10px; }
+  #pt-sea .mini .nm { font-size: 16px; font-weight: bold; }
+  #pt-sea .mini .kd { font-size: 12px; opacity: .75; margin: 3px 0 6px; }
+  #pt-map { position: relative; background-image: linear-gradient(rgba(20,14,6,.18), rgba(20,14,6,.18)), var(--chart, none); background-size: cover; background-position: center; }
+  #pt-map .seas { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 132px; gap: 22px 26px; padding: 6px; }
+  #pt-map svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .sea { position: relative; z-index: 1; border-radius: 16px; padding: 10px 12px; cursor: pointer; border: 3px solid rgba(255,255,255,.12); background: linear-gradient(160deg, var(--c), var(--c2)); display: flex; flex-direction: column; gap: 3px; box-shadow: inset 0 0 30px rgba(0,0,0,.25); transition: transform .1s; overflow: hidden; }
+  .sea::after { content: ''; position: absolute; inset: auto -10% -30% -10%; height: 60%; background: repeating-radial-gradient(ellipse at 50% 0, rgba(255,255,255,.08) 0 2px, transparent 2px 14px); pointer-events: none; }
+  .sea:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.4); }
+  .sea.on { border-color: #ffd45c; box-shadow: 0 0 0 3px rgba(255,212,92,.35), inset 0 0 30px rgba(0,0,0,.25); }
+  .sea.lock { filter: grayscale(.85) brightness(.6); cursor: default; }
+  .sea.lock:hover { transform: none; }
+  .sea .no { font-size: 13px; font-weight: bold; opacity: .8; }
+  .sea .sn { font-size: 17px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,.4); line-height: 1.25; }
+  .sea .sb { margin-top: auto; font-size: 12px; display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+  .sea .ok { position: absolute; top: 8px; right: 10px; font-size: 11px; font-weight: bold; background: #8ef08a; color: #10222d; border-radius: 999px; padding: 2px 8px; }
+  .sea .trait { color: #ffd45c; font-weight: bold; }
+  #pt-sea .story { font-size: 15px; line-height: 1.65; background: rgba(0,0,0,.2); border-radius: 12px; padding: 10px 12px; margin: 6px 0 12px; }
+  #pt-sea dl { display: grid; grid-template-columns: 70px 1fr; gap: 6px 10px; font-size: 14px; margin: 0 0 12px; }
+  #pt-sea dt { opacity: .6; } #pt-sea dd { margin: 0; }
+  #pt-sea .trait { color: #ffd45c; font-weight: bold; }
+  #pt-sea .alert { background: rgba(233,80,63,.18); border: 1px solid rgba(233,80,63,.5); border-radius: 10px; padding: 8px 10px; font-size: 14px; margin-bottom: 12px; }
+  #pt-sea .fine { background: rgba(142,240,138,.12); border: 1px solid rgba(142,240,138,.35); border-radius: 10px; padding: 8px 10px; font-size: 14px; margin-bottom: 12px; }
+
+  /* 조선소 탭: 배 트리 */
+  #pt-tree .era { text-align: center; font-size: 12px; opacity: .75; margin-bottom: 6px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+  #pt-tree .grid { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(3, minmax(112px, 1fr)); gap: 12px 18px; }
+  #pt-tree svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .rowlb { font-size: 12px; opacity: .6; }
+  .node { position: relative; z-index: 1; background: rgba(255,255,255,.07); border: 2px solid rgba(255,255,255,.12); border-radius: 14px; padding: 6px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform .1s; min-width: 0; }
+  .node:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.35); }
+  .node canvas { width: 100%; height: 58px; }
+  .node .nm { font-size: 14px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .node .kd { font-size: 11px; opacity: .65; }
+  .node .st { font-size: 12px; opacity: .85; }
+  .node.own { background: rgba(80,170,140,.18); }
+  .node.use { border-color: #ffd45c; box-shadow: 0 0 0 2px rgba(255,212,92,.35); }
+  .node.lock { opacity: .4; }
+  .node.sel { outline: 3px solid #7fd3ff; outline-offset: 2px; }
+
+  /* 장비 */
+  .slot { margin-bottom: 10px; }
+  .slot h3 { margin: 0 0 5px; font-size: 14px; display: flex; justify-content: space-between; opacity: .9; }
+  .part { display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; background: rgba(255,255,255,.05); margin-bottom: 4px; border-left: 4px solid var(--g); }
+  .part:hover { background: rgba(255,255,255,.1); }
+  .part .ic { width: 40px; height: 40px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: bold; color: var(--g); border: 2px solid var(--g, transparent); box-sizing: border-box; }
+  .part .ic.empty { border: 2px dashed rgba(255,255,255,.25); opacity: .6; color: #fff; }
+  .part .pn { font-size: 15px; font-weight: bold; }
+  .part .pd { font-size: 12px; opacity: .75; line-height: 1.45; }
+  .part.on { background: rgba(255,212,92,.14); }
+  .part.lock { opacity: .45; }
+  .part.emptyrow { border-left-color: rgba(255,255,255,.15); }
+  .part .tag { font-size: 12px; font-weight: bold; color: #ffd45c; white-space: nowrap; }
+  .part .cnt { font-size: 12px; opacity: .7; }
+  #pt-slots, #pt-inv, #lab-inv, #lab-req { overflow: auto; max-height: calc(100vh - 110px); box-sizing: border-box; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  #port .chip { font-size: 13px; padding: 5px 12px; background: #4a5a66; box-shadow: 0 3px 0 #2f3a44; }
+  #port .chip.on { background: #2f8f9d; box-shadow: 0 3px 0 #1f6570; }
+  .chip b { color: #ffd45c; }
+  details.nofit summary { cursor: pointer; font-size: 13px; opacity: .7; margin: 10px 0 6px; }
+
+  /* 의뢰 · 합성 */
+  #lab-npc { text-align: center; }
+  #lab-npc .npc { width: 100%; max-height: 40vh; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.3)); }
+  #lab-npc .npc.glyph { display: flex; justify-content: center; padding-top: 30px; max-height: none; }
+  #lab-npc .kd { opacity: .6; font-size: 13px; margin-top: 8px; }
+  .bubble { position: relative; background: #fff; color: #10222d; border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 1.5; margin-top: 14px; text-align: left; }
+  .bubble::before { content: ''; position: absolute; top: -10px; left: 50%; border: 10px solid transparent; border-top: 0; border-bottom-color: #fff; transform: translateX(-50%); }
+  .amt { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 14px; }
+  .amt input { width: 100%; accent-color: #ffd45c; }
+  .amt .cur { font-size: 14px; opacity: .85; }
+  .presets { display: flex; gap: 6px; }
+  .odds { display: grid; gap: 8px; margin-bottom: 12px; }
+  .orow { display: grid; grid-template-columns: 42px 1fr 58px; align-items: center; gap: 10px; font-size: 15px; font-weight: bold; }
+  .orow b { text-align: right; }
+  .obar { height: 14px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; }
+  .obar i { display: block; height: 100%; border-radius: 999px; transition: width .15s; }
+  .todds { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 13px; margin: 8px 0 12px; }
+  .todds .lb { font-weight: bold; opacity: .7; }
+  #port button.big { width: 100%; font-size: 20px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  #port button.big .cost .mi, #port button.big .cost img { width: 20px; height: 20px; }
+  #port button.big .cost .mi.plank { width: 22px; height: 11px !important; }
+  .result { margin-top: 12px; text-align: center; background: rgba(255,255,255,.06); border: 2px solid var(--g); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; animation: pop .35s ease-out; }
+  .result.g2 { box-shadow: 0 0 24px rgba(111,184,255,.35); }
+  .result.g3 { box-shadow: 0 0 36px rgba(255,184,77,.55); animation: pop .35s ease-out, shine 1.6s ease-in-out infinite; }
+  .result.fail { filter: saturate(.5); }
+  .result .rh { font-size: 13px; opacity: .6; }
+  .result .ric { width: 72px; height: 72px; object-fit: contain; font-size: 40px; display: flex; align-items: center; justify-content: center; color: var(--g); border-radius: 14px; background: rgba(255,255,255,.06); }
+  .result .rn { font-size: 22px; font-weight: bold; }
+  .result .pd { font-size: 14px; opacity: .85; max-width: 420px; }
+  .result .tag { font-size: 13px; font-weight: bold; color: #ffd45c; }
+  @keyframes pop { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes shine { 50% { box-shadow: 0 0 56px rgba(255,184,77,.8); } }
+  .tray { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tslot { width: 50px; height: 50px; border-radius: 10px; background: rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .tslot.empty { border: 2px dashed rgba(255,255,255,.2); opacity: .6; cursor: default; font-size: 20px; }
+  .tslot .ic { width: 46px; height: 46px; object-fit: contain; border: 2px solid var(--g); border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--g); }
+  .tray button { margin-left: auto; }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div class="ov on" id="title">
+  <div class="tbox">
+    <h1><small>쥐 해적</small>일곱 바다 정복</h1>
+    <p>고양이 해군에게 빼앗긴 바다를 되찾아라!</p>
+    <p class="keys">W/S = 돛 올리기 · 내리기 &nbsp;·&nbsp; A/D = 키 &nbsp;·&nbsp; 클릭 = 마우스 쪽 뱃전 일제 사격<br>Q/E = 왼쪽 · 오른쪽 뱃전 &nbsp;·&nbsp; Space = 양쪽 &nbsp;·&nbsp; 1 체인샷 · 2 화염탄 · 3 폭격 (배 · 장비에 있을 때)</p>
+    <div class="row"><button id="titleGo">출항</button></div>
+  </div>
+</div>
+
+<div class="ov" id="story">
+  <div class="who">애꾸 선장</div>
+  <div id="storyCap"></div>
+  <div class="lines" id="storyLines"></div>
+  <div class="row"><button id="storyGo">닻 올려라!</button></div>
+  <div class="hint">클릭 · Space = 다음 줄 &nbsp;·&nbsp; Esc = 건너뛰기</div>
+</div>
+
+<div class="ov" id="port"></div>
+
+<div class="ov" id="result">
+  <h1 id="resTitle"></h1>
+  <p id="resText"></p>
+  <div class="loot" id="resLoot"></div>
+  <p class="half" id="resHalf"></p>
+  <div class="row" id="resBtns"></div>
+</div>
+
+<script src="art/sprites/sprites.js" onerror="window.SPRITES={}"></script>
+<script src="art/rig/rigs.js" onerror="window.RIGS={}"></script>
+<script src="seas.js"></script>
+<script src="ships.js"></script>
+<script src="game.js"></script>
+<script src="port.js"></script>
+</body>
+</html>

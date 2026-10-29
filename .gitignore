@@ -9,3 +9,16 @@ unity/[Oo]bj/
 unity/[Ll]ogs/
 unity/[Bb]uild*/
 unity/[Uu]ser[Ss]ettings/
+# 쥐 해적: Codex/ChatGPT 로그 · 지난 그림 · 확인용 그림 (게임은 art/src · art/sprites · art/rig 만 씀)
+pirate/art/**/log_*.txt
+pirate/art/src/gpt/
+pirate/art/src/old_gpt/
+pirate/art/src/flat/*.png
+!pirate/art/src/flat/ref_*.png
+pirate/art/src/flat/test1/
+pirate/art/rig/_tmp/
+pirate/art/rig/captain/
+pirate/art/*.png
+unity/*.slnx
+unity/*.sln
+unity/*.csproj

@@ -1,0 +1,44 @@
+ship_caravel -i ref_style_top.png -i ref_pirate.png
+ship_clipper -i ref_style_top.png -i ref_pirate.png
+ship_paddle -i ref_style_top.png -i ref_pirate.png
+ship_torpedo -i ref_style_top.png -i ref_pirate.png
+ship_missile -i ref_style_top.png -i ref_pirate.png
+ship_carrack -i ref_style_top.png -i ref_pirate.png
+ship_frigate -i ref_style_top.png -i ref_pirate.png
+ship_steamfrigate -i ref_style_top.png -i ref_pirate.png
+ship_cruiser -i ref_style_top.png -i ref_pirate.png
+ship_submarine -i ref_style_top.png -i ref_pirate.png
+ship_galleon -i ref_style_top.png -i ref_pirate.png
+ship_ofline -i ref_style_top.png -i ref_pirate.png
+ship_ironclad -i ref_style_top.png -i ref_pirate.png
+ship_dreadnought -i ref_style_top.png -i ref_pirate.png
+ship_carrier -i ref_style_top.png -i ref_pirate.png
+e_cat_sloop -i ref_style_top.png -i ref_navy.png
+e_cat_frigate -i ref_style_top.png -i ref_navy.png
+e_cat_mortar -i ref_style_top.png -i ref_navy.png
+e_cat_speeder -i ref_style_top.png -i ref_navy.png
+e_cat_ironclad -i ref_style_top.png -i ref_navy.png
+e_rat_rival -i ref_style_top.png -i ref_pirate.png
+shark_fin -i ref_shark.png -i ref_style_top.png
+boss_admiral -i ref_style_top.png -i ref_navy.png
+boss_rival -i ref_style_top.png -i ref_pirate.png
+boss_megashark -i ref_shark.png -i ref_style_top.png
+boss_fortress -i ref_style_top.png -i ref_navy.png
+crew_cat -i ref_style_top.png -i ref_navy.png
+crew_boss -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+items -i ref_style_top.png -i ref_pirate.png
+parts_a -i ref_style_top.png -i ref_pirate.png
+parts_u -i ref_style_top.png -i ref_pirate.png
+title_art -i ref_style_top.png -i ref_pirate.png
+ship_galley -i ref_style_top.png -i ref_pirate.png
+crew_rat -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_rat_t0 -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_rat_t3 -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_rat_t4 -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_rat_t5 -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+crew_rival -i ref_pirate.png -i ref_navy.png -i ref_style_top.png
+islands -i ref_style_top.png -i ref_pirate.png
+sea_deco -i ref_style_top.png -i ref_pirate.png
+ui_icons -i ref_style_top.png -i ref_pirate.png
+ui_frames -i ref_style_top.png -i ref_pirate.png
+map_chart -i ref_style_top.png -i ref_pirate.png

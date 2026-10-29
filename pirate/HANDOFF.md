@@ -32,6 +32,44 @@
 - H 중포함: 갤리온 → 전열함 → 철갑함 → 드레드노트 → 항공모함
 - 단계가 오르면 자동 무기가 붙음: 선수포(bow) · 어뢰(torpedo) · 유도탄(missile) · 함재기(planes) · 자동 폭격(autoMortar)
 
+## 2026-10-29 14:15 세션 (이어서 한 것)
+- **게임 코드 완성**: `seas.js`(바다 8개) · `game.js`(전투 이식 + 선원 리깅 + 상어 잠수 + 보스 5종/8전 + 자동 무기 + 안개/폭풍/소용돌이) · `port.js` + `index.html`(타이틀 · 스토리 · 항구 4탭 · 결과)
+- **기획서**: `pirate/컨셉기획서.md` (개조식). 작성자 칸은 비행기 기획서를 따라 '정승운'으로 둠 → 다르면 고칠 것
+- 확인: 8개 바다 모두 시작 → 보스 → 승리까지 콘솔 오류 없음 (`?god=1` 무적 + 콘솔에서 `PG.G` 로 적 체력 0). 그림 없을 때 벡터로 대신 그림
+- 확인용 주소: `pirate/index.html?port=sea|ship|gear|lab` `&rich=1` `&allseas=1` `&allships=1` `&god=1`
+- 이 PC 의 Codex CLI = `~/.codex/.sandbox-bin/codex.exe` (PATH 에 없음 → `export PATH="/c/Users/user/.codex/.sandbox-bin:$PATH"` 뒤 `gen.sh`). prep.py 는 시스템 `python -I pirate/tools/prep.py` (PIL 있음)
+- 그림 생성은 14:49 한도 풀린 뒤 Codex 로 백그라운드 시작하게 걸어 둠 (32장, galley · crew_rat 제외) → 끝나면 확인 · prep · 게임에서 확인
+- **ChatGPT 웹(크롬)으로도 뽑을 수 있음**: 참조 3장 첨부 + 프롬프트(줄바꿈 없이 한 줄) → 결과 blob 을 JS 로 다운로드 → `art/src/gpt/` 에 원본 보관, `art/src/이름.png` 로 복사. `ship_galley` · `crew_rat` 은 GPT 로 뽑은 것 (스타일 아주 잘 맞음). 같은 채팅에서 이어서 요청하면 그림체 유지됨
+- prep.py 는 scipy 도 필요: `uv run --no-project --with pillow --with numpy --with scipy python -I pirate/tools/prep.py`
+- **배 크기 = len × SHIP_K(1.8)** (`game.js` · `prep.py` 둘 다): 선원은 원래 len 기준 크기라 배만 커져 갑판에 선원이 넉넉히 올라감. `CREW_SPOTS` 는 가운데 돛대 자리를 비움
+- **포탄 물리**: 포탄 · 선수포는 배 속도(+ 회전 선속도)를 이어받음, 어뢰는 발사 방향 성분을 얹음, 쏘면 옆으로 밀리고 살짝 돌아감, 폭풍 바람이 포탄도 밂. 조준 띠도 달리는 만큼 앞으로 기울어 실제 떨어질 곳을 보여 줌
+
+## 그림 전부 원본 플랫 그림체로 다시 뽑음 (2026-10-29 16시)
+- ChatGPT 1차 그림이 원본(NKK)보다 외곽선 · 광택 · 디테일이 많아 그림체가 달라짐 → **원본 참조(`ref_pirate` · `ref_navy` · `ref_style_top` · `ref_shark`)만 붙이고 강한 플랫 규칙**으로 Codex 재생성
+  - `art/src/flat/style.txt` = 플랫 규칙 (한 색 + 그림자 한 단, 외곽선 · 그라데이션 · 광택 · 애니 눈 없음, 차분한 색)
+  - `art/src/flat/make_flat.py subjects.json` → `prompt_*.txt` · `refs.txt`, `bash gen_flat.sh 이름…` (BATCH 개씩)
+  - 선원 시트는 카메라 규칙(CREW_CAM) 필수: 위에서 60° 내려다봄, 옆모습 · 서 있는 전신 금지 — 안 넣으면 옆모습으로 나옴
+  - 결과를 `art/src/` 로 복사(옛 ChatGPT 그림은 `art/src/old_gpt/`), `prep.py` → `art/sprites/`
+- **Codex 그림 꺼내기**: Codex 는 `~/.codex/generated_images/` 에 그리고 프로젝트로 복사는 윈도 샌드박스 때문에 자주 실패 → `python -I pirate/tools/codex_pull.py <폴더> <로그 접두어> <접미어> 이름…` 이 로그에서 경로를 찾아 가져옴 (gen_flat.sh 는 자동)
+- prep.py: 투명 배경 그림(Codex 가 가끔 줌)도 처리, 해도(map_chart) 찢긴 가장자리 마젠타는 어두운 나무색으로
+- **바다는 그림 타일을 안 씀** (타일 이음매가 보였음): `game.js` drawSea = 바다색 한 가지 + 월드 좌표에 고정된 큰 평면 얼룩 + 평면 초승달 물결 → 이음매 없는 한 장. sea_tiles 그림은 안 씀
+- 선원 리깅 38명 전부 플랫 그림으로 다시 함 (`rig_map.py`, 색 맵도 Codex). 선장은 crew_rat_0 (새 그림은 눈 위치가 원래 모자 챙 아래라 rig_eye 안 씀). `art/rig/captain`(옛 그림)은 파일 잠김으로 못 지움 → 안 쓰니 지워도 됨
+
+## 캐릭터 파츠 리깅 (2026-10-29 오후) — 선장 완료, 나머지 선원은 같은 순서로
+- 방향: **데포르메 탑뷰, 캐릭터만 살짝 쿼터뷰**. 선원 자리는 배와 같이 돌지만 그림은 화면 기준으로 세우고 왼/오만 뒤집음 (`game.js` drawCrew)
+- 순서 (통이미지가 기준):
+  1. 통이미지 = `art/src/rig/<이름>_whole.png` (선원 시트 칸을 잘라 씀)
+  2. **파츠 색 맵**: ChatGPT 에 통이미지를 주고 같은 그림을 단색으로 칠하게 함 — 머리(모자 · 귀 · 얼굴) 빨강, 몸통(옷 · 발) 파랑, 앞팔(어깨~손) 초록, 뒷팔 노랑, 꼬리 하늘색, 배경 흰색 → `art/src/rig/<이름>_map.png`
+  3. `python -I pirate/tools/rig_map.py <이름> <통이미지> <색 맵>` → 맵을 실루엣에 맞추고, 통이미지 색 경계로 다듬어 파츠를 자름. 쉬는 자세 = 통이미지와 똑같음, 가려진 곳은 가까운 색으로 채움. `art/rig/<이름>/compare.png` (통이미지 | 조립 | 파츠 구역 · 관절 | 흩어 놓은 파츠) 로 꼭 확인
+  4. 눈 옮기기 · 깜빡임: `rig_eye.py <이름> <지금 눈 x,y> <옮길 x,y>` (통이미지 좌표). 선장 = `296,191 320,164`
+  5. 소품(칼 · 꽂을대): `rig.json` props 의 gx · gy(쥐는 자리) · rot · scale 을 손으로 맞춤 (다시 잘라도 유지)
+  - 옛 방식 `rig_fit.py`(파츠 시트를 색으로 맞춤)는 ChatGPT 파츠 크기 · 모양이 안 맞아 잘못 나뉨 → 안 씀 (함수만 rig_map 이 가져다 씀)
+- 게임: `art/rig/rigs.js`(window.RIGS) → 파츠를 관절 기준으로 돌림. 숨쉬기 · 꼬리 · 깜빡임, 걷기, 선장 호령(칼), 포수 장전, 움찔, 만세
+- **유닛처럼 상호작용**: 일제 사격 때 선원이 그쪽 난간 대포 자리로 뛰어가 장전 → 잠시 뒤 제자리, 맞으면 움찔, 격침하면 만세, 건진 선원은 난간에서 올라와 자리로
+- 확인용: `?zoom=3.5` (카메라 확대, HUD 숨김), 콘솔 `PG.rigDemo(canvas, 'crew_rat', 0, ['idle','order','walk','cheer','flinch'], t)`
+- 남은 것: 선원 4명(sailor · gunner · lookout · waver) 색 맵 → 리깅, 고양이 선원 · 보스도 같은 방식
+- **크롬 다운로드가 막힘** → ChatGPT 그림은 로컬 수신기(`scratchpad/recv.js`, 127.0.0.1:5398) 팝업으로 `postMessage` 해서 저장. 팝업은 진짜 클릭으로 열어야 함
+
 ## ⚠ 먼저 볼 것 (2026-10-29 13:55)
 - **Codex 사용 한도 걸림** — 새 생성은 전부 실패, 한도 풀림 = 오늘 오후 2:48 (로그: "You've hit your usage limit")
 - 지금 `art/src` 에 있는 `ship_galley · caravel · clipper · paddle · torpedo · missile · carrack · steamfrigate.png` 8장은 옛 프롬프트(채도 높음 · 갑판에 선원 그려짐) 결과라 `old/` 로 옮겨 둠 (안 씀) → 다시 생성 필요
