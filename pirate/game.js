@@ -5,6 +5,8 @@
 (function () {
   const cv = document.getElementById('cv');
   let ctx = cv.getContext('2d');
+  // 단일 HTML 빌드(tools/build_pirate.js)는 그림 · 소리를 window.__ASSETS 에 data URI 로 품음 → 있으면 그것, 없으면 파일 경로
+  const asset = (p) => (window.__ASSETS && window.__ASSETS[p]) || p;
   // 바다는 끝이 없음 (비행기 게임처럼): 배 둘레 CHUNK 칸마다 섬 · 장식을 해시로 만들고, 멀어지면 버렸다가 돌아오면 똑같이 다시 만듦
   const CHUNK = 1400, NEAR = 2, FAR = 3;
   const SY = window.SHIPYARD, SEAS = window.SEAS;
@@ -25,8 +27,8 @@
     SP[name] = frames.map((f) => {
       const im = new Image(); waiting++;
       im.onload = im.onerror = () => { if (--waiting === 0) setReady(); };
-      im.src = 'art/sprites/' + f.img;
-      return { im, w: f.w, h: f.h, src: 'art/sprites/' + f.img };
+      im.src = asset('art/sprites/' + f.img);
+      return { im, w: f.w, h: f.h, src: im.src };
     });
   }
   function setReady() { if (ready) return; ready = true; PG.ready = true; dispatchEvent(new Event('pg-ready')); }
@@ -70,7 +72,7 @@
     for (const a of Object.values(BGM)) a.pause();
     bgmOn = name;
     if (!name || muted) return;
-    const a = BGM[name] ||= Object.assign(new Audio('../audio/bgm/' + name + '.mp3'), { loop: true, volume: 0.45 });
+    const a = BGM[name] ||= Object.assign(new Audio(asset('../audio/bgm/' + name + '.mp3')), { loop: true, volume: 0.45 });
     a.currentTime = 0; a.play().catch(() => {});
   }
   const audioOn = () => { if (!AC) { try { AC = new AudioContext(); } catch (e) {} } if (bgmOn && BGM[bgmOn] && BGM[bgmOn].paused && !muted) BGM[bgmOn].play().catch(() => {}); };
@@ -250,7 +252,7 @@
     let crit = false;
     if (Math.random() < s.crit) { dmg *= 2; crit = true; }
     if (f.armor && !['torp', 'shell', 'missile'].includes(kind)) dmg *= f.armor;
-    if (f.boss === 'shark' && f.phase === 'surface') dmg *= 1.5;
+    if (f.shark && (f.phase === 'surface' || f.phase === 'tired')) dmg *= 1.5; // 지친 상어 = 약점
     f.hp -= dmg; f.hit = 0.22;
     G.combo++; G.comboT = 2.5; G.best = Math.max(G.best, G.combo);
     txt(f.x, f.y, crit ? `치명타! ${Math.round(dmg)}` : '-' + Math.round(dmg), crit ? '#ffb347' : '#ffe27a', crit);
@@ -422,9 +424,17 @@
     if (f.k === 'mine') { f.x += Math.cos(f.bob * 0.3) * 8 * dt; f.y += Math.sin(f.bob * 0.4) * 8 * dt; if (d < f.len + me.len * 0.3 && !G.over) { hurtMe(f.boom); f.hp = 0; f.exploded = true; } return; }
     if (f.boss === 'shark') return bossShark(f, dt, d);
     if (f.k === 'shark') {
-      // 잠수(지느러미만) → 가까우면 떠올라 2.5초 물기 → 다시 잠수
-      if (f.dive) { steer(f, me.x, me.y, dt, 1, d > 260 ? 0 : 0.9); if (d < 150 && f.cd[0] <= 0) { f.dive = false; f.surf = 2.5; splashAt(f.x, f.y, false); } }
-      else { steer(f, me.x, me.y, dt, 1.1); if (d < f.len * 0.4 + me.len * 0.3 && f.cd[1] <= 0) { hurtMe(f.bite, f.x, f.y); f.cd[1] = 1.1; SFX.bite(); burst(me.x, me.y, '#cfe8ff', 10, 120); } if ((f.surf -= dt) <= 0) { f.dive = true; f.cd[0] = 2.5; splashAt(f.x, f.y, false); } }
+      // 잠수(지느러미만) → 가까우면 떠올라 배 쪽으로 돌진(물기) → 지쳐서 머리를 내밀고 멈춤 = 공격할 때 (피해 1.5배) → 다시 잠수
+      if (f.dive) { steer(f, me.x, me.y, dt, 1, d > 260 ? 0 : 0.9); if (d < 230 && f.cd[0] <= 0) { f.dive = false; f.phase = 'lunge'; f.pt = 0.6; f.bit = false; f.a = Math.atan2(me.y - f.y, me.x - f.x); splashAt(f.x, f.y, false); } }
+      else if (f.phase === 'lunge') {
+        f.v = f.speed * 2.6; f.a += wrapA(Math.atan2(me.y - f.y, me.x - f.x) - f.a) * Math.min(1, dt * 1.5);
+        if (!f.bit && d < f.len * 0.4 + me.len * 0.3) { f.bit = true; hurtMe(f.bite, f.x, f.y); SFX.bite(); burst(me.x, me.y, '#cfe8ff', 10, 120); }
+        if ((f.pt -= dt) <= 0) { f.phase = 'tired'; f.pt = f.tiredT = 2.6; txt(f.x, f.y - 26, '헥헥…', '#9fe0ff'); }
+      } else { // 지침: 제자리에서 둥둥, 숨 거품
+        f.v *= Math.pow(0.02, dt); f.a += Math.sin(G.t * 3 + f.bob) * 0.4 * dt;
+        if (Math.random() < dt * 6) G.parts.push({ x: f.x + Math.cos(f.a) * f.len * 0.35, y: f.y + Math.sin(f.a) * f.len * 0.35, vx: rnd(-10, 10), vy: -20, t: 0.6, max: 0.6, col: 'bubble', size: 4 });
+        if ((f.pt -= dt) <= 0) { f.dive = true; f.phase = 'dive'; f.cd[0] = 2.5; splashAt(f.x, f.y, false); }
+      }
     } else if (f.k === 'speeder') {
       steer(f, me.x, me.y, dt);
       if (d < f.len * 0.5 + me.len * 0.3 && !G.over) { if (st().ram) { hurtFoe(f, st().ram, 'ram'); } else hurtMe(f.ram); f.hp = 0; f.exploded = true; }
@@ -497,9 +507,9 @@
     } else if (f.phase === 'charge') {
       f.v = f.speed * 3.4;
       if (!f.bit && d < f.len * 0.35 + me.len * 0.3) { f.bit = true; hurtMe(f.bite, f.x, f.y); SFX.bite(); shake(16); }
-      if (f.pt <= 0) { f.n = (f.n || 0) + 1; if (f.n % 2 === 0 && G.foes.length < 8) { for (let i = 0; i < (f.rage ? 3 : 2); i++) spawnFoe('shark', { x: f.x + rnd(-120, 120), y: f.y + rnd(-120, 120) }); } f.phase = 'surface'; f.pt = f.rage ? 3 : 4; splashAt(f.x, f.y, true); txt(f.x, f.y - 40, '약점!', '#ffd84a', true); }
+      if (f.pt <= 0) { f.n = (f.n || 0) + 1; if (f.n % 2 === 0 && G.foes.length < 8) { for (let i = 0; i < (f.rage ? 3 : 2); i++) spawnFoe('shark', { x: f.x + rnd(-120, 120), y: f.y + rnd(-120, 120) }); } f.phase = 'surface'; f.pt = f.tiredT = f.rage ? 3 : 4; splashAt(f.x, f.y, true); txt(f.x, f.y - 40, '지쳤다! 지금!', '#ffd84a', true); }
     } else if (f.phase === 'surface') {
-      f.v *= 0.95; if (f.rage && f.cd[3] <= 0) { f.cd[3] = 1.2; ring(f.x, f.y, 10, 260, f.bite * 0.5, G.t); }
+      f.v *= Math.pow(0.02, dt); if (f.rage && f.cd[3] <= 0) { f.cd[3] = 1.2; ring(f.x, f.y, 10, 260, f.bite * 0.5, G.t); }
       if (f.pt <= 0) { f.phase = 'dive'; f.pt = rnd(2.5, 3.5); splashAt(f.x, f.y, true); }
     }
     f.x += Math.cos(f.a) * f.v * dt; f.y += Math.sin(f.a) * f.v * dt;
@@ -680,7 +690,7 @@
   for (const r of Object.values(RIGS)) for (const p of [...r.parts, ...(r.props || [])]) {
     const im = new Image(); waiting++;
     im.onload = im.onerror = () => { if (--waiting === 0) setReady(); };
-    im.src = p.src; p.im = im;
+    im.src = asset(p.src); p.im = im;
   }
   const rigOk = (r) => r && r.parts.every((p) => p.im.complete && p.im.naturalWidth);
   // 자세 → 파츠별 { rot, sx, sy, dx, dy }. P = { t, act, at, dur, fl, ch }
@@ -817,6 +827,13 @@
     ctx.restore();
     if (f.phase === 'aim') { ctx.strokeStyle = `rgba(255,60,40,${0.5 + 0.4 * Math.sin(G.t * 20)})`; ctx.lineWidth = f.len * 0.25; ctx.setLineDash([16, 12]); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(f.aimA) * f.speed * 3.4 * 1.1, y + Math.sin(f.aimA) * f.speed * 3.4 * 1.1); ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1; ctx.setLineDash([]); }
     if (!f.boss && f.hp < f.max) hpBar(x, y - 30, 40, f.hp / f.max, '#e8463c');
+    // 지친 동안: 노란 고리가 남은 시간만큼 줄어듦 + 머리 위 땀방울 → 지금 쏘면 됨
+    if ((f.phase === 'tired' || f.phase === 'surface') && f.tiredT) {
+      const q = Math.max(0, f.pt / f.tiredT), R = f.len * 0.42 + 8;
+      ctx.strokeStyle = 'rgba(255,216,74,.85)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * q); ctx.stroke();
+      ctx.fillStyle = '#bfe6ff'; for (let i = 0; i < 2; i++) { const sx = x + (i ? 10 : -10), sy = y - R - 4 - ((G.t * 30 + i * 9) % 12); ctx.globalAlpha = 0.9 - ((G.t * 30 + i * 9) % 12) / 14; ctx.beginPath(); ctx.ellipse(sx, sy, 3, 4.5, 0, 0, 7); ctx.fill(); }
+      ctx.globalAlpha = 1;
+    }
   }
   function drawMine(f) {
     const x = f.x - cam.x, y = f.y - cam.y, s = 1 + Math.sin(f.bob * 3) * 0.05, im = fr('items', 2);

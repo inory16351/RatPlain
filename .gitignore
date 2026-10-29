@@ -1,5 +1,7 @@
 # 웹 단일 HTML 빌드 산출물 (node tools/build_single.js 로 다시 만듦)
-build/
+# 쥐 해적 단일 HTML(node tools/build_pirate.js)만 커밋함
+build/*
+!build/쥐해적_일곱바다.html
 # Codex 생성 로그
 art/**/log_*.txt
 # Unity (나중에 unity/ 폴더로 추가 예정)
