@@ -5,7 +5,8 @@
 (function () {
   const cv = document.getElementById('cv');
   let ctx = cv.getContext('2d');
-  const WORLD = { w: 3600, h: 2600 };
+  // 바다는 끝이 없음 (비행기 게임처럼): 배 둘레 CHUNK 칸마다 섬 · 장식을 해시로 만들고, 멀어지면 버렸다가 돌아오면 똑같이 다시 만듦
+  const CHUNK = 1400, NEAR = 2, FAR = 3;
   const SY = window.SHIPYARD, SEAS = window.SEAS;
   let VW = 1280, VH = 720, K = 1, DPR = 1;
   const ZOOM = +new URLSearchParams(location.search).get('zoom') || 1; // 확인용: ?zoom=3 = 카메라 확대 (선원 리깅 보기)
@@ -114,12 +115,13 @@
     G = { sea: seaIdx, S, st: s, t: 0, wave: 0, deco: [], foes: [], balls: [], shells: [], torps: [], missiles: [], parts: [], fx: [], drops: [], chests: [], swimmers: [], islands: [], later: [], bolts: [],
       gold: 0, plank: 0, kills: 0, rescued: 0, combo: 0, comboT: 0, best: 0, msg: null, over: null, overT: 0, waveT: 0, boss: null,
       hpK: S.mult, dmgK: 1 + (S.mult - 1) * 0.6, lootK: 1 + (S.mult - 1) * 0.8, wind: { a: Math.random() * 7, v: 0 }, boltT: 3, planeA: 0 };
-    const startX = S.trait === 'whirl' ? 520 : WORLD.w / 2, startY = WORLD.h / 2;
-    for (let i = 0; i < 8; i++) { let x, y, r, n = 0; do { x = rnd(300, WORLD.w - 300); y = rnd(300, WORLD.h - 300); r = rnd(70, 170); n++; } while (n < 200 && (Math.hypot(x - startX, y - startY) < 450 || (S.trait === 'whirl' && Math.hypot(x - WORLD.w / 2, y - WORLD.h / 2) < 700) || G.islands.some((o) => Math.hypot(o.x - x, o.y - y) < o.r + r + 120))); G.islands.push({ x, y, r, seed: Math.random() * 100 }); }
-    for (let i = 0; i < 26; i++) { const x = rnd(150, WORLD.w - 150), y = rnd(150, WORLD.h - 150); if (G.islands.some((o) => Math.hypot(o.x - x, o.y - y) < o.r * 1.5 + 40)) continue; G.deco.push({ x, y, i: Math.floor(Math.random() * 8), s: rnd(34, 70), r: Math.random() * 7 }); }
+    const startX = 0, startY = 0;
+    G.seed = Math.random() * 1000; G.chunks = new Map(); G.home = { x: startX, y: startY };
+    if (S.trait === 'whirl') G.whirl = { x: startX + 1300, y: startY }; // 소용돌이 = 출발점 오른쪽 고정
     G.me = { x: startX, y: startY, a: 0, v: 0, av: 0, sail: 0.4, hp: s.hp, max: s.hp, cd: [0, 0], len: s.ship.len * SHIP_K, base: s.ship.len, tier: s.ship.tier, spr: 'ship_' + s.ship.id, hit: 0, recoil: [0, 0], crew: 2, jump: 0, fireT: 0,
       sk: { chain: 0, fire: 0, mortar: 0 }, auto: { bow: 1, torpedo: 1, missile: 1, autoMortar: 2, planes: 0 }, isMe: true };
     cam.x = G.me.x - VW / 2; cam.y = G.me.y - VH / 2;
+    chunks();
     paused = false; hitStop = 0; slowMo = 0;
     nextWave();
     music('battle');
@@ -141,7 +143,42 @@
       SFX.wave();
     }
   }
-  function freeSpot(minD, maxD) { let x, y, n = 0; do { const a = Math.random() * 7, d = rnd(minD, maxD); x = G.me.x + Math.cos(a) * d; y = G.me.y + Math.sin(a) * d; n++; } while (n < 300 && (x < 100 || y < 100 || x > WORLD.w - 100 || y > WORLD.h - 100 || G.islands.some((o) => Math.hypot(o.x - x, o.y - y) < o.r + 90))); return { x, y }; }
+  // 칸 하나 = 섬 0~2개 + 바다 장식 몇 개. 같은 칸은 늘 같은 모양 (G.seed + 칸 좌표 해시)
+  function makeChunk(cx, cy) {
+    const H = (k) => hash(cx * 7.13 + k * 13.7 + G.seed, cy * 3.71 + k * 1.93 - G.seed * 0.5);
+    const ch = { islands: [], deco: [] }, x0 = cx * CHUNK, y0 = cy * CHUNK, n = H(1) < 0.22 ? 0 : H(2) < 0.72 ? 1 : 2;
+    for (let i = 0; i < n; i++) {
+      const r = 70 + H(10 + i) * 100, x = x0 + 220 + H(20 + i) * (CHUNK - 440), y = y0 + 220 + H(30 + i) * (CHUNK - 440);
+      if (Math.hypot(x - G.home.x, y - G.home.y) < 450 + r) continue; // 출발점 비움
+      if (G.whirl && Math.hypot(x - G.whirl.x, y - G.whirl.y) < 700) continue;
+      if ([...G.islands, ...ch.islands].some((o) => Math.hypot(o.x - x, o.y - y) < o.r + r + 120)) continue;
+      ch.islands.push({ x, y, r, seed: H(40 + i) * 7 });
+    }
+    for (let i = 0; i < 4; i++) {
+      const x = x0 + H(50 + i) * CHUNK, y = y0 + H(60 + i) * CHUNK;
+      if (ch.islands.some((o) => Math.hypot(o.x - x, o.y - y) < o.r * 1.5 + 40)) continue;
+      ch.deco.push({ x, y, i: Math.floor(H(70 + i) * 8), s: 34 + H(80 + i) * 36, r: H(90 + i) * 7 });
+    }
+    return ch;
+  }
+  // 배 둘레 NEAR 칸까지 만들고, FAR 칸보다 먼 칸은 버림. 너무 멀리 떨어진 적은 배 근처로 다시 데려옴
+  function chunks() {
+    const me = G.me, cx0 = Math.floor(me.x / CHUNK), cy0 = Math.floor(me.y / CHUNK);
+    let changed = false;
+    for (let cy = cy0 - NEAR; cy <= cy0 + NEAR; cy++) for (let cx = cx0 - NEAR; cx <= cx0 + NEAR; cx++) {
+      const k = cx + ',' + cy; if (G.chunks.has(k)) continue;
+      const ch = makeChunk(cx, cy); G.chunks.set(k, ch); G.islands.push(...ch.islands); changed = true;
+    }
+    for (const [k, ch] of G.chunks) {
+      const [cx, cy] = k.split(',').map(Number);
+      if (Math.max(Math.abs(cx - cx0), Math.abs(cy - cy0)) <= FAR) continue;
+      G.chunks.delete(k); G.islands = G.islands.filter((o) => !ch.islands.includes(o)); changed = true;
+    }
+    if (changed) G.deco = [...G.chunks.values()].flatMap((c) => c.deco);
+    for (const f of G.foes) if (!f.boss && Math.hypot(f.x - me.x, f.y - me.y) > 3200) Object.assign(f, freeSpot(900, 1300));
+    G.chests = G.chests.filter((c) => Math.hypot(c.x - me.x, c.y - me.y) < 4000);
+  }
+  function freeSpot(minD, maxD) { let x, y, n = 0; do { const a = Math.random() * 7, d = rnd(minD, maxD); x = G.me.x + Math.cos(a) * d; y = G.me.y + Math.sin(a) * d; n++; } while (n < 300 && (G.islands.some((o) => Math.hypot(o.x - x, o.y - y) < o.r + 90))); return { x, y }; }
   function spawnFoe(k, p = freeSpot(700, 1300)) {
     const F = FOES[k], hp = F.hp * G.hpK;
     const f = { k, ...F, ...p, a: Math.atan2(G.me.y - p.y, G.me.x - p.x), v: 0, av: 0, hp, max: hp, cd: [rnd(0, 2), rnd(0, 2), 2, 3, 4, 5], hit: 0, bob: Math.random() * 7, recoil: [0, 0], burn: 0, slow: 0, jump: 0,
@@ -249,7 +286,6 @@
   }
   function collideIslands(s, r) {
     for (const o of G.islands) { const dx = s.x - o.x, dy = s.y - o.y, d = Math.hypot(dx, dy) || 1, m = o.r + r; if (d < m) { s.x = o.x + dx / d * m; s.y = o.y + dy / d * m; s.v *= 0.5; } }
-    s.x = Math.max(r, Math.min(WORLD.w - r, s.x)); s.y = Math.max(r, Math.min(WORLD.h - r, s.y));
   }
   function wakeOf(s) {
     if (Math.abs(s.v) < 30) return;
@@ -291,6 +327,7 @@
     for (const f of G.foes) if (f.hp <= 0 && !f.dead) sinkFoe(f);
     G.foes = G.foes.filter((f) => !f.dead);
     pickups(dt);
+    chunks();
     for (const p of G.parts) { p.t -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.95; p.vy *= 0.95; if (p.g) p.vy += p.g * dt; }
     G.parts = G.parts.filter((p) => p.t > 0); if (G.parts.length > 1400) G.parts.splice(0, G.parts.length - 1400);
     for (const f of G.fx) { f.t -= dt; if (f.jumper) { f.x += f.vx * dt; f.y += f.vy * dt; if (f.t <= 0) splashAt(f.x, f.y, false); } }
@@ -335,7 +372,7 @@
       G.bolts = G.bolts.filter((b) => !b.hit);
     }
     if (tr === 'whirl') {
-      const cx = WORLD.w / 2, cy = WORLD.h / 2;
+      const cx = G.whirl.x, cy = G.whirl.y;
       const pull = (o, k) => { const dx = cx - o.x, dy = cy - o.y, d = Math.hypot(dx, dy) || 1; if (d > 1500) return d; const p = 90 * (1 - d / 1500) * k; o.x += (dx / d * p - dy / d * p * 0.9) * dt; o.y += (dy / d * p + dx / d * p * 0.9) * dt; return d; };
       if (pull(me, guard) < 150 && !G.over) { me.hp -= 14 * guard * dt; me.hit = 0.1; if (Math.random() < dt * 3) txt(me.x, me.y, '소용돌이!', '#9fe0ff'); }
       for (const f of G.foes) if (!f.boss) pull(f, 0.7);
@@ -466,7 +503,6 @@
       if (f.pt <= 0) { f.phase = 'dive'; f.pt = rnd(2.5, 3.5); splashAt(f.x, f.y, true); }
     }
     f.x += Math.cos(f.a) * f.v * dt; f.y += Math.sin(f.a) * f.v * dt;
-    f.x = Math.max(60, Math.min(WORLD.w - 60, f.x)); f.y = Math.max(60, Math.min(WORLD.h - 60, f.y));
     if (Math.random() < dt * 25 && f.v > 40) wakeOf(f);
   }
 
@@ -832,9 +868,8 @@
       ctx.globalAlpha = a; ctx.beginPath(); ctx.moveTo(x - w, y); ctx.quadraticCurveTo(x, y - 9, x + w, y); ctx.quadraticCurveTo(x, y - 3, x - w, y); ctx.fill();
     }
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 3; ctx.setLineDash([12, 10]); ctx.strokeRect(-cam.x, -cam.y, WORLD.w, WORLD.h); ctx.setLineDash([]);
     if (G.S.trait === 'whirl') {
-      const x = WORLD.w / 2 - cam.x, y = WORLD.h / 2 - cam.y;
+      const x = G.whirl.x - cam.x, y = G.whirl.y - cam.y;
       for (let i = 0; i < 5; i++) { ctx.strokeStyle = `rgba(210,240,255,${0.18 + i * 0.04})`; ctx.lineWidth = 4; ctx.beginPath(); for (let k = 0; k < 60; k++) { const a = -G.t * 1.5 + i * 1.256 + k * 0.12, r = 900 - k * 14; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.stroke(); }
       ctx.fillStyle = 'rgba(5,25,45,.55)'; ctx.beginPath(); ctx.arc(x, y, 150, 0, 7); ctx.fill();
     }
@@ -995,14 +1030,20 @@
     // 보스 체력
     const b = G.boss;
     if (b && !b.dead) { const w = Math.min(560, VW - 300); panel(VW / 2 - w / 2 - 10, 62, w + 20, 36); hudPic('boss', VW / 2 - w / 2 + 6, 76, 20); ctx.fillStyle = '#fff'; ctx.font = `13px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(b.name + (b.boss === 'shark' && b.phase !== 'surface' ? ' (잠수 — 어뢰 · 폭격만)' : ''), VW / 2, 78); ctx.fillStyle = '#1a0e06'; ctx.fillRect(VW / 2 - w / 2, 83, w, 8); ctx.fillStyle = '#d8584a'; ctx.fillRect(VW / 2 - w / 2, 83, w * Math.max(0, b.hp) / b.max, 8); }
-    // 미니맵 (안개면 시야 안만)
-    const mw = 180, mh = 130, mx = VW - mw - 10, my = VH - mh - 10, sx = mw / WORLD.w, sy = mh / WORLD.h, fog = G.S.trait === 'fog' ? st().vision : 1e9;
-    ctx.fillStyle = 'rgba(10,40,60,.8)'; ctx.fillRect(mx, my, mw, mh); ctx.strokeStyle = '#a07a40'; ctx.lineWidth = 3; ctx.strokeRect(mx, my, mw, mh);
-    ctx.fillStyle = '#d8c48c'; for (const o of G.islands) { ctx.beginPath(); ctx.arc(mx + o.x * sx, my + o.y * sy, Math.max(2, o.r * sx), 0, 7); ctx.fill(); }
-    ctx.fillStyle = '#ffd84a'; for (const c of G.chests) ctx.fillRect(mx + c.x * sx - 2, my + c.y * sy - 2, 4, 4);
-    ctx.fillStyle = '#9fe07a'; for (const w of G.swimmers) ctx.fillRect(mx + w.x * sx - 1, my + w.y * sy - 1, 3, 3);
-    for (const f of G.foes) { if (dist(f, me) > fog || (f.shark && f.dive)) continue; ctx.fillStyle = f.boss ? '#ff4ad1' : f.k === 'mine' ? '#a07030' : '#ff5050'; ctx.fillRect(mx + f.x * sx - 2, my + f.y * sy - 2, f.boss ? 6 : 3, f.boss ? 6 : 3); }
-    ctx.save(); ctx.translate(mx + me.x * sx, my + me.y * sy); ctx.rotate(me.a); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4); ctx.fill(); ctx.restore();
+    // 미니맵 = 배 둘레 레이더 (바다가 끝이 없어서 배가 늘 가운데, 반경 RAD 월드 px). 안개면 시야 안만
+    const mw = 180, mh = 130, mx = VW - mw - 10, my = VH - mh - 10, RAD = 2400, sc = mw / (RAD * 2), fog = G.S.trait === 'fog' ? st().vision : 1e9;
+    const P = (o) => [mx + mw / 2 + (o.x - me.x) * sc, my + mh / 2 + (o.y - me.y) * sc];
+    ctx.fillStyle = 'rgba(10,40,60,.8)'; ctx.fillRect(mx, my, mw, mh);
+    ctx.save(); ctx.beginPath(); ctx.rect(mx, my, mw, mh); ctx.clip();
+    ctx.strokeStyle = 'rgba(160,122,64,.35)'; ctx.lineWidth = 1; for (const r of [600, 1200, 1800]) { ctx.beginPath(); ctx.arc(mx + mw / 2, my + mh / 2, r * sc, 0, 7); ctx.stroke(); }
+    if (G.whirl) { const [x, y] = P(G.whirl); ctx.strokeStyle = '#9fe0ff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 1500 * sc, 0, 7); ctx.stroke(); }
+    ctx.fillStyle = '#d8c48c'; for (const o of G.islands) { const [x, y] = P(o); ctx.beginPath(); ctx.arc(x, y, Math.max(2, o.r * sc), 0, 7); ctx.fill(); }
+    ctx.fillStyle = '#ffd84a'; for (const c of G.chests) { const [x, y] = P(c); ctx.fillRect(x - 2, y - 2, 4, 4); }
+    ctx.fillStyle = '#9fe07a'; for (const w of G.swimmers) { const [x, y] = P(w); ctx.fillRect(x - 1, y - 1, 3, 3); }
+    for (const f of G.foes) { if (dist(f, me) > fog || (f.shark && f.dive)) continue; const [x, y] = P(f), z = f.boss ? 6 : 3; ctx.fillStyle = f.boss ? '#ff4ad1' : f.k === 'mine' ? '#a07030' : '#ff5050'; ctx.fillRect(x - z / 2, y - z / 2, z, z); }
+    ctx.restore();
+    ctx.strokeStyle = '#a07a40'; ctx.lineWidth = 3; ctx.strokeRect(mx, my, mw, mh);
+    ctx.save(); ctx.translate(mx + mw / 2, my + mh / 2); ctx.rotate(me.a); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-4, 4); ctx.fill(); ctx.restore();
     const arrow = (wx, wy, col) => { const x = wx - cam.x, y = wy - cam.y; if (x > 0 && y > 60 && x < VW && y < VH) return; const a = Math.atan2(y - VH / 2, x - VW / 2), ex = VW / 2 + Math.cos(a) * (VW / 2 - 24), ey = VH / 2 + Math.sin(a) * (VH / 2 - 30); ctx.save(); ctx.translate(Math.max(20, Math.min(VW - 20, ex)), Math.max(70, Math.min(VH - 20, ey))); ctx.rotate(a); ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(11, 0); ctx.lineTo(-6, -7); ctx.lineTo(-6, 7); ctx.fill(); ctx.restore(); };
     for (const f of G.foes) if (f.k !== 'mine' && dist(f, me) < fog) arrow(f.x, f.y, f.boss ? '#ff4ad1' : 'rgba(255,90,80,.85)');
     for (const c of G.chests) arrow(c.x, c.y, 'rgba(255,216,74,.85)');
