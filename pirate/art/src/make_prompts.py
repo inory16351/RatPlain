@@ -30,7 +30,7 @@ ONE = "- 1536x1536 square. ONE subject lying horizontally, centered, its length 
 
 RAT = ("- MOUSE IDENTITY (very important, must be obvious at a small size): the ship itself is designed like a MOUSE: the bow at the RIGHT ends in a big carved "
        "brown mouse-head figurehead with two big round pink ears and a pink nose, a long pink mouse-tail-shaped rudder curls out behind the stern at the LEFT, "
-       "a red flag with a white mouse-skull-and-cheese emblem lying flat at the stern, and only a few soft muted pale-yellow cheese accents (a cheese-wedge emblem on a sail, a few cheese holes on the rail).\n" + EMPTY)
+       "a red flag with a white cheese-wedge-and-crossbones emblem lying flat at the stern (NEVER a round three-circle mouse-ear silhouette or any famous cartoon mouse logo), and only a few soft muted pale-yellow cheese accents (a cheese-wedge emblem on a sail, a few cheese holes on the rail).\n" + EMPTY)
 CAT = ("- CAT IDENTITY (very important, must be obvious at a small size): the ship itself is designed like a CAT: the bow at the RIGHT is shaped and painted like a "
        "cat head with two pointy triangular ears and whiskers, sails or deck plates carry big paw-print emblems, a striped cat-tail-shaped rudder curls out at the LEFT. "
        "Painted muted navy blue and cream with dull gold trim (a strict military CAT NAVY).\n" + EMPTY)
@@ -112,7 +112,7 @@ CREW_BOSS = ("- 1536x1536 square divided into a 2x2 grid of four equal cells, ON
              "bottom-left: the white CAT GRAND ADMIRAL wearing a round glass space-helmet-like visor and headphones, like the attached commander cat reference. bottom-right: a grey rival rat pirate sailor with a dark red bandana.\n")
 TITLE = ("- 1536x1024 landscape key art for the title screen, NOT top-down: a cheerful side/3-4 view illustration. The brown PIRATE MOUSE captain from the reference "
          "(black tricorn hat with gold trim, eye patch, big pink ears, pink tail) stands proudly on the bow of his small wooden mouse-shaped pirate ship "
-         "(mouse-head figurehead with pink ears, red flag with a mouse-skull-and-cheese emblem), pointing a cutlass toward the horizon. "
+         "(mouse-head figurehead with pink ears, red flag with a white cheese-wedge-and-crossbones emblem, never a three-circle mouse-ear silhouette), pointing a cutlass toward the horizon. "
          "Behind on the sea: a CAT NAVY warship with paw-print sails and a blue shark fin. Bright sunny sea and sky, flat soft colors. "
          "Leave the top third fairly simple sky for a title logo (but draw NO text).\n"
          "- NO magenta background: a full painted scene.\n")

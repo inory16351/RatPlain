@@ -83,3 +83,7 @@
 5. `pirate/port.js` + `pirate/index.html` (항구: 배 트리 · 장비 · 조선소 의뢰/합성 · 바다 선택 · 스토리)
 6. `pirate/컨셉기획서.md` (개조식)
 7. 서버 `node tools/serve.js` → http://localhost:5321/pirate/index.html 확인, 커밋
+
+## 포크 세션 메모 (반영함)
+- 쥐 해적기 세 동그라미 쥐 귀 문양 = 미키마우스 실루엣처럼 보임 → 치즈 조각 + 뼈 문양으로 바꿈 (`make_prompts.py` RAT · TITLE)
+- 포크가 만든 시험본 `sea/art/src/r_sloop.png` · `c_sloop.png` = 배 자체로 쥐 · 고양이가 잘 읽힘. 방향 참고용
