@@ -184,6 +184,10 @@ book('장비 테이블.xlsx', [
     ('Tier_Odds', [('테크 - 티어', 'tier_gap', 'int'), ('확률 (%)', 'weight', 'float'), ('설명', '-', '-')],
      [[0, 60, '가진 배 중 가장 높은 티어 (테크)'], [1, 25, '테크 − 1'], [2, 10, '테크 − 2'], [3, 5, '그 아래 나머지 티어끼리 나눔 (없으면 테크에 더함)']]),
     ('Up_Chance', [('넣은 전설 수', 'count', 'int'), ('성공 확률 (%)', 'chance', 'float')], [[int(k), num(v)] for k, v in D['upChance'].items()]),
+    # 분해: 아직 게임에 없는 기능이라 초안 값 = 등급 기본 회수량 × (1 + 0.6 × 티어), 의뢰 기대 회수보다 적게
+    ('Dismantle', [('등급', 'grade', 'int'), ('등급 이름', 'grade_name', 'string'), ('티어', 'tier', 'int'), ('금화 회수', 'coin', 'int'), ('목재 회수', 'plank', 'int')],
+     [[g, D['grades'][g]['name'], t, round(c * (1 + 0.6 * t)), round(p * (1 + 0.6 * t))]
+      for g, (c, p) in enumerate([(8, 3), (20, 7), (45, 15), (90, 30)]) for t in range(len(D['eras']))]),
     ('Equip_Config', [('키', 'key', 'string'), ('값', 'value', 'float'), ('설명', '-', '-')], [
         ['request_min', D['req']['min'], '제작 의뢰 최소 금화'],
         ['request_max', D['req']['max'], '제작 의뢰 최대 금화'],
@@ -203,6 +207,7 @@ book('장비 테이블.xlsx', [
         ['fit_line', '낄 수 있는 갈래 (S · M · H 쉼표로). 장착 조건: 배에 그 슬롯 있음 + 갈래 맞음 (갤리선은 모든 장비 가능)'],
         ['effectN / eN_value', '장비 효과 (Value_Type). 더함 먼저, 곱함 나중'],
         ['Request_Odds', '제작 의뢰 등급 확률. 사이 금화는 로그 보간'],
+        ['Dismantle', '장비 분해 시 회수 재화 (등급 · 티어별). 장착 중 장비는 분해 불가. 초안 값, 의뢰 비용보다 적게 회수되게 조정'],
     ]),
 ])
 

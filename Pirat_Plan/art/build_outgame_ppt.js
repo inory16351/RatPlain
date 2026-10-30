@@ -287,12 +287,12 @@ async function main() {
     const s = k.slide('데이터 테이블', '테이블 명세', '확정 수치는 Pirat_Table 엑셀로 관리, 기획서 수치는 예시');
     const books = [
       ['배 테이블.xlsx', C.sea, [['Ship', '함선별 테크 · 시대 · 가격 · 슬롯 · 기본 수치 · 자동 무기'], ['Base_Stat', '함선 기본 수치'], ['Line / Tier', '테크 · 시대 정의'], ['Slot_Type', '장비 슬롯 9종']]],
-      ['장비 테이블.xlsx', C.navy, [['Equipment', '장비별 등급 · 티어 · 장착 테크 · 효과'], ['Grade', '등급 4종'], ['Request_Odds / Tier_Odds', '의뢰 등급 · 티어 확률'], ['Up_Chance / Equip_Config', '티어 업 확률 · 의뢰 설정']]],
+      ['장비 테이블.xlsx', C.navy, [['Equipment', '장비별 등급 · 티어 · 장착 테크 · 효과'], ['Grade', '등급 4종'], ['Request_Odds / Tier_Odds', '의뢰 등급 · 티어 확률'], ['Up_Chance / Equip_Config', '티어 업 확률 · 의뢰 설정'], ['Dismantle', '등급 · 티어별 분해 회수 재화']]],
     ];
     const cw = (CW - 0.3) / 2;
     books.forEach(([n, col, sheets], i) => {
       const x = X0 + i * (cw + 0.3), y = 1.85;
-      k.card(s, x, y, cw, 3.7);
+      k.card(s, x, y, cw, 4.15);
       k.chip(s, n, x + 0.3, y + 0.3, cw - 0.6, 0.45, col, C.card, 13);
       sheets.forEach(([sh, d], j) => {
         const yy = y + 1.0 + j * 0.65;
@@ -300,8 +300,8 @@ async function main() {
         k.text(s, d, x + 2.8, yy, cw - 3.1, 0.5, { size: 12, valign: 'middle' });
       });
     });
-    k.card(s, X0, 5.8, CW, 0.95, { fill: 'FFF1D6', flat: true });
-    k.text(s, [{ text: '추가 필요  ', options: { bold: true, color: C.red } }, { text: '분해 회수량은 아직 테이블에 없음 → 장비 테이블에 분해 시트 추가 필요 (등급 · 티어별 목재 · 금화 회수량)' }], X0 + 0.3, 5.8, CW - 0.6, 0.95, { size: 13, valign: 'middle' });
+    k.card(s, X0, 6.2, CW, 0.6, { fill: C.tint, flat: true });
+    k.text(s, [{ text: '분해 회수량 초안  ', options: { bold: true, color: C.sea } }, { text: '등급 기본값 × (1 + 0.6 × 티어), 의뢰 비용보다 적게 회수되도록 조정' }], X0 + 0.3, 6.2, CW - 0.6, 0.6, { size: 13, valign: 'middle' });
   }
 
   await k.save(OUT);
