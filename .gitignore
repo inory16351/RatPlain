@@ -24,3 +24,7 @@ pirate/art/*.png
 unity/*.slnx
 unity/*.sln
 unity/*.csproj
+# 쥐 해적 기획서: 원본 캡처 · Codex 로그 · 오피스 잠금 파일
+Pirat_Plan/art/cap/
+Pirat_Plan/art/log_*.txt
+~$*

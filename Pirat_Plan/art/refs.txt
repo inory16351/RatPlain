@@ -1,0 +1,4 @@
+key_art -i ref_capt.png -i ref_pirate.png -i ref_navy.png
+story -i ref_capt.png -i ref_galley.png -i ref_navy.png
+factions -i ref_capt.png -i ref_boss.png -i ref_shark.png
+port -i ref_wright.png -i ref_capt.png -i ref_pirate.png
