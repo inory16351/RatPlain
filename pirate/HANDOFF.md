@@ -23,6 +23,7 @@
 | `pirate/art/src/old/` | 첫 시험 그림 (채도 높음, 안 씀) |
 | `pirate/tools/prep.py` | 마젠타 빼기 · 자르기 → `pirate/art/sprites/` + `sprites.js` |
 | `pirate/ships.js` | 아웃게임 데이터 · 저장 (배 16척 · 장비 · 의뢰 · 합성 · 티어 업) — 완성 |
+| `Pirat_Plan/` | 기획서: `컨셉기획서.md` (개조식, 최신) · `쥐 해적게임 컨셉 기획.pptx` |
 | `Pirat_Table/` | 데이터 테이블 엑셀 (배 · 장비 · 적 · 바다). `uv run --with openpyxl python tools/gen_pirate_table.py` 로 코드에서 다시 뽑음 (아직 게임이 엑셀을 읽지는 않음) |
 | `sea/` | 포크 세션이 쓰다 멈춘 폴더. 안 씀 (지워도 됨, 사용자에게 확인) |
 
@@ -35,7 +36,7 @@
 
 ## 2026-10-29 14:15 세션 (이어서 한 것)
 - **게임 코드 완성**: `seas.js`(바다 8개) · `game.js`(전투 이식 + 선원 리깅 + 상어 잠수 + 보스 5종/8전 + 자동 무기 + 안개/폭풍/소용돌이) · `port.js` + `index.html`(타이틀 · 스토리 · 항구 4탭 · 결과)
-- **기획서**: `pirate/컨셉기획서.md` (개조식). 작성자 칸은 비행기 기획서를 따라 '정승운'으로 둠 → 다르면 고칠 것
+- **기획서**: `Pirat_Plan/컨셉기획서.md` (개조식). 작성자 칸은 비행기 기획서를 따라 '정승운'으로 둠 → 다르면 고칠 것
 - 확인: 8개 바다 모두 시작 → 보스 → 승리까지 콘솔 오류 없음 (`?god=1` 무적 + 콘솔에서 `PG.G` 로 적 체력 0). 그림 없을 때 벡터로 대신 그림
 - 확인용 주소: `pirate/index.html?port=sea|ship|gear|lab` `&rich=1` `&allseas=1` `&allships=1` `&god=1`
 - 이 PC 의 Codex CLI = `~/.codex/.sandbox-bin/codex.exe` (PATH 에 없음 → `export PATH="/c/Users/user/.codex/.sandbox-bin:$PATH"` 뒤 `gen.sh`). prep.py 는 시스템 `python -I pirate/tools/prep.py` (PIL 있음)
@@ -120,7 +121,7 @@
 3. `pirate/seas.js` (바다 8개 · 웨이브 · 보스 · 맵 특성 안개/폭풍/소용돌이)
 4. `pirate/game.js` (RatPirate 전투 이식 + 스프라이트 + 선원 리깅 + 상어 잠수 + 보스 패턴 + 자동 무기)
 5. `pirate/port.js` + `pirate/index.html` (항구: 배 트리 · 장비 · 조선소 의뢰/합성 · 바다 선택 · 스토리)
-6. `pirate/컨셉기획서.md` (개조식)
+6. `Pirat_Plan/컨셉기획서.md` (개조식)
 7. 서버 `node tools/serve.js` → http://localhost:5321/pirate/index.html 확인, 커밋
 
 ## 포크 세션 메모 (반영함)
