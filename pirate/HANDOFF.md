@@ -23,6 +23,7 @@
 | `pirate/art/src/old/` | 첫 시험 그림 (채도 높음, 안 씀) |
 | `pirate/tools/prep.py` | 마젠타 빼기 · 자르기 → `pirate/art/sprites/` + `sprites.js` |
 | `pirate/ships.js` | 아웃게임 데이터 · 저장 (배 16척 · 장비 · 의뢰 · 합성 · 티어 업) — 완성 |
+| `Pirat_Table/` | 데이터 테이블 엑셀 (배 · 장비 · 적 · 바다). `uv run --with openpyxl python tools/gen_pirate_table.py` 로 코드에서 다시 뽑음 (아직 게임이 엑셀을 읽지는 않음) |
 | `sea/` | 포크 세션이 쓰다 멈춘 폴더. 안 씀 (지워도 됨, 사용자에게 확인) |
 
 ## 배 진화 (ships.js `SHIPS`)
