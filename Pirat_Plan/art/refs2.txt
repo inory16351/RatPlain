@@ -1,0 +1,3 @@
+item_icons -i ref_icons.png -i ref_pirate.png
+objects -i ref_style_top.png -i ref_icons.png -i ref_pirate.png
+item_scene -i ref_style_top.png -i ref_pirate.png -i ref_navy.png
