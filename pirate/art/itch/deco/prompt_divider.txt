@@ -1,0 +1,9 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: divider.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached cover_v2.png is the key art of our game (a one-eyed PIRATE MOUSE captain in a black tricorn hat with gold trim, eye patch, pink ears, brown fur, sailing a small wooden mouse-shaped ship with a red cheese-and-crossbones sail; enemies are the CAT NAVY with paw-print sails, and sharks). The other attached images show the original art style. Match cover_v2.png exactly in style, palette and characters.
+
+- ART STYLE: soft flat 2D vector illustration, muted slightly desaturated warm natural colors, simple rounded big shapes, flat fills with one subtle shadow tone, NO gradients, NO glossy highlights, NO 3D, NO anime style, few small details. Cute and funny.
+- BACKGROUND: perfectly flat solid pure magenta (#FF00FF) everywhere around the subject, for chroma keying. No magenta inside the subject, no shadow on the background, no frame.
+
+Image spec:
+- 1536x1024. A long thin horizontal ornamental DIVIDER centered on magenta: a twisted brown rope line spanning about 90% of the width, with a small wedge of yellow cheese in the exact center and a tiny anchor at each end. It must be thin (about 8% of the image height). Nothing else, no text.
