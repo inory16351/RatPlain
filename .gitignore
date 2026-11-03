@@ -28,3 +28,13 @@ unity/*.csproj
 Pirat_Plan/art/cap/
 Pirat_Plan/art/log_*.txt
 ~$*
+# 쥐 해적 Unity (Pirate_1): 에셋 · 패키지 · 프로젝트 설정만 커밋
+Pirate_1/[Ll]ibrary/
+Pirate_1/[Tt]emp/
+Pirate_1/[Oo]bj/
+Pirate_1/[Ll]ogs/
+Pirate_1/[Bb]uild*/
+Pirate_1/[Uu]ser[Ss]ettings/
+Pirate_1/*.slnx
+Pirate_1/*.sln
+Pirate_1/*.csproj

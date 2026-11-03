@@ -1,0 +1,1663 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1f7f1748d7ff5845a617e0b476264da, type: 3}
+  m_Name: ShipyardDB
+  m_EditorClassIdentifier: Assembly-CSharp::ShipyardDB
+  baseStats:
+  - stat: hp
+    value: 100
+  - stat: speed
+    value: 170
+  - stat: turn
+    value: 1.5
+  - stat: dmgTaken
+    value: 1
+  - stat: guns
+    value: 2
+  - stat: reload
+    value: 2.1
+  - stat: dmg
+    value: 14
+  - stat: crit
+    value: 0.1
+  - stat: range
+    value: 1
+  - stat: ballSpd
+    value: 540
+  - stat: pickup
+    value: 150
+  - stat: crewMax
+    value: 12
+  - stat: crewReload
+    value: 0.02
+  - stat: repair
+    value: 15
+  - stat: goldBonus
+    value: 0
+  - stat: plankBonus
+    value: 0
+  - stat: chain
+    value: 0
+  - stat: fire
+    value: 0
+  - stat: mortar
+    value: 0
+  - stat: mortarDmg
+    value: 60
+  - stat: mortarR
+    value: 110
+  - stat: bow
+    value: 0
+  - stat: bowDmg
+    value: 10
+  - stat: torpedo
+    value: 0
+  - stat: torpedoDmg
+    value: 40
+  - stat: missile
+    value: 0
+  - stat: missileDmg
+    value: 18
+  - stat: planes
+    value: 0
+  - stat: planeDmg
+    value: 6
+  - stat: ram
+    value: 0
+  - stat: splash
+    value: 0
+  - stat: burnAll
+    value: 0
+  - stat: chainAll
+    value: 0
+  - stat: plunder
+    value: 0
+  - stat: evade
+    value: 0
+  - stat: double
+    value: 0
+  - stat: autoMortar
+    value: 0
+  - stat: crewHeal
+    value: 0
+  - stat: kraken
+    value: 0
+  - stat: stormGuard
+    value: 0
+  - stat: vision
+    value: 520
+  ships:
+  - id: galley
+    name: "\uCC0D\uCC0D 1\uD638"
+    kind: "\uAC24\uB9AC\uC120"
+    tier: 0
+    row: 1
+    line: 
+    req: 
+    costPlank: 0
+    costCoin: 0
+    len: 84
+    desc: "\uC560\uAFB8 \uC120\uC7A5\uC774 \uCC98\uC74C \uD6D4\uCE5C \uB178 \uC813\uB294
+      \uBC30. \uB300\uD3EC \uB450 \uBB38. \uC774 \uBC30\uC758 \uC7A5\uBE44\uB294
+      \uBAA8\uB4E0 \uBC30\uC5D0 \uB084 \uC218 \uC788\uC74C."
+    add: []
+    mul: []
+    slots:
+    - cannon
+    - sail
+    - hull
+    gearNormal:
+    - "\uCCAD\uB3D9 \uC18C\uD3EC"
+    - "\uC0BC\uBCA0 \uB3DB"
+    - "\uCC38\uB098\uBB34 \uD310\uC790"
+    gearGood:
+    - "\uAE34 \uCCAD\uB3D9\uD3EC"
+    - "\uC30D \uB178 \uAC11\uD310"
+    - "\uB367\uB304 \uCC38\uB098\uBB34"
+    sprite: {fileID: 21300000, guid: 036d9047e85c1694585946d9dcbf74e8, type: 3}
+  - id: caravel
+    name: "\uCE58\uC988 \uBC14\uB78C"
+    kind: "\uCE90\uB7EC\uBCA8"
+    tier: 1
+    row: 0
+    line: S
+    req: galley
+    costPlank: 70
+    costCoin: 250
+    len: 90
+    desc: "\uC0BC\uAC01\uB3DB\uC73C\uB85C \uBC14\uB78C\uC744 \uAC70\uC2AC\uB7EC \uB2EC\uB9BC.
+      \uBE60\uB974\uACE0 \uC798 \uB3CE."
+    add:
+    - stat: hp
+      value: 30
+    mul:
+    - stat: speed
+      value: 1.15
+    - stat: turn
+      value: 1.15
+    slots:
+    - cannon
+    - sail
+    - hull
+    - rudder
+    gearNormal:
+    - "\uCE90\uB7EC\uBCA8 \uD3EC"
+    - "\uB77C\uD2F4 \uC0BC\uAC01\uB3DB"
+    - "\uAC00\uBCBC\uC6B4 \uC120\uCCB4"
+    - "\uC120\uBBF8 \uD0A4"
+    gearGood:
+    - "\uAC1C\uB7C9 \uCE90\uB7EC\uBCA8 \uD3EC"
+    - "\uC774\uC911 \uC0BC\uAC01\uB3DB"
+    - "\uBABB \uBC15\uC740 \uC120\uCCB4"
+    - "\uADE0\uD615 \uD0A4"
+    sprite: {fileID: 21300000, guid: f695ffff08b2d5b4789176ed4ea07045, type: 3}
+  - id: clipper
+    name: "\uC740\uBE5B \uC218\uC5FC"
+    kind: "\uD074\uB9AC\uD37C"
+    tier: 2
+    row: 0
+    line: S
+    req: caravel
+    costPlank: 280
+    costCoin: 700
+    len: 104
+    desc: "\uBC14\uB2E4\uC5D0\uC11C \uAC00\uC7A5 \uBE60\uB978 \uBC94\uC120. \uB0A0\uCE74\uB85C\uC6B4
+      \uBC43\uBA38\uB9AC\uB85C \uB4E4\uC774\uBC1B\uC74C."
+    add:
+    - stat: hp
+      value: 55
+    - stat: guns
+      value: 1
+    - stat: ram
+      value: 25
+    mul:
+    - stat: speed
+      value: 1.3
+    - stat: turn
+      value: 1.2
+    slots:
+    - cannon
+    - sail
+    - hull
+    - rudder
+    - figure
+    gearNormal:
+    - "\uCF8C\uC18D \uC7A5\uD3EC"
+    - "\uACB9\uACB9 \uC0AC\uAC01\uB3DB"
+    - "\uAD6C\uB9AC \uC785\uD78C \uC120\uCCB4"
+    - "\uCF8C\uC18D \uD0A4"
+    - "\uB3CC\uACA9 \uC120\uC218\uC0C1"
+    gearGood:
+    - "\uAD6C\uB9AC \uC7A5\uD3EC"
+    - "\uBCF4\uC870 \uB3DB"
+    - "\uB0A0\uB835\uD55C \uC120\uCCB4"
+    - "\uC774\uC911 \uD0A4"
+    - "\uC1E0\uBFD4 \uC120\uC218\uC0C1"
+    sprite: {fileID: 21300000, guid: 5b00b7bba7d198a409910ecdf29c0bc5, type: 3}
+  - id: paddle
+    name: "\uBB3C\uB808\uBC29\uC544 \uAF2C\uB9AC"
+    kind: "\uC678\uB95C \uC99D\uAE30\uC120"
+    tier: 3
+    row: 0
+    line: S
+    req: clipper
+    costPlank: 600
+    costCoin: 1500
+    len: 110
+    desc: "\uBC14\uB78C\uC774 \uC5C6\uC5B4\uB3C4 \uB2EC\uB9AC\uB294 \uC99D\uAE30
+      \uC678\uB95C. \uC55E\uCABD \uC120\uC218\uD3EC\uAC00 \uC790\uB3D9\uC73C\uB85C
+      \uC3E8."
+    add:
+    - stat: hp
+      value: 85
+    - stat: guns
+      value: 1
+    - stat: bow
+      value: 1.4
+    - stat: ram
+      value: 30
+    - stat: stormGuard
+      value: 0.4
+    mul:
+    - stat: speed
+      value: 1.4
+    - stat: turn
+      value: 1.25
+    - stat: range
+      value: 1.05
+    slots:
+    - cannon
+    - sail
+    - hull
+    - rudder
+    - figure
+    - scope
+    gearNormal:
+    - "\uAC15\uC120\uD3EC"
+    - "\uC99D\uAE30 \uC678\uB95C"
+    - "\uCCA0\uB760 \uC120\uCCB4"
+    - "\uC99D\uAE30 \uC870\uD0C0\uAE30"
+    - "\uCDA9\uAC01 \uC120\uC218"
+    - "\uB18B\uC1E0 \uB9DD\uC6D0\uACBD"
+    gearGood:
+    - "\uD6C4\uC7A5\uD3EC"
+    - "\uACE0\uC555 \uC678\uB95C"
+    - "\uCCA0\uD310 \uC120\uCCB4"
+    - "\uC815\uBC00 \uC870\uD0C0\uAE30"
+    - "\uAC15\uCCA0 \uCDA9\uAC01"
+    - "\uC774\uC911 \uB9DD\uC6D0\uACBD"
+    sprite: {fileID: 21300000, guid: 922480b174da8e94ca053a754edfdc5d, type: 3}
+  - id: torpedo
+    name: "\uBC88\uAC1C \uC218\uC5FC"
+    kind: "\uC5B4\uB8B0\uC815"
+    tier: 4
+    row: 0
+    line: S
+    req: paddle
+    costPlank: 1600
+    costCoin: 3800
+    len: 116
+    desc: "\uC791\uACE0 \uC544\uC8FC \uBE60\uB984. \uB9C8\uC6B0\uC2A4 \uCABD\uC73C\uB85C
+      \uC5B4\uB8B0\uB97C \uC3E8."
+    add:
+    - stat: hp
+      value: 153
+    - stat: guns
+      value: 1
+    - stat: bow
+      value: 1.1
+    - stat: torpedo
+      value: 3
+    - stat: ram
+      value: 35
+    - stat: stormGuard
+      value: 0.5
+    mul:
+    - stat: speed
+      value: 1.61
+    - stat: turn
+      value: 1.35
+    - stat: range
+      value: 1.1
+    - stat: dmgTaken
+      value: 0.96
+    slots:
+    - cannon
+    - sail
+    - hull
+    - rudder
+    - figure
+    - scope
+    - shot
+    gearNormal:
+    - "\uC18D\uC0AC\uD3EC"
+    - "\uC99D\uAE30 \uD130\uBE48"
+    - "\uACBD\uC7A5\uAC11"
+    - "\uC720\uC555 \uC870\uD0C0\uAE30"
+    - "\uC5B4\uB8B0 \uCDA9\uAC01"
+    - "\uAC70\uB9AC \uCE21\uC815\uAE30"
+    - "\uCCA0\uAC11\uD0C4 \uCC3D\uACE0"
+    gearGood:
+    - "\uACE0\uC18D \uC18D\uC0AC\uD3EC"
+    - "\uACFC\uC5F4 \uD130\uBE48"
+    - "\uC774\uC911 \uACBD\uC7A5\uAC11"
+    - "\uACE0\uC18D \uC870\uD0C0\uAE30"
+    - "\uC30D \uC5B4\uB8B0 \uCDA9\uAC01"
+    - "\uAD11\uD559 \uCE21\uC815\uAE30"
+    - "\uC18C\uC774\uD0C4 \uCC3D\uACE0"
+    sprite: {fileID: 21300000, guid: f0c6b18021539ae42be9a540f566f74e, type: 3}
+  - id: missile
+    name: "\uCE58\uC988 \uBBF8\uC0AC\uC77C"
+    kind: "\uBBF8\uC0AC\uC77C \uACE0\uC18D\uC815"
+    tier: 5
+    row: 0
+    line: S
+    req: torpedo
+    costPlank: 3200
+    costCoin: 7000
+    len: 120
+    desc: "\uC950 \uADC0 \uB808\uC774\uB354\uC5D0 \uC720\uB3C4\uD0C4 \uBC1C\uC0AC\uB300.
+      \uAC00\uC7A5 \uBE60\uB978 \uBC30."
+    add:
+    - stat: hp
+      value: 231
+    - stat: guns
+      value: 1
+    - stat: bow
+      value: 0.8
+    - stat: torpedo
+      value: 2.6
+    - stat: missile
+      value: 1.6
+    - stat: ram
+      value: 40
+    - stat: stormGuard
+      value: 0.6
+    - stat: vision
+      value: 200
+    mul:
+    - stat: speed
+      value: 1.8
+    - stat: turn
+      value: 1.43
+    - stat: range
+      value: 1.13
+    - stat: dmgTaken
+      value: 0.93
+    slots:
+    - cannon
+    - sail
+    - hull
+    - rudder
+    - figure
+    - scope
+    - shot
+    gearNormal:
+    - "\uD568\uD3EC"
+    - "\uAC00\uC2A4 \uD130\uBE48"
+    - "\uBCF5\uD569 \uC7A5\uAC11"
+    - "\uC804\uC790 \uC870\uD0C0\uAE30"
+    - "\uC720\uB3C4\uD0C4 \uC120\uC218"
+    - "\uB808\uC774\uB354"
+    - "\uC720\uB3C4\uD0C4 \uCC3D\uACE0"
+    gearGood:
+    - "\uC790\uB3D9 \uD568\uD3EC"
+    - "\uC6CC\uD130\uC81C\uD2B8"
+    - "\uBC18\uC751 \uC7A5\uAC11"
+    - "\uC790\uB3D9 \uC870\uD0C0\uAE30"
+    - "\uB300\uD568 \uC720\uB3C4\uD0C4"
+    - "\uC704\uC0C1 \uB808\uC774\uB354"
+    - "\uC9D1\uC18D\uD0C4 \uCC3D\uACE0"
+    sprite: {fileID: 21300000, guid: 30923377ea24ac043a0a82bec869f94e, type: 3}
+  - id: carrack
+    name: "\uBC30\uBD88\uB69D\uC774"
+    kind: "\uCE90\uB799"
+    tier: 1
+    row: 1
+    line: M
+    req: galley
+    costPlank: 70
+    costCoin: 250
+    len: 96
+    desc: "\uBC30\uAC00 \uB465\uAE00\uACE0 \uC9D0\uCE78\uC774 \uB113\uC74C. \uCCB4\uC778\uC0F7
+      \xB7 \uD654\uC5FC\uD0C4\uC744 \uC2E3\uAE30 \uC2DC\uC791\uD568."
+    add:
+    - stat: hp
+      value: 30
+    - stat: chain
+      value: 9
+    mul:
+    - stat: speed
+      value: 1.05
+    slots:
+    - cannon
+    - sail
+    - hull
+    - shot
+    gearNormal:
+    - "\uCE90\uB799 \uD3EC"
+    - "\uD070 \uC0AC\uAC01\uB3DB"
+    - "\uB465\uADFC \uC120\uCCB4"
+    - "\uCCB4\uC778\uC0F7 \uC0C1\uC790"
+    gearGood:
+    - "\uC30D \uCE90\uB799 \uD3EC"
+    - "\uC55E\uB4A4 \uB3DB"
+    - "\uC774\uC911 \uAC11\uD310"
+    - "\uACE0\uB9AC \uCCB4\uC778\uC0F7"
+    sprite: {fileID: 21300000, guid: f0c6205522d09f643a51f02c1ecc7747, type: 3}
+  - id: frigate
+    name: "\uAF2C\uB9AC \uC0AC\uB0E5\uAFBC"
+    kind: "\uD504\uB9AC\uAE43"
+    tier: 2
+    row: 1
+    line: M
+    req: carrack
+    costPlank: 280
+    costCoin: 700
+    len: 110
+    desc: "\uBE60\uB974\uACE0 \uD3EC\uB3C4 \uB9CE\uC740 \uB9CC\uB2A5 \uAD70\uD568.
+      \uD654\uC5FC\uD0C4 \uC7A5\uCC29."
+    add:
+    - stat: hp
+      value: 60
+    - stat: guns
+      value: 1
+    - stat: chain
+      value: 8
+    - stat: fire
+      value: 10
+    mul:
+    - stat: speed
+      value: 1.15
+    - stat: turn
+      value: 1.05
+    slots:
+    - cannon
+    - sail
+    - hull
+    - shot
+    - scope
+    gearNormal:
+    - "12\uD30C\uC6B4\uB4DC \uD3EC"
+    - "\uD504\uB9AC\uAE43 \uB3DB"
+    - "\uAD6C\uB9AC \uC120\uC800"
+    - "\uD654\uC5FC\uD0C4 \uC0C1\uC790"
+    - "\uC120\uC7A5 \uB9DD\uC6D0\uACBD"
+    gearGood:
+    - "18\uD30C\uC6B4\uB4DC \uD3EC"
+    - "\uACE0\uAE09 \uBC94\uD3EC"
+    - "\uAC15\uD654 \uB291\uACE8"
+    - "\uAE30\uB984 \uD654\uC5FC\uD0C4"
+    - "\uD574\uAD70 \uB9DD\uC6D0\uACBD"
+    sprite: {fileID: 21300000, guid: ae071299e5f40c64eba9072314ecde94, type: 3}
+  - id: steamfrigate
+    name: "\uC5F0\uAE30 \uC218\uC5FC"
+    kind: "\uC99D\uAE30 \uD504\uB9AC\uAE43"
+    tier: 3
+    row: 1
+    line: M
+    req: frigate
+    costPlank: 600
+    costCoin: 1500
+    len: 118
+    desc: "\uB3DB\uACFC \uC2A4\uD06C\uB8E8\uB97C \uD568\uAED8 \uC500. \uBC15\uACA9\uD3EC\uB97C
+      \uC2E4\uC5B4 \uBA40\uB9AC \uD3ED\uACA9."
+    add:
+    - stat: hp
+      value: 95
+    - stat: guns
+      value: 1
+    - stat: chain
+      value: 7
+    - stat: fire
+      value: 9
+    - stat: mortar
+      value: 13
+    - stat: stormGuard
+      value: 0.3
+    mul:
+    - stat: speed
+      value: 1.2
+    - stat: turn
+      value: 1.05
+    slots:
+    - cannon
+    - sail
+    - hull
+    - shot
+    - scope
+    - mortar
+    gearNormal:
+    - "\uAC15\uC120 \uD568\uD3EC"
+    - "\uC2A4\uD06C\uB8E8 \uAE30\uAD00"
+    - "\uCCA0\uD310 \uB367\uB310"
+    - "\uC791\uB82C\uD0C4 \uC0C1\uC790"
+    - "\uCE21\uAC70\uC758"
+    - "\uD574\uC548 \uBC15\uACA9\uD3EC"
+    gearGood:
+    - "\uC554\uC2A4\uD2B8\uB871\uD3EC"
+    - "\uBCF5\uD569 \uAE30\uAD00"
+    - "\uCCA0\uAC11 \uB760"
+    - "\uAC1C\uB7C9 \uC791\uB82C\uD0C4"
+    - "\uC57C\uAC04 \uB9DD\uC6D0\uACBD"
+    - "\uC911\uBC15\uACA9\uD3EC"
+    sprite: {fileID: 21300000, guid: b4f609bd9f08e3b4fa1b2ed42e799395, type: 3}
+  - id: cruiser
+    name: "\uC1E0 \uC218\uC5FC"
+    kind: "\uBC29\uD638 \uC21C\uC591\uD568"
+    tier: 4
+    row: 1
+    line: M
+    req: steamfrigate
+    costPlank: 1600
+    costCoin: 3800
+    len: 126
+    desc: "\uAC15\uCCA0 \uAC11\uD310\uACFC \uD3EC\uD0D1. \uC120\uC6D0\uC774 \uB9CE\uC544
+      \uC7A5\uC804\uC774 \uBE68\uB77C\uC9D0."
+    add:
+    - stat: hp
+      value: 205
+    - stat: guns
+      value: 2
+    - stat: chain
+      value: 6
+    - stat: fire
+      value: 8
+    - stat: mortar
+      value: 11
+    - stat: bow
+      value: 1.5
+    - stat: crewMax
+      value: 6
+    - stat: stormGuard
+      value: 0.4
+    mul:
+    - stat: speed
+      value: 1.3
+    - stat: turn
+      value: 1.18
+    - stat: range
+      value: 1.05
+    - stat: dmgTaken
+      value: 0.96
+    slots:
+    - cannon
+    - sail
+    - hull
+    - shot
+    - scope
+    - mortar
+    - crew
+    gearNormal:
+    - "\uD3EC\uD0D1 \uD568\uD3EC"
+    - "\uC0BC\uB2E8 \uD33D\uCC3D \uAE30\uAD00"
+    - "\uBC29\uD638 \uAC11\uD310"
+    - "\uCCA0\uAC11\uD0C4 \uC0C1\uC790"
+    - "\uAD11\uD559 \uC0AC\uACA9 \uC9C0\uD718"
+    - "\uACE1\uC0AC\uD3EC"
+    - "\uC218\uBCD1 \uCE68\uC2E4"
+    gearGood:
+    - "\uC30D\uC5F4 \uD3EC\uD0D1"
+    - "\uACE0\uC18D \uAE30\uAD00"
+    - "\uACBD\uC0AC \uC7A5\uAC11"
+    - "\uACE0\uD3ED\uD0C4 \uC0C1\uC790"
+    - "\uAC70\uB9AC \uACC4\uC0B0\uAE30"
+    - "\uC911\uACE1\uC0AC\uD3EC"
+    - "\uD574\uAD70 \uC219\uC18C"
+    sprite: {fileID: 21300000, guid: 3911a820c66c86e4a80153cf73fdd704, type: 3}
+  - id: submarine
+    name: "\uC7A0\uC218 \uC0DD\uC950"
+    kind: "\uC7A0\uC218\uD568"
+    tier: 5
+    row: 1
+    line: M
+    req: cruiser
+    costPlank: 3200
+    costCoin: 7000
+    len: 124
+    desc: "\uBB3C\uC18D\uC5D0\uC11C \uC5B4\uB8B0\uB97C \uC3D8\uACE0, \uB9DE\uC744
+      \uB54C \uAC00\uB054 \uC7A0\uC218\uD574 \uD53C\uD568."
+    add:
+    - stat: hp
+      value: 269
+    - stat: guns
+      value: 2
+    - stat: chain
+      value: 5
+    - stat: fire
+      value: 7
+    - stat: mortar
+      value: 10
+    - stat: torpedo
+      value: 1.8
+    - stat: torpedoDmg
+      value: 20
+    - stat: crewMax
+      value: 8
+    - stat: evade
+      value: 0.15
+    - stat: stormGuard
+      value: 0.7
+    mul:
+    - stat: speed
+      value: 1.38
+    - stat: turn
+      value: 1.25
+    - stat: range
+      value: 1.08
+    - stat: dmgTaken
+      value: 0.93
+    slots:
+    - cannon
+    - sail
+    - hull
+    - shot
+    - scope
+    - mortar
+    - crew
+    gearNormal:
+    - "\uAC11\uD310\uD3EC"
+    - "\uC804\uB3D9\uAE30"
+    - "\uB0B4\uC555 \uC120\uCCB4"
+    - "\uC74C\uD5A5 \uC5B4\uB8B0"
+    - "\uC7A0\uB9DD\uACBD"
+    - "\uC7A0\uB300\uD568 \uBC15\uACA9\uD3EC"
+    - "\uC881\uC740 \uCE68\uC2E4"
+    gearGood:
+    - "\uC790\uB3D9 \uAC11\uD310\uD3EC"
+    - "\uACF5\uAE30 \uBD88\uC694 \uAE30\uAD00"
+    - "\uD761\uC74C \uD0C0\uC77C"
+    - "\uC720\uC120 \uC5B4\uB8B0"
+    - "\uAD11\uD559 \uC7A0\uB9DD\uACBD"
+    - "\uC5F0\uBC1C \uBC15\uACA9\uD3EC"
+    - "\uAD50\uB300 \uCE68\uC2E4"
+    sprite: {fileID: 21300000, guid: ec4a289acedc459479d761436e52db18, type: 3}
+  - id: galleon
+    name: "\uD669\uAE08 \uCE58\uC988"
+    kind: "\uAC24\uB9AC\uC628"
+    tier: 1
+    row: 2
+    line: H
+    req: galley
+    costPlank: 70
+    costCoin: 250
+    len: 104
+    desc: "\uBCF4\uBB3C\uC120\uC774\uC790 \uAD70\uD568. \uB290\uB9AC\uC9C0\uB9CC
+      \uD2BC\uD2BC\uD558\uACE0 \uB300\uD3EC\uAC00 \uB9CE\uC74C."
+    add:
+    - stat: hp
+      value: 50
+    - stat: guns
+      value: 1
+    - stat: goldBonus
+      value: 0.1
+    mul:
+    - stat: speed
+      value: 0.95
+    - stat: turn
+      value: 0.92
+    slots:
+    - cannon
+    - sail
+    - hull
+    - figure
+    gearNormal:
+    - "\uAC24\uB9AC\uC628 \uD3EC"
+    - "\uAC24\uB9AC\uC628 \uB3DB"
+    - "\uB450\uAEBC\uC6B4 \uC120\uCCB4"
+    - "\uAE08\uBC15 \uC120\uC218\uC0C1"
+    gearGood:
+    - "\uCEEC\uBC84\uB9B0 \uD3EC"
+    - "\uB192\uC740 \uB3DB\uB300"
+    - "\uB192\uC740 \uC120\uBBF8\uB8E8"
+    - "\uC0AC\uC790\uC950 \uC120\uC218\uC0C1"
+    sprite: {fileID: 21300000, guid: 1a88c52acb6599341a35159042432051, type: 3}
+  - id: ofline
+    name: "\uC0BC\uCE35 \uCE58\uC988\uD0D1"
+    kind: "\uC804\uC5F4\uD568"
+    tier: 2
+    row: 2
+    line: H
+    req: galleon
+    costPlank: 280
+    costCoin: 700
+    len: 128
+    desc: "\uC138 \uCE35 \uAC11\uD310 \uAC00\uB4DD \uB300\uD3EC. \uC77C\uC81C \uC0AC\uACA9
+      \uD55C \uBC88\uC774 \uBB34\uC11C\uC6C0."
+    add:
+    - stat: hp
+      value: 100
+    - stat: guns
+      value: 3
+    - stat: goldBonus
+      value: 0.1
+    mul:
+    - stat: speed
+      value: 0.9
+    - stat: turn
+      value: 0.85
+    - stat: dmg
+      value: 1.1
+    slots:
+    - cannon
+    - sail
+    - hull
+    - figure
+    - crew
+    gearNormal:
+    - "32\uD30C\uC6B4\uB4DC \uD3EC"
+    - "\uC804\uC5F4\uD568 \uB3DB"
+    - "\uC0BC\uC911 \uAC11\uD310"
+    - "\uC81C\uB3C5 \uC120\uC218\uC0C1"
+    - "\uD3EC\uC218 \uCE68\uC2E4"
+    gearGood:
+    - "42\uD30C\uC6B4\uB4DC \uD3EC"
+    - "\uAC70\uB300 \uBC94\uD3EC"
+    - "\uCC38\uB098\uBB34 \uC7A5\uAC11"
+    - "\uC655\uAD00 \uC120\uC218\uC0C1"
+    - "\uD3EC\uBCD1\uB300 \uC219\uC18C"
+    sprite: {fileID: 21300000, guid: d056f1bd193d33c48801d11752c102dd, type: 3}
+  - id: ironclad
+    name: "\uBB34\uC1E0 \uC5C9\uB369\uC774"
+    kind: "\uCCA0\uAC11\uD568"
+    tier: 3
+    row: 2
+    line: H
+    req: ofline
+    costPlank: 600
+    costCoin: 1500
+    len: 124
+    desc: "\uC1E0\uB85C \uB458\uB7EC\uC2FC \uBC30. \uBC1B\uB294 \uD53C\uD574\uAC00
+      \uD06C\uAC8C \uC904\uACE0 \uD68C\uC804 \uD3EC\uD0D1\uC774 \uC0DD\uAE40."
+    add:
+    - stat: hp
+      value: 170
+    - stat: guns
+      value: 3
+    - stat: bow
+      value: 1.8
+    - stat: bowDmg
+      value: 6
+    - stat: stormGuard
+      value: 0.5
+    mul:
+    - stat: speed
+      value: 0.9
+    - stat: turn
+      value: 0.85
+    - stat: dmg
+      value: 1.2
+    - stat: dmgTaken
+      value: 0.85
+    slots:
+    - cannon
+    - sail
+    - hull
+    - figure
+    - crew
+    - mortar
+    gearNormal:
+    - "\uD68C\uC804 \uD3EC\uD0D1"
+    - "\uC99D\uAE30 \uAE30\uAD00"
+    - "\uBB34\uC1E0 \uC7A5\uAC11"
+    - "\uCDA9\uAC01"
+    - "\uD654\uBD80 \uC219\uC18C"
+    - "\uAC11\uD310 \uBC15\uACA9\uD3EC"
+    gearGood:
+    - "\uC30D\uC5F4 \uD68C\uC804 \uD3EC\uD0D1"
+    - "\uC30D \uC2A4\uD06C\uB8E8"
+    - "\uC555\uC5F0 \uC7A5\uAC11"
+    - "\uC1E0 \uCDA9\uAC01"
+    - "\uD3EC\uD0D1 \uC219\uC18C"
+    - "\uC5F0\uBC1C \uBC15\uACA9\uD3EC"
+    sprite: {fileID: 21300000, guid: fa16f937d3efb3b4b81e1e93cdfbd65e, type: 3}
+  - id: dreadnought
+    name: "\uCE58\uC988 \uB300\uC655"
+    kind: "\uB4DC\uB808\uB4DC\uB178\uD2B8"
+    tier: 4
+    row: 2
+    line: H
+    req: ironclad
+    costPlank: 1600
+    costCoin: 3800
+    len: 150
+    desc: "\uAC70\uD3EC \uC5F4 \uBB38\uC9DC\uB9AC \uAC70\uB300 \uC804\uD568. \uD3EC
+      \uD55C \uBC1C \uD55C \uBC1C\uC774 \uC544\uC8FC \uC148."
+    add:
+    - stat: hp
+      value: 314
+    - stat: guns
+      value: 6
+    - stat: bow
+      value: 1.4
+    - stat: bowDmg
+      value: 12
+    - stat: mortar
+      value: 12
+    - stat: stormGuard
+      value: 0.6
+    mul:
+    - stat: speed
+      value: 0.99
+    - stat: turn
+      value: 0.85
+    - stat: dmg
+      value: 1.35
+    - stat: dmgTaken
+      value: 0.77
+    - stat: range
+      value: 1.21
+    slots:
+    - cannon
+    - sail
+    - hull
+    - figure
+    - crew
+    - mortar
+    - scope
+    gearNormal:
+    - "12\uC778\uCE58 \uC8FC\uD3EC"
+    - "\uC99D\uAE30 \uD130\uBE48"
+    - "\uAC15\uCCA0 \uC7A5\uAC11\uB300"
+    - "\uD568\uC218 \uBB38\uC7A5"
+    - "\uC218\uBCD1 \uC219\uC18C"
+    - "\uBD80\uD3EC"
+    - "\uC0AC\uACA9 \uC9C0\uD718\uC18C"
+    gearGood:
+    - "14\uC778\uCE58 \uC8FC\uD3EC"
+    - "\uC911\uC720 \uD130\uBE48"
+    - "\uC9D1\uC911 \uBC29\uC5B4"
+    - "\uB300\uC655 \uBB38\uC7A5"
+    - "\uB300\uD568\uB300 \uC219\uC18C"
+    - "\uACE0\uAC01\uD3EC"
+    - "\uAC70\uB9AC \uCE21\uC815\uD0D1"
+    sprite: {fileID: 21300000, guid: ec472ec83a1ad0a4082b90daa1037574, type: 3}
+  - id: carrier
+    name: "\uD558\uB298 \uCE58\uC988\uC131"
+    kind: "\uD56D\uACF5\uBAA8\uD568"
+    tier: 5
+    row: 2
+    line: H
+    req: dreadnought
+    costPlank: 3200
+    costCoin: 7000
+    len: 190
+    desc: "\uC950 \uC870\uC885\uC0AC \uD568\uC7AC\uAE30\uAC00 \uB0A0\uC544\uC62C\uB77C
+      \uC54C\uC544\uC11C \uC2F8\uC6C0."
+    add:
+    - stat: hp
+      value: 450
+    - stat: guns
+      value: 3
+    - stat: planes
+      value: 3
+    - stat: mortar
+      value: 11
+    - stat: stormGuard
+      value: 0.7
+    - stat: vision
+      value: 250
+    mul:
+    - stat: speed
+      value: 1.01
+    - stat: turn
+      value: 0.83
+    - stat: dmg
+      value: 1.3
+    - stat: dmgTaken
+      value: 0.7
+    - stat: range
+      value: 1.19
+    slots:
+    - cannon
+    - sail
+    - hull
+    - figure
+    - crew
+    - mortar
+    - scope
+    gearNormal:
+    - "\uC591\uC6A9\uD3EC"
+    - "\uC6D0\uC790\uB85C"
+    - "\uBE44\uD589\uAC11\uD310 \uC7A5\uAC11"
+    - "\uD568\uAD50 \uBB38\uC7A5"
+    - "\uC870\uC885\uC0AC \uC219\uC18C"
+    - "\uD568\uC7AC \uD3ED\uACA9\uAE30"
+    - "\uAD00\uC81C \uB808\uC774\uB354"
+    gearGood:
+    - "\uC790\uB3D9 \uC591\uC6A9\uD3EC"
+    - "\uACE0\uCD9C\uB825 \uC6D0\uC790\uB85C"
+    - "\uACA9\uBCBD \uC7A5\uAC11"
+    - "\uCE58\uC988\uC131 \uBB38\uC7A5"
+    - "\uC815\uBE44\uC0AC \uC219\uC18C"
+    - "\uAE09\uAC15\uD558 \uD3ED\uACA9\uAE30"
+    - "\uC870\uAE30 \uACBD\uBCF4\uAE30"
+    sprite: {fileID: 21300000, guid: 58b81875bfaf6dc46967dda46c9908dd, type: 3}
+  uniques:
+  - id: u_oars
+    ship: galley
+    slot: sail
+    grade: 2
+    name: "\uC950 \uB178\uAFBC \uBD81\uC7A5\uB2E8"
+    lines: []
+    add:
+    - stat: crewHeal
+      value: 2
+    mul:
+    - stat: speed
+      value: 1.1
+    - stat: turn
+      value: 1.1
+    desc: "\uC18D\uB3C4 \xB7 \uD68C\uC804 +10%, \uC120\uC6D0\uC744 \uAC74\uC9C0\uBA74
+      \uCCB4\uB825 +2"
+  - id: u_bronze
+    ship: galley
+    slot: cannon
+    grade: 2
+    name: "\uCCAD\uB3D9 \uC0AC\uC790\uC950\uD3EC"
+    lines: []
+    add:
+    - stat: crit
+      value: 0.08
+    mul:
+    - stat: dmg
+      value: 1.12
+    desc: "\uD3EC\uD0C4 \uC704\uB825 +12%, \uCE58\uBA85\uD0C0 +8%"
+  - id: u_eyepatch
+    ship: galley
+    slot: hull
+    grade: 3
+    name: "\uC560\uAFB8 \uC120\uC7A5\uC758 \uCCAB \uBC30 \uD310\uC790"
+    lines: []
+    add:
+    - stat: hp
+      value: 40
+    - stat: plunder
+      value: 0.04
+    mul: []
+    desc: "\uC120\uCCB4 +40, \uC801\uC744 \uACA9\uCE68\uD560 \uB54C\uB9C8\uB2E4 \uCCB4\uB825
+      4% \uD68C\uBCF5"
+  - id: u_lateen
+    ship: caravel
+    slot: sail
+    grade: 2
+    name: "\uC5ED\uD48D \uC0BC\uAC01\uB3DB"
+    lines:
+    - S
+    add:
+    - stat: stormGuard
+      value: 0.4
+    mul:
+    - stat: speed
+      value: 1.12
+    desc: "\uC18D\uB3C4 +12%, \uBC14\uB78C \xB7 \uBC88\uAC1C \xB7 \uC18C\uC6A9\uB3CC\uC774
+      \uC601\uD5A5 \u221240%"
+  - id: u_compass
+    ship: caravel
+    slot: rudder
+    grade: 3
+    name: "\uCE58\uC988 \uB098\uCE68\uBC18 \uD0A4"
+    lines:
+    - S
+    - M
+    add:
+    - stat: evade
+      value: 0.1
+    - stat: pickup
+      value: 80
+    mul:
+    - stat: turn
+      value: 1.3
+    desc: "\uD68C\uC804 +30%, \uC801 \uD3EC\uD0C4 10% \uBE57\uB098\uAC10, \uC90D\uAE30
+      \uAC70\uB9AC +80"
+  - id: u_hook
+    ship: carrack
+    slot: shot
+    grade: 2
+    name: "\uAC08\uACE0\uB9AC \uCCB4\uC778\uC0F7"
+    lines:
+    - M
+    add:
+    - stat: chainAll
+      value: 0.15
+    mul: []
+    desc: "\uBAA8\uB4E0 \uD3EC\uD0C4 15% \uD655\uB960\uB85C \uCCB4\uC778\uC0F7 (\uB3DB\uC744
+      \uCC22\uC5B4 \uB290\uB9AC\uAC8C)"
+  - id: u_hold
+    ship: carrack
+    slot: hull
+    grade: 3
+    name: "\uCE58\uC988 \uCC3D\uACE0 \uC120\uCCB4"
+    lines:
+    - M
+    - H
+    add:
+    - stat: hp
+      value: 50
+    - stat: goldBonus
+      value: 0.25
+    - stat: plankBonus
+      value: 0.25
+    mul: []
+    desc: "\uC120\uCCB4 +50, \uAE08\uD654 \xB7 \uBAA9\uC7AC +25%"
+  - id: u_goldfig
+    ship: galleon
+    slot: figure
+    grade: 2
+    name: "\uD669\uAE08 \uC950 \uC120\uC218\uC0C1"
+    lines:
+    - H
+    add:
+    - stat: goldBonus
+      value: 0.3
+    - stat: ram
+      value: 20
+    mul: []
+    desc: "\uAE08\uD654 +30%, \uBC15\uCE58\uAE30 20"
+  - id: u_culverin
+    ship: galleon
+    slot: cannon
+    grade: 3
+    name: "\uC30D\uB465\uC774 \uCEEC\uBC84\uB9B0"
+    lines:
+    - H
+    - M
+    add:
+    - stat: double
+      value: 0.3
+    mul:
+    - stat: dmg
+      value: 1.1
+    desc: "\uD3EC\uD0C4 \uC704\uB825 +10%, \uC77C\uC81C \uC0AC\uACA9\uC774 30% \uD655\uB960\uB85C
+      \uD55C \uBC88 \uB354"
+  - id: u_ramhorn
+    ship: clipper
+    slot: figure
+    grade: 2
+    name: "\uC1E0\uBFD4 \uC0DD\uC950 \uC120\uC218\uC0C1"
+    lines:
+    - S
+    add:
+    - stat: ram
+      value: 60
+    mul: []
+    desc: "\uBC15\uCE58\uAE30 60 (\uB0B4 \uBC30\uB294 \uBC15\uCE58\uAE30 \uD53C\uD574
+      \uC548 \uBC1B\uC74C)"
+  - id: u_trade
+    ship: clipper
+    slot: sail
+    grade: 3
+    name: "\uBB34\uC5ED\uD48D \uB3DB"
+    lines:
+    - S
+    add:
+    - stat: stormGuard
+      value: 0.5
+    mul:
+    - stat: speed
+      value: 1.2
+    - stat: reload
+      value: 0.9
+    desc: "\uC18D\uB3C4 +20%, \uC7A5\uC804 \u221210%, \uBC14\uB78C \uC601\uD5A5 \u221250%"
+  - id: u_greek
+    ship: frigate
+    slot: shot
+    grade: 2
+    name: "\uADF8\uB9AC\uC2A4\uC758 \uBD88"
+    lines:
+    - M
+    - H
+    add:
+    - stat: burnAll
+      value: 0.2
+    mul: []
+    desc: "\uBAA8\uB4E0 \uD3EC\uD0C4 20% \uD655\uB960\uB85C \uBD88\uBD99\uC784"
+  - id: u_nelson
+    ship: frigate
+    slot: scope
+    grade: 3
+    name: "\uC560\uAFB8 \uB9DD\uC6D0\uACBD"
+    lines:
+    - M
+    add:
+    - stat: crit
+      value: 0.18
+    - stat: vision
+      value: 200
+    mul:
+    - stat: range
+      value: 1.12
+    desc: "\uCE58\uBA85\uD0C0 +18%, \uC0AC\uAC70\uB9AC +12%, \uC548\uAC1C \uC2DC\uC57C
+      +200 (\uB9DD\uC6D0\uACBD\uC740 \uAC10\uC740 \uB208 \uCABD\uC5D0 \uB300\uC57C
+      \uC81C\uB9DB)"
+  - id: u_broad
+    ship: ofline
+    slot: cannon
+    grade: 2
+    name: "\uC804\uC5F4 \uC77C\uC81C \uC0AC\uACA9"
+    lines:
+    - H
+    add:
+    - stat: guns
+      value: 1
+    mul:
+    - stat: dmg
+      value: 1.08
+    desc: "\uBC43\uC804\uB9C8\uB2E4 \uB300\uD3EC +1, \uD3EC\uD0C4 \uC704\uB825 +8%"
+  - id: u_marines
+    ship: ofline
+    slot: crew
+    grade: 3
+    name: "\uC950 \uD574\uBCD1\uB300"
+    lines:
+    - H
+    - M
+    add:
+    - stat: crewMax
+      value: 8
+    - stat: crewHeal
+      value: 4
+    - stat: plunder
+      value: 0.05
+    mul: []
+    desc: "\uC120\uC6D0 \uD6A8\uACFC \uCD5C\uB300 +8, \uAD6C\uC870 \uC2DC \uC218\uB9AC
+      +4, \uACA9\uCE68\uD558\uBA74 \uCCB4\uB825 5% \uD68C\uBCF5"
+  - id: u_boiler
+    ship: paddle
+    slot: sail
+    grade: 2
+    name: "\uD3ED\uC8FC \uBCF4\uC77C\uB7EC"
+    lines:
+    - S
+    add:
+    - stat: ram
+      value: 40
+    mul:
+    - stat: speed
+      value: 1.18
+    desc: "\uC18D\uB3C4 +18%, \uBC15\uCE58\uAE30 +40"
+  - id: u_chaser
+    ship: paddle
+    slot: scope
+    grade: 3
+    name: "\uCD94\uACA9 \uC120\uC218\uD3EC \uC870\uC900\uAE30"
+    lines:
+    - S
+    - M
+    add:
+    - stat: bowDmg
+      value: 10
+    - stat: crit
+      value: 0.1
+    mul:
+    - stat: bow
+      value: 0.7
+    desc: "\uC120\uC218\uD3EC \uC704\uB825 +10 \xB7 \uAC04\uACA9 \u221230%, \uCE58\uBA85\uD0C0
+      +10%"
+  - id: u_shell
+    ship: steamfrigate
+    slot: cannon
+    grade: 2
+    name: "\uC791\uB82C \uD3EC\uD0C4"
+    lines:
+    - M
+    add:
+    - stat: splash
+      value: 50
+    mul: []
+    desc: "\uD3EC\uD0C4\uC774 \uB9DE\uC740 \uACF3\uC5D0\uC11C \uD3ED\uBC1C (\uBC18\uC9C0\uB984
+      50)"
+  - id: u_barrage
+    ship: steamfrigate
+    slot: mortar
+    grade: 3
+    name: "\uC790\uB3D9 \uD3ED\uACA9 \uC9C0\uD718"
+    lines:
+    - M
+    - H
+    add:
+    - stat: autoMortar
+      value: 5
+    - stat: mortarDmg
+      value: 20
+    mul: []
+    desc: "5\uCD08\uB9C8\uB2E4 \uAC00\uC7A5 \uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C
+      \uC790\uB3D9 \uD3ED\uACA9, \uD3ED\uACA9 \uC704\uB825 +20"
+  - id: u_iron
+    ship: ironclad
+    slot: hull
+    grade: 2
+    name: "\uBB34\uC1E0 \uC5C9\uB369\uC774 \uC7A5\uAC11"
+    lines:
+    - H
+    add:
+    - stat: hp
+      value: 60
+    mul:
+    - stat: dmgTaken
+      value: 0.82
+    desc: "\uC120\uCCB4 +60, \uBC1B\uB294 \uD53C\uD574 \u221218%"
+  - id: u_turret
+    ship: ironclad
+    slot: cannon
+    grade: 3
+    name: "\uD68C\uC804 \uD3EC\uD0D1 \uC30D\uC5F4\uD3EC"
+    lines:
+    - H
+    add:
+    - stat: double
+      value: 0.5
+    - stat: splash
+      value: 35
+    mul: []
+    desc: "\uC77C\uC81C \uC0AC\uACA9\uC774 50% \uD655\uB960\uB85C \uD55C \uBC88 \uB354,
+      \uD3EC\uD0C4 \uD3ED\uBC1C (\uBC18\uC9C0\uB984 35)"
+  - id: u_wolf
+    ship: torpedo
+    slot: shot
+    grade: 2
+    name: "\uB291\uB300 \uB5BC \uC5B4\uB8B0"
+    lines:
+    - S
+    - M
+    add:
+    - stat: torpedoDmg
+      value: 25
+    mul:
+    - stat: torpedo
+      value: 0.75
+    desc: "\uC5B4\uB8B0 \uC704\uB825 +25 \xB7 \uAC04\uACA9 \u221225%"
+  - id: u_smoke
+    ship: torpedo
+    slot: rudder
+    grade: 3
+    name: "\uC5F0\uB9C9 \uC870\uD0C0\uAE30"
+    lines:
+    - S
+    add:
+    - stat: evade
+      value: 0.25
+    mul:
+    - stat: turn
+      value: 1.15
+    desc: "\uC801 \uD3EC\uD0C4 25% \uBE57\uB098\uAC10, \uD68C\uC804 +15%"
+  - id: u_kraken
+    ship: cruiser
+    slot: shot
+    grade: 2
+    name: "\uD06C\uB77C\uCF04 \uCD09\uC218 \uCCB4\uC778"
+    lines:
+    - M
+    add:
+    - stat: kraken
+      value: 2
+    - stat: chainAll
+      value: 0.1
+    mul: []
+    desc: "\uCCB4\uC778\uC0F7\uC774 \uB9DE\uC73C\uBA74 \uC8FC\uBCC0 \uC801\uB3C4
+      2\uCD08 \uBB36\uC784, \uBAA8\uB4E0 \uD3EC\uD0C4 10% \uCCB4\uC778\uC0F7"
+  - id: u_drill
+    ship: cruiser
+    slot: crew
+    grade: 3
+    name: "\uC218\uBCD1 \uD3EC\uC220 \uD6C8\uB828"
+    lines:
+    - M
+    add:
+    - stat: crewMax
+      value: 10
+    - stat: crewReload
+      value: 0.01
+    mul: []
+    desc: "\uC120\uC6D0 \uD6A8\uACFC \uCD5C\uB300 +10, \uC120\uC6D0 1\uBA85\uB2F9
+      \uC7A5\uC804 \u22121% \uB354"
+  - id: u_bigguns
+    ship: dreadnought
+    slot: cannon
+    grade: 2
+    name: "\uCE58\uC988 \uB300\uC655 \uAC70\uD3EC"
+    lines:
+    - H
+    add:
+    - stat: splash
+      value: 40
+    mul:
+    - stat: dmg
+      value: 1.25
+    - stat: range
+      value: 1.1
+    desc: "\uD3EC\uD0C4 \uC704\uB825 +25%, \uC0AC\uAC70\uB9AC +10%, \uD3EC\uD0C4
+      \uD3ED\uBC1C (\uBC18\uC9C0\uB984 40)"
+  - id: u_belt
+    ship: dreadnought
+    slot: hull
+    grade: 3
+    name: "\uB300\uC655 \uC7A5\uAC11\uB300"
+    lines:
+    - H
+    - M
+    add:
+    - stat: hp
+      value: 150
+    - stat: repair
+      value: 20
+    mul:
+    - stat: dmgTaken
+      value: 0.75
+    desc: "\uC120\uCCB4 +150, \uBC1B\uB294 \uD53C\uD574 \u221225%, \uC6E8\uC774\uBE0C
+      \uC0AC\uC774 \uC218\uB9AC +20"
+  - id: u_harpoon
+    ship: missile
+    slot: figure
+    grade: 2
+    name: "\uD558\uD47C \uC720\uB3C4\uD0C4"
+    lines:
+    - S
+    add:
+    - stat: missileDmg
+      value: 15
+    mul:
+    - stat: missile
+      value: 0.75
+    desc: "\uC720\uB3C4\uD0C4 \uC704\uB825 +15 \xB7 \uAC04\uACA9 \u221225%"
+  - id: u_aegis
+    ship: missile
+    slot: scope
+    grade: 3
+    name: "\uC950 \uADC0 \uC704\uC0C1 \uB808\uC774\uB354"
+    lines:
+    - S
+    - M
+    - H
+    add:
+    - stat: crit
+      value: 0.2
+    - stat: evade
+      value: 0.12
+    - stat: vision
+      value: 300
+    mul:
+    - stat: range
+      value: 1.15
+    desc: "\uCE58\uBA85\uD0C0 +20%, \uC801 \uD3EC\uD0C4 12% \uBE57\uB098\uAC10, \uC0AC\uAC70\uB9AC
+      +15%, \uC2DC\uC57C +300"
+  - id: u_silent
+    ship: submarine
+    slot: hull
+    grade: 2
+    name: "\uD761\uC74C \uACE0\uBB34 \uC120\uCCB4"
+    lines:
+    - M
+    add:
+    - stat: evade
+      value: 0.2
+    - stat: hp
+      value: 80
+    mul: []
+    desc: "\uC801 \uD3EC\uD0C4 20% \uBE57\uB098\uAC10, \uC120\uCCB4 +80"
+  - id: u_wire
+    ship: submarine
+    slot: shot
+    grade: 3
+    name: "\uC720\uC120 \uC5B4\uB8B0 \uC77C\uC81C \uBC1C\uC0AC"
+    lines:
+    - M
+    add:
+    - stat: torpedoDmg
+      value: 40
+    - stat: kraken
+      value: 1
+    mul:
+    - stat: torpedo
+      value: 0.6
+    desc: "\uC5B4\uB8B0 \uC704\uB825 +40 \xB7 \uAC04\uACA9 \u221240%, \uCCB4\uC778\uC0F7\uC5D0
+      \uB9DE\uC740 \uC801 \uC8FC\uBCC0 1\uCD08 \uBB36\uC74C"
+  - id: u_wing
+    ship: carrier
+    slot: mortar
+    grade: 2
+    name: "\uC950 \uC870\uC885\uC0AC \uBE44\uD589\uB2E8"
+    lines:
+    - H
+    add:
+    - stat: planes
+      value: 2
+    - stat: planeDmg
+      value: 4
+    mul: []
+    desc: "\uD568\uC7AC\uAE30 +2, \uD568\uC7AC\uAE30 \uC704\uB825 +4"
+  - id: u_castle
+    ship: carrier
+    slot: figure
+    grade: 3
+    name: "\uD558\uB298 \uCE58\uC988\uC131 \uBB38\uC7A5"
+    lines:
+    - H
+    - M
+    add:
+    - stat: planes
+      value: 2
+    - stat: autoMortar
+      value: 4
+    - stat: plunder
+      value: 0.05
+    mul: []
+    desc: "\uD568\uC7AC\uAE30 +2, 4\uCD08\uB9C8\uB2E4 \uC790\uB3D9 \uD3ED\uACA9,
+      \uACA9\uCE68\uD558\uBA74 \uCCB4\uB825 5% \uD68C\uBCF5"
+  seas:
+  - id: harbor
+    name: "\uCE58\uC988 \uD56D\uAD6C \uC55E\uBC14\uB2E4"
+    col0: '#2f7fae'
+    col1: '#1b5a85'
+    mult: 1
+    rec: 0
+    trait: 
+    waves:
+    - sloop,sloop,mine
+    - sloop,sloop,mine,mine,rival
+    - sloop,sloop,sloop,rival,mine
+    boss: b_rival
+    story: "\uD56D\uAD6C\uB97C \uB9C9\uC544\uC120 \uB77C\uC774\uBC8C \uD574\uC801
+      '\uD68C\uC0C9\uAF2C\uB9AC'. \uCCAB \uBC14\uB2E4\uBD80\uD130 \uAE38\uC744 \uC5F0\uB2E4."
+  - id: reef
+    name: "\uC0C1\uC5B4 \uC554\uCD08"
+    col0: '#2a8f9a'
+    col1: '#17606e'
+    mult: 1.3
+    rec: 1
+    trait: 
+    waves:
+    - shark,shark,shark,sloop
+    - shark,shark,sloop,sloop,mine
+    - shark,shark,shark,shark,sloop,rival
+    boss: b_shark
+    story: "\uC9C0\uB290\uB7EC\uBBF8\uB9CC \uBCF4\uC774\uB294 \uC0C1\uC5B4 \uB5BC.
+      \uC5B4\uB8B0 \xB7 \uD3ED\uACA9\uB9CC \uBB3C\uC18D\uAE4C\uC9C0 \uB2FF\uC74C."
+  - id: patrol
+    name: "\uACE0\uC591\uC774 \uD574\uAD70 \uC21C\uCC30\uB300"
+    col0: '#2d6f9e'
+    col1: '#183f66'
+    mult: 1.7
+    rec: 1
+    trait: 
+    waves:
+    - frigate,sloop,speeder,speeder
+    - frigate,frigate,speeder,speeder,mine
+    - frigate,frigate,sloop,speeder,speeder,speeder
+    boss: b_admiral
+    story: "\uACE0\uC591\uC774 \uD574\uAD70 \uC81C\uB3C5\uC758 \uC21C\uCC30 \uD568\uB300.
+      \uCF8C\uC18D\uC815\uC774 \uB4E4\uC774\uBC1B\uC73C\uB7EC \uC634."
+  - id: den
+    name: "\uC548\uAC1C \uB080 \uD574\uC801 \uC18C\uAD74"
+    col0: '#3d6d7e'
+    col1: '#22414f'
+    mult: 2.2
+    rec: 2
+    trait: fog
+    waves:
+    - rival,rival,mine,mine
+    - rival,rival,rival,sloop
+    - rival,rival,rival,rival,mine,mine
+    boss: b_king
+    story: "\uD574\uC801\uC655 \uBE14\uB799\uB7AB\uC758 \uC18C\uAD74. \uC548\uAC1C
+      \uC18D\uC5D0\uC11C\uB294 \uB9DD\uC6D0\uACBD \xB7 \uB808\uC774\uB354\uAC00 \uD798."
+  - id: strait
+    name: "\uD3ED\uD48D \uD574\uD611"
+    col0: '#355f80'
+    col1: '#1a3550'
+    mult: 2.8
+    rec: 3
+    trait: storm
+    waves:
+    - shark,shark,frigate,rival
+    - mortar,frigate,shark,shark,speeder
+    - mortar,rival,rival,shark,shark,speeder
+    boss: b_shark2
+    story: "\uBC88\uAC1C\uAC00 \uB0B4\uB9AC\uCE58\uB294 \uD574\uD611. \uC0C1\uCC98
+      \uC785\uC740 \uAC70\uB300 \uC0C1\uC5B4\uAC00 \uB3CC\uC544\uC634."
+  - id: iron
+    name: "\uCCA0\uAC11 \uD568\uB300"
+    col0: '#3a6a8a'
+    col1: '#1f3d58'
+    mult: 3.5
+    rec: 3
+    trait: 
+    waves:
+    - ironclad,mortar,speeder,speeder
+    - ironclad,ironclad,mortar,frigate
+    - ironclad,ironclad,mortar,mortar,speeder,speeder
+    boss: b_admiral2
+    story: "\uC1E0\uB85C \uAC10\uC2FC \uACE0\uC591\uC774 \uD574\uAD70 \uC2E0\uD615
+      \uD568\uB300. \uC81C\uB3C5 \uAE30\uD568 Mk2 \uCD9C\uACA9."
+  - id: whirl
+    name: "\uC18C\uC6A9\uB3CC\uC774 \uBC14\uB2E4"
+    col0: '#2b6d8c'
+    col1: '#163a52'
+    mult: 4.3
+    rec: 4
+    trait: whirl
+    waves:
+    - rival,rival,frigate,shark,shark
+    - ironclad,mortar,rival,speeder,speeder
+    - ironclad,frigate,rival,rival,shark,shark,mortar
+    boss: b_king2
+    story: "\uBC14\uB2E4 \uD55C\uAC00\uC6B4\uB370 \uAC70\uB300\uD55C \uC18C\uC6A9\uB3CC\uC774.
+      \uD574\uC801\uC655\uC774 \uBCF5\uC218\uD558\uB7EC \uC634."
+  - id: hq
+    name: "\uACE0\uC591\uC774 \uD574\uAD70 \uBCF8\uC9C4"
+    col0: '#2e5f84'
+    col1: '#13304a'
+    mult: 5.2
+    rec: 5
+    trait: storm
+    waves:
+    - ironclad,ironclad,frigate,frigate,speeder
+    - ironclad,mortar,mortar,rival,shark,shark
+    - ironclad,ironclad,frigate,mortar,mortar,speeder,speeder
+    boss: b_fortress
+    story: "\uB300\uC81C\uB3C5\uC758 \uD574\uC0C1 \uC694\uC0C8. \uC774 \uBC14\uB2E4\uB97C
+      \uB118\uC73C\uBA74 \uC77C\uACF1 \uBC14\uB2E4\uAC00 \uC950\uC758 \uAC83."
+  slotTypes:
+  - id: cannon
+    name: "\uB300\uD3EC"
+    icon: {fileID: 21300000, guid: 3b9c325710404e045870c4cd74b48e97, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: 951e0c3773f77ef42b7cacded2f2d711, type: 3}
+  - id: sail
+    name: "\uB3DB \xB7 \uAE30\uAD00"
+    icon: {fileID: 21300000, guid: eba7ea524f2f60442b6d117f74cad5c0, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: 930bea3a912bb3d45aaddad4d9e5f7f1, type: 3}
+  - id: hull
+    name: "\uC120\uCCB4 \uC7A5\uAC11"
+    icon: {fileID: 21300000, guid: 497b57f45f43636438df606bac787753, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: 059faffec00e5d2439e7d582ee66f8dc, type: 3}
+  - id: rudder
+    name: "\uD0A4"
+    icon: {fileID: 21300000, guid: 3789e1474365acf4f8b6a82516046df7, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: b3f943d6f5324ea41b66a9f6c83ae470, type: 3}
+  - id: scope
+    name: "\uB9DD\uC6D0\uACBD"
+    icon: {fileID: 21300000, guid: 96f7b6ca1629f184a983abb33d5e12ff, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: c6159f366d13b1146b99c5a69baba5ba, type: 3}
+  - id: figure
+    name: "\uC120\uC218\uC0C1"
+    icon: {fileID: 21300000, guid: 71b4499afafc0984186f879965e0b332, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: 1bc82568394c84e47bdcfc386713a33b, type: 3}
+  - id: mortar
+    name: "\uBC15\uACA9\uD3EC"
+    icon: {fileID: 21300000, guid: 99ec2f3cf0ae4f1459623142c62be921, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: df25e0b4cce23e94cb2bcabfd4f0e59f, type: 3}
+  - id: shot
+    name: "\uD2B9\uC218\uD0C4 \uCC3D\uACE0"
+    icon: {fileID: 21300000, guid: b7d7e6d84c07df542836c75175a74c3f, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: a9311b49d5ac07d458a7e557190646dc, type: 3}
+  - id: crew
+    name: "\uC120\uC6D0\uC2E4"
+    icon: {fileID: 21300000, guid: 29d2728b80e674b43b0cd2bcbca47db0, type: 3}
+    uniqueIcon: {fileID: 21300000, guid: 2ed7b5c3e859911428eb47a26403dc61, type: 3}
+  items:
+  - id: invincible
+    name: "\uBB34\uC801\uAE30"
+    desc: "4\uCD08 \uB3D9\uC548 \uBAA8\uB4E0 \uD53C\uD574 \uBB34\uC2DC (\uAE08\uBE5B)
+      \u2014 \uBCF4\uC2A4 \uAD11\uC5ED \uD328\uD134 \xB7 \uD3EC\uC704 \uD0C8\uCD9C"
+    price: 60
+    icon: {fileID: 21300000, guid: f9accaaac6f3ff04aae96f51b92035d4, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    startCount: 1
+    dropWeight: 10
+    duration: 4
+  - id: shield
+    name: "\uBC29\uC5B4\uB9C9"
+    desc: "\uACF5\uACA9\uC744 3\uBC88 \uB9C9\uC74C (\uD558\uB298\uC0C9 \uBC84\uBE14)
+      \u2014 \uCE21\uBA74 \uC0AC\uACA9 \uB300\uACB0 \xB7 \uC704\uCE58 \uC7A1\uAE30"
+    price: 30
+    icon: {fileID: 21300000, guid: 62564a3923b66c54191530a19350cfeb, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    startCount: 1
+    dropWeight: 25
+    duration: 0
+  - id: booster
+    name: "\uBD80\uC2A4\uD130"
+    desc: "1.2\uCD08 \uB3D9\uC548 \uC18D\uB3C4 \xD72.6, \uBD80\uB52A\uD78C \uC801\uC5D0\uAC8C
+      \uD53C\uD574 40 \u2014 \uCF8C\uC18D\uC815 \xB7 \uC0C1\uC5B4 \uBB34\uB9AC \uB3CC\uD30C"
+    price: 25
+    icon: {fileID: 21300000, guid: 7cae737dfcc28974da01ff291f9cdd42, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    startCount: 1
+    dropWeight: 25
+    duration: 1.2
+  - id: power_shot
+    name: "\uD3EC\uD0C4 \uAC15\uD654"
+    desc: "8\uCD08 \uB3D9\uC548 \uD3EC\uD0C4 \uD53C\uD574 \xD71.5, \uB9DE\uC740 \uACF3
+      \uD3ED\uBC1C (\uBC18\uC9C0\uB984 60) \u2014 \uC801\uC774 \uBAB0\uB824 \uC788\uC744
+      \uB54C \xB7 \uCCA0\uAC11\uD568"
+    price: 40
+    icon: {fileID: 21300000, guid: 8a304b89b1444ba4f91d934fdecc1110, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    startCount: 1
+    dropWeight: 20
+    duration: 8
+  - id: rapid_fire
+    name: "\uC0AC\uACA9 \uC18D\uB3C4 \uAC15\uD654"
+    desc: "6\uCD08 \uB3D9\uC548 \uC7A5\uC804 0.25\uCD08 \u2014 \uBCF4\uC2A4 \uC57D\uC810
+      \xB7 \uC9C0\uCE5C \uC0C1\uC5B4 \uB178\uB9B4 \uB54C"
+    price: 40
+    icon: {fileID: 21300000, guid: 18005ae60116c4f4b9babfb99a59bded, type: 3}
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    startCount: 1
+    dropWeight: 20
+    duration: 6
+  hpBuff: 1.15
+  dmgBuff: 1.1
+  takenBuff: 0.93
+  rangeBuff: 1.05
+  eraArmor:
+  - 1
+  - 1
+  - 0.97
+  - 0.94
+  - 0.91
+  - 0.88
+  lightHull: 1.05
+  gradeNames:
+  - "\uC77C\uBC18"
+  - "\uACE0\uAE09"
+  - "\uD76C\uADC0"
+  - "\uC804\uC124"
+  gradeColors:
+  - {r: 0.79, g: 0.82, b: 0.86, a: 1}
+  - {r: 0.5, g: 0.85, b: 0.54, a: 1}
+  - {r: 0.44, g: 0.72, b: 1, a: 1}
+  - {r: 1, g: 0.72, b: 0.3, a: 1}
+  builtEnemies:
+  - sloop
+  - frigate
+  - mortar
+  - speeder
+  - rival
+  - mine
+  - shark
+  - ironclad
+  - b_rival
+  - b_shark
+  - b_shark2
+  - b_admiral
+  - b_admiral2
+  - b_king
+  - b_king2
+  - b_fortress
+  eras:
+  - "\uACE0\uB300"
+  - "\uB300\uD56D\uD574\uC2DC\uB300"
+  - "\uBC94\uC120 \uC804\uC131\uAE30"
+  - "\uC99D\uAE30\uC120 \uC2DC\uB300"
+  - "\uAC15\uCCA0 \uAD70\uD568"
+  - "\uD604\uB300"
