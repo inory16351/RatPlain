@@ -25,18 +25,28 @@ public class Sfx : MonoBehaviour
     {
         inst = this;
         foreach (var e in clips) if (e.clip) byName[e.name] = e;
-        AudioListener.volume = PlayerPrefs.GetInt("mute", 0) == 1 ? 0 : 1;
+        Apply();
     }
 
     // M = 소리 끄기 · 켜기 (음악까지, 저장됨)
     void Update()
     {
         var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb == null || !kb.mKey.wasPressedThisFrame) return;
-        bool mute = AudioListener.volume > 0;
-        AudioListener.volume = mute ? 0 : 1;
-        PlayerPrefs.SetInt("mute", mute ? 1 : 0); PlayerPrefs.Save();
+        if (kb != null && kb.mKey.wasPressedThisFrame) Muted = !Muted;
     }
+
+    // 소리 설정 (PlayerPrefs "mute" · "volume", 로비 설정 창 · M 키)
+    public static bool Muted
+    {
+        get => PlayerPrefs.GetInt("mute", 0) == 1;
+        set { PlayerPrefs.SetInt("mute", value ? 1 : 0); PlayerPrefs.Save(); Apply(); }
+    }
+    public static float Volume
+    {
+        get => PlayerPrefs.GetFloat("volume", 1);
+        set { PlayerPrefs.SetFloat("volume", Mathf.Clamp01(value)); PlayerPrefs.Save(); Apply(); }
+    }
+    static void Apply() => AudioListener.volume = Muted ? 0 : Volume;
 
     public static void Play(string name, float volume = 1, float pitch = 1)
     {

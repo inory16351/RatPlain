@@ -100,7 +100,9 @@ public class GameManager : MonoBehaviour
     // 멈칫(맞는 순간) · 슬로모션(보스 격침 · 침몰) · 일시정지 = Time.timeScale
     float hitStopT, slowT;
     bool paused;
-    public bool Paused => paused;
+    public bool Paused => paused || (exitMenu && exitMenu.IsOpen);
+    [Tooltip("Esc 확인 배너 (예 = 전투 결과 없이 로비로)")]
+    public ExitMenu exitMenu;
     public void HitStop(float t) { hitStopT = Mathf.Max(hitStopT, t); }
     public void SlowMo(float t) { slowT = Mathf.Max(slowT, t); }
     void OnDestroy() { Time.timeScale = 1; }
@@ -125,6 +127,7 @@ public class GameManager : MonoBehaviour
 
 void Start()
     {
+        if (exitMenu) exitMenu.onYes = () => { Time.timeScale = 1; GameSession.last = null; TitleScreen.lobbyNext = true; SceneManager.LoadScene(portScene); };
         // 항구에서 고른 바다 (바로 이 장면을 틀면 저장된 마지막 바다)
         if (Shipyard.DB)
         {
@@ -142,15 +145,16 @@ void Start()
     {
         float dt = Time.deltaTime, u = Time.unscaledDeltaTime;
         var kb = Keyboard.current;
-        // P · Esc = 일시정지, 일시정지 중 X = 항구로 후퇴 (침몰로 쳐서 전리품 절반)
+        // P = 일시정지, 일시정지 중 X = 항구로 후퇴 (침몰로 쳐서 전리품 절반), Esc = 메인메뉴 확인 배너 (열려 있는 동안 멈춤)
         if (kb != null && state == 0)
         {
-            if (kb.pKey.wasPressedThisFrame || kb.escapeKey.wasPressedThisFrame) paused = !paused;
+            if (kb.escapeKey.wasPressedThisFrame && exitMenu) { if (exitMenu.IsOpen) exitMenu.Close(); else exitMenu.Open(); }
+            else if (kb.pKey.wasPressedThisFrame || (kb.escapeKey.wasPressedThisFrame && !exitMenu)) paused = !paused;
             if (paused && kb.xKey.wasPressedThisFrame) { paused = false; player.hp = 0; }
         }
         if (hitStopT > 0) hitStopT -= u;
         if (slowT > 0) slowT -= u;
-        Time.timeScale = paused || hitStopT > 0 ? 0 : slowT > 0 ? 0.3f : 1;
+        Time.timeScale = Paused || hitStopT > 0 ? 0 : slowT > 0 ? 0.3f : 1;
         if ((comboT -= dt) <= 0) combo = 0;
         if (msgT > 0) msgT -= dt;
         if (state == 0)

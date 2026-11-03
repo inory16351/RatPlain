@@ -77,7 +77,8 @@ public class HUD : MonoBehaviour
             if (p.hp / p.maxHp < 0.3f && !gm.Over) a = Mathf.Max(a, 0.1f + 0.07f * Mathf.Sin(Time.time * 6));
             damageFlash.color = new Color(0.78f, 0.1f, 0.08f, a);
         }
-        if (pausePanel && pausePanel.activeSelf != gm.Paused) pausePanel.SetActive(gm.Paused);
+        bool pp = gm.Paused && !(gm.exitMenu && gm.exitMenu.IsOpen); // Esc 배너가 떠 있을 땐 일시정지 안내 숨김
+        if (pausePanel && pausePanel.activeSelf != pp) pausePanel.SetActive(pp);
         goldText.text = gm.gold.ToString();
         plankText.text = gm.plank.ToString();
         if (crewText) crewText.text = $"선원 {p.crew}  <size=15>장전 −{Mathf.RoundToInt(Mathf.Min(p.crewMax, p.crew) * p.crewReload * 100)}%</size>";

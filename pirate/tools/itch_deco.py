@@ -122,7 +122,7 @@ def framed(paths, name, w=1200, gap=16):
     out.save(f"{OUT}/{name}.png")
 
 
-framed(["sea3_dread"], "shot_broadside")
-framed(["sea2_frigate"], "shot_seas")
-framed(["boss_shark", "boss_fortress"], "shot_bosses")
+framed(["u_broadside"], "shot_broadside")  # Unity 화면 (u_*), 웹 화면은 sea3_dread 등
+framed(["u_seas"], "shot_seas")
+framed(["u_boss_shark", "u_boss_fortress"], "shot_bosses")
 print("ok")
