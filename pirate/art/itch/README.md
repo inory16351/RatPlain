@@ -1,9 +1,11 @@
-# itch.io 페이지 (쥐 해적) 자료
+# itch.io 페이지 (Pirat of the Caribbean) 자료
 
-- 페이지: https://inoryw82-1.itch.io/rat-pirates (Draft, 편집 https://itch.io/game/edit/5291097)
+- 페이지: https://inoryw82-1.itch.io/rat-pirates (Draft, 편집 https://itch.io/game/edit/5291097). 제목 "Pirat of the Caribbean" (한글 이름 안 붙임), 주소는 rat-pirates 그대로
 - `page.html` = 설명 본문 (영/한 병기)
-- `cover_gpt.jpg` 630x500 · `banner_gpt.jpg` 960x300 = ChatGPT 웹(크롬)으로 뽑은 1536x1024 그림을 잘라 씀 (참조: `../src/title_art.png` · `ref_style_top.png` · `ref_pirate.png`). 원본 1536x1024 는 ChatGPT 채팅 "Generate game cover image" 에만 있음
-- 크롬 → 로컬 수신기 연결이 막혀서, 그림은 ChatGPT 탭에서 itch 팝업 탭으로 postMessage 로 넘겨 바로 올림. 로컬 사본은 itch CDN 에서 받음
-- `prompt_cover_art.txt` · `prompt_banner_art.txt` = Codex 로 새로 뽑을 프롬프트 (로고 글자 "RAT PIRATES" 포함). 참조 `-i ../src/title_art.png -i ../src/ref_style_top.png -i ../src/ref_pirate.png`
+- `cover_v2.jpg` 630x500 · `banner_v2.jpg` 960x300 · `bg_v2.jpg` 1920x1280 (테마 Background, 양옆 그림) = Codex 로 뽑은 1536x1024 원본(`*_v2.png`)을 자름. 프롬프트 `prompt_*_v2.txt`, 참조 `-i cover_gpt.jpg -i ../src/title_art.png -i ../src/ref_style_top.png -i ../src/ref_pirate.png`
+- `logo.png` = 로비용 투명 로고 (원본 `logo_v2.png` 마젠타 배경 → 키잉 · 여백 자름). Unity 메인 로비에 쓸 것
+- `cover_gpt.jpg` · `banner_gpt.jpg` = 이전 이름(RAT PIRATES) 그림, 새 그림 프롬프트의 그림체 참조로 씀
+- 테마: BG #1d617d (bg_v2 아래쪽 바다색) · BG2 #f3e8d2 · 글자 #3d2b1f · 링크 #b8473a · Background no-repeat · 가운데 · Fixed · Screenshots = Sidebar
 - `shots/` = 게임 캔버스 캡처 1280x720 (`?rich=1&allseas=1&allships=1&god=1`, 콘솔에서 `PG.start(바다)` · `PG.G.wave` 로 보스 바로 부름)
-- 테마: BG #24566f · BG2 #f3e8d2 · 글자 #3d2b1f · 링크 #b8473a
+- 업로드 방법: 크롬 확장으로 `HTMLInputElement.prototype.click` 을 가로채 파일 입력칸을 페이지에 띄운 뒤 file_upload (한 번에 10MB 까지)
+- 남은 것: 게임 파일 없음 (임베드 자리에 "No file provided to embed"). Unity Pirate_1 WebGL 빌드 (`Assets/Editor/WebGLBuild.cs`, 결과 `build/Pirate_1_WebGL`) 를 zip 해서 올릴 예정. 첫 배치 빌드는 emcc 크래시(0xC0000005)로 실패, 다시 돌리면 됨

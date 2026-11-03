@@ -38,3 +38,12 @@ Pirate_1/[Uu]ser[Ss]ettings/
 Pirate_1/*.slnx
 Pirate_1/*.sln
 Pirate_1/*.csproj
+# Unity Pirate_1 (쥐 해적)
+Pirate_1/[Ll]ibrary/
+Pirate_1/[Tt]emp/
+Pirate_1/[Oo]bj/
+Pirate_1/[Ll]ogs/
+Pirate_1/[Uu]ser[Ss]ettings/
+Pirate_1/*.sln
+Pirate_1/*.slnx
+Pirate_1/*.csproj

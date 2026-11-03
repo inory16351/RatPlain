@@ -1,0 +1,10 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: logo_v2.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached cover_gpt.jpg is our current store cover and title_art.png is our title key art (a one-eyed PIRATE MOUSE captain in a black tricorn hat with gold trim, eye patch, pink ears, sailing a small wooden mouse-shaped ship with a red cheese-and-crossbones sail, fighting the CAT NAVY with paw-print sails and sharks). The other attached images show the original art style. Match cover_gpt.jpg exactly in logo style, art style, palette and characters.
+
+The game is renamed. The new logo text is exactly "PIRAT OF THE CARIBBEAN" (spell exactly P-I-R-A-T  O-F  T-H-E  C-A-R-I-B-B-E-A-N, note PIRAT has no letter E at the end). Logo style like cover_gpt.jpg: big bold chunky playful cream letters with a thick dark brown outline and flat shadow; "PIRAT" is the biggest word on the first line, "OF THE" small in the middle, "CARIBBEAN" on the last line; a small black pirate hat with crossed bones sits on top of the logo. No other text anywhere.
+
+- ART STYLE: soft flat 2D vector illustration, muted slightly desaturated warm natural colors, simple rounded big shapes, flat fills with one subtle shadow tone, NO gradients, NO glossy highlights, NO 3D, NO anime style, few small details.
+
+Image spec:
+- 1536x1024 image of ONLY the game logo (with the small pirate hat and crossed bones on top), centered, filling about 80% of the width, on a perfectly flat solid pure magenta background (#FF00FF) for chroma keying. Nothing else: no ship, no characters, no sea, no shadow on the background, no magenta inside the logo.
