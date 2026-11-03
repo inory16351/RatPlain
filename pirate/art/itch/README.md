@@ -10,4 +10,4 @@
 - 테마: BG #1d617d (bg_v2 아래쪽 바다색) · BG2 #f3e8d2 · 글자 #3d2b1f · 링크 #b8473a · Background no-repeat · 가운데 · Fixed · Screenshots = Hidden (스크린샷은 설명 본문에 넣음)
 - `shots/` = 게임 캔버스 캡처 1280x720 (`?rich=1&allseas=1&allships=1&god=1`, 콘솔에서 `PG.start(바다)` · `PG.G.wave` 로 보스 바로 부름)
 - 업로드 방법: 크롬 확장으로 `HTMLInputElement.prototype.click` 을 가로채 파일 입력칸을 페이지에 띄운 뒤 file_upload (한 번에 10MB 까지)
-- 남은 것: 게임 파일 없음 (임베드 자리에 "No file provided to embed"). Unity Pirate_1 WebGL 빌드 (`Assets/Editor/WebGLBuild.cs`, 결과 `build/Pirate_1_WebGL`) 를 zip 해서 올릴 예정. 첫 배치 빌드는 emcc 크래시(0xC0000005)로 실패, 다시 돌리면 됨
+- 남은 것 · Unity 쪽 할 일 = `docs/쥐해적_유니티_핸드오프.md` (로비 · ESC 확인 배너 · WebGL 빌드 · 업로드 · Unity 화면 스크린샷). 설명의 큰 삽화 4장은 `deco/*_s.png` (900 폭 캔버스 가운데에 작게) 로 교체함
