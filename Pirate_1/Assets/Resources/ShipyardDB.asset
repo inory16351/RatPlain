@@ -811,11 +811,13 @@ MonoBehaviour:
     - stat: turn
       value: 0.85
     - stat: dmg
-      value: 1.35
+      value: 1.1
     - stat: dmgTaken
       value: 0.77
     - stat: range
       value: 1.21
+    - stat: reload
+      value: 1.2
     slots:
     - cannon
     - sail
