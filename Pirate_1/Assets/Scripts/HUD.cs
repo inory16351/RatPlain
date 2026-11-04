@@ -38,14 +38,14 @@ public class HUD : MonoBehaviour
         if (Shipyard.DB)
         {
             var s = Shipyard.Compute().ship;
-            shipName = s.name + "  ";
+            shipName = Shipyard.ShipName(s) + "  ";
             if (portrait && captainPortraits != null && captainPortraits.Length > 0) portrait.sprite = captainPortraits[Mathf.Clamp(s.tier, 0, captainPortraits.Length - 1)];
         }
         // 자동 무기 목록 (가진 것만)
         var autos = new System.Collections.Generic.List<string>();
-        if (p.bow > 0) autos.Add("선수포"); if (p.torpedo > 0) autos.Add("어뢰"); if (p.missile > 0) autos.Add("유도탄");
-        if (p.autoMortar > 0) autos.Add("자동 폭격"); if (p.planes > 0) autos.Add($"함재기 ×{Mathf.RoundToInt(p.planes)}");
-        if (autosText) autosText.text = autos.Count > 0 ? "자동: " + string.Join(" · ", autos) : "";
+        if (p.bow > 0) autos.Add(Loc.T("auto.bow")); if (p.torpedo > 0) autos.Add(Loc.T("auto.torpedo")); if (p.missile > 0) autos.Add(Loc.T("auto.missile"));
+        if (p.autoMortar > 0) autos.Add(Loc.T("auto.mortar")); if (p.planes > 0) autos.Add(Loc.F("auto.planes", Mathf.RoundToInt(p.planes)));
+        if (autosText) autosText.text = autos.Count > 0 ? Loc.F("hud.autos", string.Join(" · ", autos)) : "";
     }
     public GameObject bossBar;
     public RectTransform bossFill;
@@ -57,17 +57,17 @@ public class HUD : MonoBehaviour
         var p = gm.player;
         hpFill.localScale = new Vector3(Mathf.Clamp01(p.hp / p.maxHp), 1, 1);
         hpText.text = $"{shipName}{Mathf.CeilToInt(Mathf.Max(0, p.hp))} / {p.maxHp:0}";
-        Reload(reloadLeft, reloadLeftImg, reloadLeftText, "Q 왼쪽", p.Cooldown(-1), p);
-        Reload(reloadRight, reloadRightImg, reloadRightText, "E 오른쪽", p.Cooldown(1), p);
-        if (sailText) sailText.text = $"돛 {Mathf.RoundToInt(p.sail * 100)}%";
+        Reload(reloadLeft, reloadLeftImg, reloadLeftText, Loc.T("hud.left"), p.Cooldown(-1), p);
+        Reload(reloadRight, reloadRightImg, reloadRightText, Loc.T("hud.right"), p.Cooldown(1), p);
+        if (sailText) sailText.text = Loc.F("hud.sail", Mathf.RoundToInt(p.sail * 100));
         if (comboRoot)
         {
             bool on = gm.combo >= 3 && !gm.Over;
             if (comboRoot.activeSelf != on) comboRoot.SetActive(on);
             if (on)
             {
-                comboText.text = $"{gm.combo} 콤보!"; comboText.color = gm.combo >= 10 ? new Color(1f, 0.54f, 0.16f) : new Color(1f, 0.85f, 0.29f);
-                comboSub.text = $"금화 +{Mathf.FloorToInt(gm.combo / 5f) * 10}%";
+                comboText.text = Loc.F("hud.combo", gm.combo); comboText.color = gm.combo >= 10 ? new Color(1f, 0.54f, 0.16f) : new Color(1f, 0.85f, 0.29f);
+                comboSub.text = Loc.F("hud.combo_gold", Mathf.FloorToInt(gm.combo / 5f) * 10);
                 comboRoot.transform.localScale = Vector3.one * (1 + Mathf.Min(0.5f, gm.combo * 0.02f));
             }
         }
@@ -81,9 +81,9 @@ public class HUD : MonoBehaviour
         if (pausePanel && pausePanel.activeSelf != pp) pausePanel.SetActive(pp);
         goldText.text = gm.gold.ToString();
         plankText.text = gm.plank.ToString();
-        if (crewText) crewText.text = $"선원 {p.crew}  <size=15>장전 −{Mathf.RoundToInt(Mathf.Min(p.crewMax, p.crew) * p.crewReload * 100)}%</size>";
+        if (crewText) crewText.text = Loc.F("hud.crew", p.crew, Mathf.RoundToInt(Mathf.Min(p.crewMax, p.crew) * p.crewReload * 100));
         bool bossWave = gm.wave > gm.waves.Length;
-        waveText.text = bossWave ? "보스" : $"웨이브 {gm.wave}/{gm.waves.Length}";
+        waveText.text = bossWave ? Loc.T("hud.boss") : Loc.F("hud.wave", gm.wave, gm.waves.Length);
         if (waveIcon) waveIcon.sprite = bossWave ? bossSprite : waveSprite;
         if (killText) killText.text = gm.kills.ToString();
 
@@ -94,10 +94,10 @@ public class HUD : MonoBehaviour
 
         var boss = gm.bossShip;
         bossBar.SetActive(boss);
-        if (boss) { bossName.text = boss.displayName; bossFill.localScale = new Vector3(Mathf.Clamp01(boss.hp / boss.maxHp), 1, 1); }
+        if (boss) { bossName.text = boss.Name; bossFill.localScale = new Vector3(Mathf.Clamp01(boss.hp / boss.maxHp), 1, 1); }
 
         var held = p.items.HeldItem;
-        hintText.text = gm.Looting ? $"전리품을 줍고  Enter = 항구로 · R = 다시 하기   ({Mathf.CeilToInt(gm.lootLeft)}초 뒤 자동으로 항구)" : held != null ? $"F = {held.name} 사용" : "적 · 보급 상자를 부숴 아이템 얻기";
+        hintText.text = gm.Looting ? Loc.F("hud.hint_loot", Mathf.CeilToInt(gm.lootLeft)) : held != null ? Loc.F("hud.hint_use", held.Name) : Loc.T("hud.hint_none");
     }
 
 

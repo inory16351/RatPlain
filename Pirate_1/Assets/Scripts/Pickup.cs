@@ -43,7 +43,7 @@ public class Pickup : MonoBehaviour
         float d = Vector2.Distance(p, mp);
         float pull = kind == PickupKind.Swimmer ? me.pickup * 0.75f : me.pickup;
         if (kind != PickupKind.Chest && d < pull) transform.position = p + (mp - p) * Mathf.Min(1, dt * 4);
-        if (kind == PickupKind.Swimmer && Random.value < dt * 0.5f) gm.Text(p + new Vector2(0.18f, 0.1f), "찍!", Color.white);
+        if (kind == PickupKind.Swimmer && Random.value < dt * 0.5f) gm.Text(p + new Vector2(0.18f, 0.1f), Loc.T("float.squeak"), Color.white);
         if (d < (kind == PickupKind.Chest ? 0.46f + me.len * 0.2f : kind == PickupKind.Swimmer ? 0.34f : 0.32f)) Collect();
     }
 
@@ -71,12 +71,12 @@ public class Pickup : MonoBehaviour
                 items.Take(item);
                 Sfx.Play("chest", 0.6f, 1.2f);
                 gm.Sparkle(p);
-                gm.Text(p, swap ? $"{items.slots[item].name} (교체)" : items.slots[item].name, new Color(0.6f, 0.95f, 1f), true);
+                gm.Text(p, swap ? Loc.F("float.swap", items.slots[item].Name) : items.slots[item].Name, new Color(0.6f, 0.95f, 1f), true);
                 break;
             case PickupKind.Chest:
                 gm.gold += value; gm.plank += plank;
                 Sfx.Play("chest");
-                gm.Text(p, $"보물! +{value}", new Color(1f, 0.85f, 0.29f), true);
+                gm.Text(p, Loc.F("float.treasure_n", value), new Color(1f, 0.85f, 0.29f), true);
                 gm.Blast(p, 0.5f);
                 break;
         }

@@ -61,6 +61,7 @@ public class TitleScreen : MonoBehaviour
         if (settingsPanel) settingsPanel.SetActive(false);
         if (exitMenu) exitMenu.onYes = OpenLobby;
         RefreshLobby();
+        Loc.Changed += RefreshLobby;
         if (confirmPanel) confirmPanel.SetActive(false);
         if (confirmYes) confirmYes.onClick.AddListener(StartNew);
         if (confirmNo) confirmNo.onClick.AddListener(() => { Sfx.Play("ui_click"); confirmPanel.SetActive(false); });
@@ -73,12 +74,14 @@ public class TitleScreen : MonoBehaviour
         if (storyFirst) { storyFirst = false; OpenStory(); }
     }
 
+    void OnDestroy() { Loc.Changed -= RefreshLobby; }
+
     // 기록 유무에 따라 이어하기 버튼 · 기록 요약
     void RefreshLobby()
     {
         bool has = Shipyard.HasSave;
         titleGo.gameObject.SetActive(has);
-        if (titleGoText) titleGoText.text = "이어서 출항하기";
+        if (titleGoText) titleGoText.text = Loc.T("lobby.continue");
         if (saveInfo) saveInfo.text = has ? Shipyard.SaveSummary() : "";
     }
 

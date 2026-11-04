@@ -10,6 +10,8 @@ public class ItemSlot
     public string id;
     public string name;
     public Sprite icon;
+    // 화면 이름 (스트링 테이블 item.<id>.name)
+    public string Name => Shipyard.ItemName(id, name);
     public Color tint = Color.white;
 }
 
@@ -59,7 +61,7 @@ public class ItemSlots : MonoBehaviour
         if (Held < 0)
         {
             Sfx.Play("deny");
-            gm.Text(gm.player.transform.position + Vector3.up * 0.4f, "아이템 없음", new Color(0.8f, 0.85f, 0.9f));
+            gm.Text(gm.player.transform.position + Vector3.up * 0.4f, Loc.T("float.no_item"), new Color(0.8f, 0.85f, 0.9f));
             return;
         }
         if (!gm.player.Activate(slots[Held].id)) return;

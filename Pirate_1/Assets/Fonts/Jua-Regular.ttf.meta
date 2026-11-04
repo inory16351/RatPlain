@@ -10,7 +10,8 @@ TrueTypeFontImporter:
   includeFontData: 1
   fontNames:
   - Jua
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 104877900310423189aa56d9b676a6c0, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

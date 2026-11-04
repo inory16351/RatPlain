@@ -133,7 +133,7 @@ void Start()
         {
             seaIndex = Mathf.Clamp(GameSession.sea >= 0 ? GameSession.sea : Shipyard.Save.pick, 0, Shipyard.DB.seas.Count - 1);
             var S = Shipyard.DB.seas[seaIndex];
-            seaName = S.name; story = S.story; hpMult = S.mult; waves = Shipyard.WavesOf(seaIndex); boss = S.boss;
+            seaName = Shipyard.SeaName(S); story = Shipyard.SeaStory(S); hpMult = S.mult; waves = Shipyard.WavesOf(seaIndex); boss = S.boss;
             if (seaTint && ColorUtility.TryParseHtmlString(S.col0, out var c)) seaTint.color = Color.Lerp(Color.white, c * 1.6f, 0.35f);
         }
         if (weather) weather.Begin(Shipyard.DB ? Shipyard.DB.seas[seaIndex].trait : "", player);
@@ -174,14 +174,14 @@ void Start()
                     state = 1; lootLeft = lootTime;
                     if (bgm) bgm.Stop();
                     Sfx.Play("win");
-                    Message("승리!", "떨어진 금화 · 목재를 줍고  Enter = 항구로 · R = 다시 하기", 4f);
+                    Message(Loc.T("msg.win"), Loc.T("msg.win_sub"), 4f);
                 }
                 else
                 {
                     waiting = true; waveT = 2.6f;
                     float fix = Mathf.Round(player.repair + player.crew + player.maxHp * player.waveRepairFrac); // 선원이 많을수록 더 고침 + 최대 체력 비례
                     player.hp = Mathf.Min(player.maxHp, player.hp + fix);
-                    Text(player.transform.position + Vector3.up * 0.3f, $"수리 +{fix:0}", new Color(0.5f, 1f, 0.55f));
+                    Text(player.transform.position + Vector3.up * 0.3f, Loc.F("float.repair", fix.ToString("0")), new Color(0.5f, 1f, 0.55f));
                 }
             }
             if (waiting && (waveT -= dt) <= 0) { waiting = false; NextWave(); }
@@ -212,8 +212,8 @@ void Start()
         }
         GameSession.last = r;
         if (!win) Sfx.Play("lose"); // 이긴 소리는 전리품 줍기 시작할 때
-        string got = $"금화 +{r.gotCoin} · 판자 +{r.gotPlank} · 격침 {kills} · 구조 {rescued}" + (win ? "" : "  (침몰 — 절반만)");
-        Message(win ? "승리!" : "침몰…", got + "\nEnter = 항구로 · R = 다시 하기", 999);
+        string got = Loc.F("msg.result", r.gotCoin, r.gotPlank, kills, rescued) + (win ? "" : "  " + Loc.T("msg.result_half"));
+        Message(win ? Loc.T("msg.win") : Loc.T("msg.lose"), got + "\n" + Loc.T("msg.result_keys"), 999);
     }
 
 
@@ -225,7 +225,7 @@ void Start()
             bossShip = Spawn(boss, FreeSpot(8f, 11f));
             int n = 0;
             foreach (var k in waves[0].Split(',')) if (k.Trim() != "mine" && n++ < 2) Spawn(k.Trim(), FreeSpot(7f, 13f));
-            Message(bossShip ? bossShip.displayName : boss, "보스 출현!", 3f);
+            Message(bossShip ? bossShip.Name : Loc.T("foe." + boss, boss), Loc.T("msg.boss"), 3f);
             PlayMusic(bossClip);
             Sfx.Play("roar");
             CameraFollow.Shake(10);
@@ -235,7 +235,7 @@ void Start()
             foreach (var k in waves[wave - 1].Split(',')) Spawn(k.Trim(), FreeSpot(7f, 13f));
             for (int i = 0; i < treasurePerWave; i++) SpawnTreasure();
             if (Random.value < extraTreasureChance) SpawnTreasure();
-            Message($"{seaName} · 웨이브 {wave}/{waves.Length}", wave == 1 ? story : "", 2.8f);
+            Message(Loc.F("msg.wave", seaName, wave, waves.Length), wave == 1 ? story : "", 2.8f);
             Sfx.Play("wave");
         }
     }
@@ -406,7 +406,7 @@ void Start()
         if (exploded || f.ai == FoeAI.Mine) { Blast(p, 1f); CameraFollow.Shake(8); Sfx.Boom(2); }
         else { Splash(p, true); Sfx.Play("sink"); HitStop(0.05f); }
         if (f.boss != BossKind.None) SlowMo(1.2f);
-        if (f.displayName.Contains("고양이")) Sfx.Play("meow");
+        if (f.displayName.Contains("고양이")) Sfx.Play("meow"); // 프리팹의 한국어 원문으로 고양이 배인지 봄 (화면 이름은 f.Name)
         float spread = 0.4f * (1 + f.len / 2f);
         bool ship = f.boss == BossKind.None && (f.ai == FoeAI.Ship || f.ai == FoeAI.Mortar || f.ai == FoeAI.Speeder);
         int coins = Mathf.CeilToInt(f.gold * (ship ? shipGoldMul : 1) * goldMul * LootMult * (1 + player.goldBonus) * ComboBonus / 5f);
@@ -425,7 +425,7 @@ void Start()
         if (f == bossShip)
         {
             bossShip = null;
-            Message($"{f.displayName} 격침!", "", 2.4f);
+            Message(Loc.F("msg.sunk", f.Name), "", 2.4f);
             CameraFollow.Shake(24);
         }
         if (f.ai == FoeAI.Mine) Destroy(f.gameObject); else f.BeginSink(); // 배는 천천히 기울며 가라앉음

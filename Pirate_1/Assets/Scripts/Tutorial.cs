@@ -98,12 +98,12 @@ public class Tutorial : MonoBehaviour
         if (s >= steps.Length)
         {
             step = -1; gm.tutorialSafe = false;
-            boxText.text = doneText; doneT = 3.5f;
+            boxText.text = Loc.T("tut.done", doneText); doneT = 3.5f;
             Sfx.Play("clear", 0.6f);
             return;
         }
         box.SetActive(true);
-        boxText.text = steps[s];
+        boxText.text = Loc.T("tut.step" + s, steps[s]); // 스트링 테이블 tut.step0~5 (없으면 인스펙터 글자)
         if (s > 0) Sfx.Play("ui_click", 0.7f);
     }
 
@@ -182,7 +182,7 @@ public class Tutorial : MonoBehaviour
         {
             var t = queue.Dequeue(); tipAt = queueAt.Dequeue();
             if (!tipAt) return;
-            tipTitle.text = t.title; tipText.text = t.text;
+            tipTitle.text = Loc.T($"tip.{t.key}.title", t.title); tipText.text = Loc.T($"tip.{t.key}.text", t.text);
             tip.gameObject.SetActive(true);
             tipT = tipTime;
             Sfx.Play("ui_click", 0.5f, 1.3f);

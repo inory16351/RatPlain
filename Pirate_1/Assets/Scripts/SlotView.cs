@@ -24,7 +24,7 @@ public class SlotView : MonoBehaviour
         var s = items.HeldItem;
         icon.enabled = s != null;
         if (s != null) { icon.sprite = s.icon; icon.color = s.tint; }
-        label.text = s != null ? s.name : "빈 칸";
+        label.text = s != null ? s.Name : Loc.T("slot.empty");
         label.color = s != null ? Color.white : new Color(0.7f, 0.74f, 0.8f);
         if (key) key.color = s != null ? Color.white : new Color(0.6f, 0.6f, 0.6f);
         frame.color = s != null ? full : empty;

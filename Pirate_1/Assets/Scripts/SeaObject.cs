@@ -69,7 +69,7 @@ public class SeaObject : MonoBehaviour
         else gm.Debris(p, radius * 4);
         int gold = Random.value < goldChance ? Random.Range(goldMin, goldMax + 1) : 0;
         if (goldMax > 0 || plank > 0 || itemChance > 0) gm.DropLoot(p, gold, plank, itemChance, radius * 2);
-        if (kind == SeaObjectKind.Treasure) { gm.Text(p, "보물!", new Color(1f, 0.85f, 0.29f), true); Sfx.Play("chest"); gm.Sparkle(p); }
+        if (kind == SeaObjectKind.Treasure) { gm.Text(p, Loc.T("float.treasure"), new Color(1f, 0.85f, 0.29f), true); Sfx.Play("chest"); gm.Sparkle(p); }
         else if (kind == SeaObjectKind.Supply) Sfx.Play("wood");
         Destroy(gameObject);
     }

@@ -11,6 +11,8 @@ public class EnemyShip : MonoBehaviour
     [Header("종류")]
     public string kind = "sloop";
     public string displayName = "고양이 순찰선";
+    // 화면에 보이는 이름 (스트링 테이블 foe.<kind>, 없으면 displayName)
+    public string Name => Loc.T("foe." + kind, displayName);
     public FoeAI ai = FoeAI.Ship;
     public BossKind boss = BossKind.None;
     [Tooltip("보스 강화판 (제독 Mk2 · 해적왕 재도전)")]
@@ -83,13 +85,13 @@ public class EnemyShip : MonoBehaviour
         hp -= d; hitT = 0.22f;
         if (crewView) crewView.Hit();
         gm.AddCombo();
-        gm.Text(transform.position, crit ? $"치명타! {Mathf.RoundToInt(d)}" : "-" + Mathf.RoundToInt(d), crit ? new Color(1f, 0.7f, 0.28f) : new Color(1f, 0.89f, 0.48f), crit);
+        gm.Text(transform.position, crit ? Loc.F("float.crit", Mathf.RoundToInt(d)) : "-" + Mathf.RoundToInt(d), crit ? new Color(1f, 0.7f, 0.28f) : new Color(1f, 0.89f, 0.48f), crit);
         if (crit) { CameraFollow.Shake(12); Sfx.Play("crit"); gm.HitStop(0.06f); }
         bool ball = k == ShotKind.Ball;
         var me = gm.player;
         if (k == ShotKind.Chain || (ball && Random.value < me.chainAll))
         {
-            slow = 4; gm.Text((Vector2)transform.position + Vector2.up * 0.15f, "돛 찢김!", new Color(0.81f, 0.84f, 0.88f));
+            slow = 4; gm.Text((Vector2)transform.position + Vector2.up * 0.15f, Loc.T("float.sail_torn"), new Color(0.81f, 0.84f, 0.88f));
             // 크라켄: 주변 적도 묶음
             if (me.kraken > 0) foreach (var o in gm.foes) if (o != this && Vector2.Distance(o.transform.position, transform.position) < 1.8f) { o.slow = Mathf.Max(o.slow, me.kraken); o.stuck = me.kraken; }
         }
@@ -179,7 +181,7 @@ public class EnemyShip : MonoBehaviour
                     transform.position = (Vector2)transform.position - push;
                     me.transform.position = (Vector2)me.transform.position + push;
                     // 박치기: 내 배에 충각 장비가 있고 달리는 중이면 적만 다침
-                    if (me.ram > 0 && ramCd <= 0 && Mathf.Abs(me.v) > 0.6f) { ramCd = 0.8f; Hurt(me.ram, ShotKind.Ram); Sfx.Play("hit"); gm.Text((Vector2)transform.position + Vector2.up * 0.2f, "박치기!", new Color(1f, 0.7f, 0.28f)); CameraFollow.Shake(8); }
+                    if (me.ram > 0 && ramCd <= 0 && Mathf.Abs(me.v) > 0.6f) { ramCd = 0.8f; Hurt(me.ram, ShotKind.Ram); Sfx.Play("hit"); gm.Text((Vector2)transform.position + Vector2.up * 0.2f, Loc.T("float.ram"), new Color(1f, 0.7f, 0.28f)); CameraFollow.Shake(8); }
                 }
             }
         }
@@ -275,7 +277,7 @@ public class EnemyShip : MonoBehaviour
             v = speed * 2.6f;
             TurnToward(AngleTo(me.transform.position), dt * 1.5f);
             if (!bit && d < len * 0.4f + me.len * 0.3f && !gm.Over) { bit = true; me.Hurt(dmg, transform.position); Sfx.Play("bite"); gm.Splash(me.transform.position, false); }
-            if ((pt -= dt) <= 0) { phase = Phase.Tired; pt = 2.6f; gm.Text((Vector2)transform.position + Vector2.up * 0.26f, "헥헥…", new Color(0.62f, 0.88f, 1f)); }
+            if ((pt -= dt) <= 0) { phase = Phase.Tired; pt = 2.6f; gm.Text((Vector2)transform.position + Vector2.up * 0.26f, Loc.T("float.pant"), new Color(0.62f, 0.88f, 1f)); }
         }
         else
         {
@@ -311,7 +313,7 @@ public class EnemyShip : MonoBehaviour
                         for (int i = 0; i < (rage ? 3 : 2); i++) gm.Spawn("shark", (Vector2)transform.position + Random.insideUnitCircle * 1.2f);
                     phase = Phase.Surface; pt = rage ? 3 : 4;
                     gm.Splash(transform.position, true);
-                    gm.Text((Vector2)transform.position + Vector2.up * 0.4f, "지쳤다! 지금!", new Color(1f, 0.85f, 0.29f), true);
+                    gm.Text((Vector2)transform.position + Vector2.up * 0.4f, Loc.T("float.tired"), new Color(1f, 0.85f, 0.29f), true);
                 }
                 break;
             case Phase.Surface:
@@ -338,7 +340,7 @@ public class EnemyShip : MonoBehaviour
                 if (cd[3] <= 0)
                 {
                     cd[3] = mk2 ? 5 : 6;
-                    gm.Message("폭격 세례!", "", 1); Sfx.Play("whistle");
+                    gm.Message(Loc.T("msg.barrage"), "", 1); Sfx.Play("whistle");
                     for (int i = 0; i < (mk2 ? 7 : 5); i++) gm.Lob(mp + Random.insideUnitCircle * 2.6f, dmg * 1.3f, 0.75f, Random.Range(1.1f, 1.8f), true, transform.position);
                 }
                 if (cd[4] <= 0 && few)
@@ -368,7 +370,7 @@ public class EnemyShip : MonoBehaviour
                         gm.Smoke(at, 0.5f);
                     }
                 }
-                if (cd[3] <= 0) { cd[3] = 7; gm.Message("폭격 비!", "", 1); Sfx.Play("whistle"); for (int i = 0; i < 6; i++) gm.Lob(mp + Random.insideUnitCircle * 3f, dmg * 1.3f, 0.8f, Random.Range(1.1f, 2f), true, transform.position); }
+                if (cd[3] <= 0) { cd[3] = 7; gm.Message(Loc.T("msg.shell_rain"), "", 1); Sfx.Play("whistle"); for (int i = 0; i < 6; i++) gm.Lob(mp + Random.insideUnitCircle * 3f, dmg * 1.3f, 0.8f, Random.Range(1.1f, 2f), true, transform.position); }
                 if (cd[4] <= 0 && few) { cd[4] = 11; gm.Spawn("speeder", gm.FreeSpot(6f, 9f)); gm.Spawn("speeder", gm.FreeSpot(6f, 9f)); }
                 if (half && cd[5] <= 0)
                 {

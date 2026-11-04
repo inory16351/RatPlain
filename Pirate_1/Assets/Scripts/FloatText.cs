@@ -11,7 +11,7 @@ public class FloatText : MonoBehaviour
 
     public void Setup(string s, Color c, bool big)
     {
-        text.text = s; col = c; text.color = c;
+        Loc.Apply(text, s); col = c; text.color = c; // 언어 글꼴 · 아랍어 모양
         if (big) { transform.localScale *= bigScale; life *= 1.4f; }
     }
 

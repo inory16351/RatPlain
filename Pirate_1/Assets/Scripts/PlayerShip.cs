@@ -128,11 +128,11 @@ void Awake()
         Vector2 at = (Vector2)transform.position + Vector2.up * 0.35f;
         switch (id)
         {
-            case "invincible": invT = invincibleTime; gm.Text(at, "무적!", new Color(1f, 0.85f, 0.3f), true); Sfx.Play("chest"); break;
-            case "shield": shieldN = shieldHits; gm.Text(at, "방어막!", new Color(0.55f, 0.85f, 1f), true); Sfx.Play("wave", 0.7f); break;
-            case "booster": boostT = boostTime; boostHit.Clear(); sail = 1; gm.Text(at, "부스터!", new Color(1f, 0.6f, 0.25f), true); Sfx.Play("torp"); CameraFollow.Shake(6); break;
-            case "power_shot": powerT = powerTime; gm.Text(at, "포탄 강화!", new Color(1f, 0.55f, 0.3f), true); Sfx.Play("fire"); break;
-            case "rapid_fire": rapidT = rapidTime; cd[0] = cd[1] = 0; gm.Text(at, "사격 속도 강화!", new Color(1f, 0.9f, 0.45f), true); Sfx.Play("chain"); break;
+            case "invincible": invT = invincibleTime; gm.Text(at, Loc.T("float.invincible"), new Color(1f, 0.85f, 0.3f), true); Sfx.Play("chest"); break;
+            case "shield": shieldN = shieldHits; gm.Text(at, Loc.T("float.shield"), new Color(0.55f, 0.85f, 1f), true); Sfx.Play("wave", 0.7f); break;
+            case "booster": boostT = boostTime; boostHit.Clear(); sail = 1; gm.Text(at, Loc.T("float.booster"), new Color(1f, 0.6f, 0.25f), true); Sfx.Play("torp"); CameraFollow.Shake(6); break;
+            case "power_shot": powerT = powerTime; gm.Text(at, Loc.T("float.power_shot"), new Color(1f, 0.55f, 0.3f), true); Sfx.Play("fire"); break;
+            case "rapid_fire": rapidT = rapidTime; cd[0] = cd[1] = 0; gm.Text(at, Loc.T("float.rapid_fire"), new Color(1f, 0.9f, 0.45f), true); Sfx.Play("chain"); break;
             default: return false;
         }
         return true;
@@ -147,7 +147,7 @@ void Awake()
         float heal = maxHp * rescueHealFrac + rescueHealFlat + crewHeal;
         hp = Mathf.Min(maxHp, hp + heal);
         if (crewView) crewView.SetCount(crew);
-        gm.Text((Vector2)transform.position + Vector2.up * 0.3f, $"선원 +1 ({crew})  체력 +{Mathf.RoundToInt(heal)}", new Color(0.49f, 1f, 0.54f));
+        gm.Text((Vector2)transform.position + Vector2.up * 0.3f, Loc.F("float.rescue", crew, Mathf.RoundToInt(heal)), new Color(0.49f, 1f, 0.54f));
     }
 
 
@@ -262,7 +262,7 @@ System.Collections.IEnumerator Again(int side, float d, ShotKind kind)
             {
                 boostHit.Add(f);
                 f.Hurt(boostRam, ShotKind.Ram);
-                gm.Text((Vector2)f.transform.position + Vector2.up * 0.25f, "돌격!", new Color(1f, 0.6f, 0.25f));
+                gm.Text((Vector2)f.transform.position + Vector2.up * 0.25f, Loc.T("float.charge"), new Color(1f, 0.6f, 0.25f));
                 Sfx.Play("hit"); CameraFollow.Shake(10);
             }
         }
@@ -273,9 +273,9 @@ System.Collections.IEnumerator Again(int side, float d, ShotKind kind)
         var gm = GameManager.I;
         if (gm.Over) return;
         if (gm.tutorialSafe) return;
-        if (invT > 0) { gm.Text(transform.position, "무적!", new Color(1f, 0.85f, 0.3f)); return; }
-        if (shieldN > 0) { shieldN--; gm.Text(transform.position, shieldN > 0 ? $"막음! ({shieldN})" : "방어막 깨짐", new Color(0.55f, 0.85f, 1f)); Sfx.Play("wood"); CameraFollow.Shake(4); return; }
-        if (Random.value < evade) { gm.Text(transform.position, "빗나감!", new Color(0.81f, 0.91f, 1f)); return; }
+        if (invT > 0) { gm.Text(transform.position, Loc.T("float.invincible"), new Color(1f, 0.85f, 0.3f)); return; }
+        if (shieldN > 0) { shieldN--; gm.Text(transform.position, shieldN > 0 ? Loc.F("float.blocked", shieldN) : Loc.T("float.shield_break"), new Color(0.55f, 0.85f, 1f)); Sfx.Play("wood"); CameraFollow.Shake(4); return; }
+        if (Random.value < evade) { gm.Text(transform.position, Loc.T("float.miss"), new Color(0.81f, 0.91f, 1f)); return; }
         d *= gm.DmgMult * dmgTaken;
         hp -= d; hitT = 0.22f;
         if (crewView) crewView.Hit();

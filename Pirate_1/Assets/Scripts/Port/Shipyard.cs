@@ -8,6 +8,10 @@ public class PartDef
 {
     public string id, ship, slot, name, desc;
     public int grade, tier;
+    // 지금 언어 이름 · 설명 (일반 · 고급 = gear.<id>, 희귀 · 전설 = unique.<id>.name / .desc, 일반 · 고급 설명은 수치로 만듦)
+    public bool unique;
+    public string Name => Loc.T(unique ? $"unique.{id}.name" : $"gear.{id}", name);
+    public string Desc => unique ? Loc.T($"unique.{id}.desc", desc) : Shipyard.Describe(add, mul);
     public string[] lines;
     public List<StatMod> add = new List<StatMod>(), mul = new List<StatMod>();
     public List<string> fits = new List<string>();
@@ -50,11 +54,20 @@ public static class Shipyard
     public const int REQ_MIN = 30, REQ_MAX = 600, REQ_STEP = 10;
     static readonly (int coin, float[] p)[] ODDS = { (30, new[] { 70f, 25, 4.5f, 0.5f }), (100, new[] { 45f, 38, 14, 3 }), (250, new[] { 25f, 40, 27, 8 }), (600, new[] { 10f, 35, 38, 17 }) };
     static readonly int[] TIER_W = { 60, 25, 10 };
-    public static readonly Dictionary<string, string> LINES = new Dictionary<string, string> { { "S", "쾌속선" }, { "M", "다목적함" }, { "H", "중포함" } };
-    static readonly Dictionary<string, string> STAT_TXT = new Dictionary<string, string> {
-        { "dmg", "포탄 위력" }, { "reload", "장전 시간" }, { "speed", "속도" }, { "turn", "회전" }, { "hp", "선체" }, { "repair", "웨이브 사이 수리" }, { "pickup", "줍기 거리" },
-        { "crit", "치명타" }, { "range", "사거리" }, { "ram", "박치기" }, { "goldBonus", "금화" }, { "mortarDmg", "폭격 위력" }, { "mortarR", "폭격 범위" },
-        { "chain", "체인샷 재사용" }, { "fire", "화염탄 재사용" }, { "chainAll", "체인샷 발동" }, { "burnAll", "화염탄 발동" }, { "crewMax", "선원 효과 최대" }, { "crewHeal", "선원 구조 시 수리" } };
+    // 갈래 S 쾌속선 · M 다목적함 · H 중포함 (이름 = 스트링 테이블 line.S …)
+    public static string LineName(string line) => Loc.T("line." + line, line);
+    static string StatName(string stat) => Loc.T("statd." + stat, stat);
+
+    // ── 데이터 글자 (ShipyardDB 의 한국어는 테이블이 없을 때만 씀)
+    public static string ShipName(ShipDef s) => s == null ? "" : Loc.T($"ship.{s.id}.name", s.name);
+    public static string ShipKind(ShipDef s) => s == null ? "" : Loc.T($"ship.{s.id}.kind", s.kind);
+    public static string ShipDesc(ShipDef s) => s == null ? "" : Loc.T($"ship.{s.id}.desc", s.desc);
+    public static string SeaName(SeaDef s) => Loc.T($"sea.{s.id}.name", s.name);
+    public static string SeaStory(SeaDef s) => Loc.T($"sea.{s.id}.story", s.story);
+    public static string SlotName(string slot) { var st = SlotType(slot); return Loc.T("slot." + slot, st != null ? st.name : slot); }
+    public static string GradeName(int g) => Loc.T("grade." + g, DB.gradeNames[g]);
+    public static string EraName(int t) => Loc.T("era." + t, DB.eras[Mathf.Clamp(t, 0, DB.eras.Length - 1)]);
+    public static string ItemName(string id, string fallback) => Loc.T($"item.{id}.name", fallback);
 
     static ShipyardDB db;
     public static ShipyardDB DB => db ? db : (db = Resources.Load<ShipyardDB>("ShipyardDB"));
@@ -93,7 +106,7 @@ public static class Shipyard
                 }
         }
         foreach (var u in DB.uniques)
-            parts.Add(new PartDef { id = u.id, ship = u.ship, slot = u.slot, grade = u.grade, name = u.name, lines = u.lines != null && u.lines.Length > 0 ? u.lines : null, add = u.add, mul = u.mul, desc = u.desc });
+            parts.Add(new PartDef { id = u.id, ship = u.ship, slot = u.slot, grade = u.grade, name = u.name, lines = u.lines != null && u.lines.Length > 0 ? u.lines : null, add = u.add, mul = u.mul, desc = u.desc, unique = true });
         foreach (var p in parts)
         {
             var s = Ship(p.ship);
@@ -125,12 +138,13 @@ public static class Shipyard
         }
     }
 
-    static string Describe(List<StatMod> add, List<StatMod> mul)
+    // 일반 · 고급 장비 설명 (수치로 만듦, 지금 언어로)
+    public static string Describe(List<StatMod> add, List<StatMod> mul)
     {
         var o = new List<string>();
-        foreach (var m in add) o.Add(m.stat == "crit" || m.stat == "goldBonus" || m.stat == "chainAll" || m.stat == "burnAll" ? $"{STAT_TXT[m.stat]} +{Mathf.RoundToInt(m.value * 100)}%" : $"{STAT_TXT[m.stat]} +{m.value}");
-        foreach (var m in mul) o.Add($"{STAT_TXT[m.stat]} {(m.value >= 1 ? "+" : "−")}{Mathf.RoundToInt(Mathf.Abs(m.value - 1) * 100)}%");
-        return string.Join(", ", o);
+        foreach (var m in add) o.Add(m.stat == "crit" || m.stat == "goldBonus" || m.stat == "chainAll" || m.stat == "burnAll" ? $"{StatName(m.stat)} +{Mathf.RoundToInt(m.value * 100)}%" : $"{StatName(m.stat)} +{m.value}");
+        foreach (var m in mul) o.Add($"{StatName(m.stat)} {(m.value >= 1 ? "+" : "−")}{Mathf.RoundToInt(Mathf.Abs(m.value - 1) * 100)}%");
+        return string.Join(Loc.ListSep, o);
     }
 
     // ── 저장
@@ -167,7 +181,7 @@ public static class Shipyard
     public static string SaveSummary()
     {
         var s = Save;
-        return $"{Ship(s.ship).name} · 정복 {s.cleared.Count}/{DB.seas.Count} · 목재 {s.plank} · 금화 {s.coin}" + (string.IsNullOrEmpty(s.savedAt) ? "" : $"   (저장 {s.savedAt})");
+        return Loc.F("lobby.save_summary", ShipName(Ship(s.ship)), s.cleared.Count, DB.seas.Count, s.plank, s.coin) + (string.IsNullOrEmpty(s.savedAt) ? "" : "   " + Loc.F("lobby.saved_at", s.savedAt));
     }
     public static void ResetSave() { save = Fresh(); Store(); }
 
@@ -200,13 +214,16 @@ public static class Shipyard
         return s;
     }
 
-    public static List<(string label, string value)> Summary(Stats s)
+    // 수치 표 (id = hull · speed · turn · guns · reload · power · taken · range, label = 지금 언어 이름)
+    public static List<(string id, string label, string value)> Summary(Stats s)
     {
         float dps = s["guns"] * s["dmg"] * (1 + s["crit"]) * (1 + s["double"]) / s["reload"];
-        return new List<(string, string)> {
-            ("선체", Mathf.RoundToInt(s["hp"]).ToString()), ("속도", Mathf.RoundToInt(s["speed"]).ToString()), ("회전", s["turn"].ToString("0.##")),
-            ("뱃전 대포", s["guns"].ToString("0")), ("장전", s["reload"].ToString("0.##") + "초"), ("화력", Mathf.RoundToInt(dps).ToString()),
-            ("받는 피해", Mathf.RoundToInt(s["dmgTaken"] * 100) + "%"), ("사거리", Mathf.RoundToInt(s["range"] * 100) + "%") };
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        (string, string, string) Row(string id, string v) => (id, Loc.T("stat." + id), v);
+        return new List<(string, string, string)> {
+            Row("hull", Mathf.RoundToInt(s["hp"]).ToString()), Row("speed", Mathf.RoundToInt(s["speed"]).ToString()), Row("turn", s["turn"].ToString("0.##", inv)),
+            Row("guns", s["guns"].ToString("0")), Row("reload", Loc.F("stat.sec", s["reload"].ToString("0.##", inv))), Row("power", Mathf.RoundToInt(dps).ToString()),
+            Row("taken", Mathf.RoundToInt(s["dmgTaken"] * 100) + "%"), Row("range", Mathf.RoundToInt(s["range"] * 100) + "%") };
     }
 
     // ── 배
@@ -225,12 +242,12 @@ public static class Shipyard
     public static string WhyNot(int uid, string sid)
     {
         var it = ItemOf(uid); var s = Ship(sid);
-        if (it == null || s == null) return "없음";
+        if (it == null || s == null) return Loc.T("why.none");
         var p = Part(it.id);
-        if (!Owns(sid)) return "아직 없는 배";
-        if (!s.slots.Contains(p.slot)) return $"{SlotType(p.slot).name} 슬롯 없음";
-        if (p.tier > s.tier) return $"티어 {p.tier} 장비 — {p.tier}단계 이상 배만";
-        if (!p.fits.Contains(sid)) return string.Join(" · ", p.lines.Select(l => LINES[l])) + " 전용";
+        if (!Owns(sid)) return Loc.T("why.not_owned");
+        if (!s.slots.Contains(p.slot)) return Loc.F("why.no_slot", SlotName(p.slot));
+        if (p.tier > s.tier) return Loc.F("why.tier", p.tier);
+        if (!p.fits.Contains(sid)) return Loc.F("line.only", string.Join(" · ", p.lines.Select(LineName)));
         return null;
     }
     public static bool Equip(int uid, string sid)
@@ -296,8 +313,8 @@ public static class Shipyard
         if (p0.grade < 3) return uids.Count == FUSE_N ? new FuseInfo { tier = p0.tier, grade = p0.grade } : null;
         if (uids.Count > UP_MAX) return null;
         var f = new FuseInfo { up = true, tier = p0.tier, grade = 3, chance = UP_CHANCE[uids.Count] };
-        if (p0.tier >= MaxTier) f.block = "이미 가장 높은 티어";
-        else if (p0.tier + 1 > Tech()) f.block = $"{p0.tier + 1}단계 배가 있어야 도전 가능";
+        if (p0.tier >= MaxTier) f.block = Loc.T("block.max");
+        else if (p0.tier + 1 > Tech()) f.block = Loc.F("block.need", p0.tier + 1);
         return f;
     }
     public static (OwnedItem it, bool ok) Fuse(List<int> uids)

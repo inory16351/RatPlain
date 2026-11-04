@@ -89,7 +89,7 @@ public class PortUI : MonoBehaviour
     string FoeName(string kind)
     {
         var e = enemyPrefabs == null ? null : System.Array.Find(enemyPrefabs, p => p && p.kind == kind);
-        return e ? e.displayName : kind;
+        return e ? e.Name : Loc.T("foe." + kind, kind);
     }
 
     int tab, seaSel, eqShip = -1;
@@ -107,7 +107,7 @@ public class PortUI : MonoBehaviour
         if (seaShipButton) seaShipButton.onClick.AddListener(() => { tab = 1; shipSel = Shipyard.Save.ship; Sfx.Play("ui_click"); Render(); });
         for (int i = 0; i < tabButtons.Length; i++) { int k = i; tabButtons[i].onClick.AddListener(() => { tab = k; hoverPart = null; Sfx.Play("ui_click"); Render(); }); }
         sailButton.onClick.AddListener(Sail);
-        if (saveButton) saveButton.onClick.AddListener(() => { Shipyard.Store(); Sfx.Play("ui_buy"); Say($"조선공: 기록해 뒀네! ({Shipyard.Save.savedAt})"); });
+        if (saveButton) saveButton.onClick.AddListener(() => { Shipyard.Store(); Sfx.Play("ui_buy"); Talk(Loc.F("talk.saved", Shipyard.Save.savedAt)); });
         shipButton.onClick.AddListener(ShipAction);
         reqButton.onClick.AddListener(DoRequest);
         fuseButton.onClick.AddListener(DoFuse);
@@ -119,7 +119,12 @@ public class PortUI : MonoBehaviour
         seaSel = Shipyard.Save.pick;
         ShowResult();
         Render();
+        Loc.Changed += OnLang;
     }
+    void OnDestroy() { Loc.Changed -= OnLang; }
+    // 설정에서 언어를 바꾸면 코드가 채운 글자를 다시 채움
+    void OnLang() { Render(); if (resultPanel && resultPanel.activeSelf && lastResult != null) FillResult(lastResult); }
+    BattleResult lastResult;
 
 // 결과 (웹 onEnd): 이기면 전리품 전부 + 다음 바다, 침몰하면 절반
     void ShowResult()
@@ -129,13 +134,9 @@ public class PortUI : MonoBehaviour
         if (r == null) return;
         GameSession.last = null;
         lastSea = r.sea;
-        var sea = DB.seas[r.sea];
+        lastResult = r;
         int next = r.sea + 1;
-        bool hasNext = r.win && next < DB.seas.Count && next <= Shipyard.Save.unlocked;
-        resultTitle.text = r.win ? $"{sea.name} 정복!" : "침몰…";
-        string head = r.win ? (next < DB.seas.Count ? $"다음 바다가 열림 — {DB.seas[next].name}" : "일곱 바다를 모두 정복함! 바다의 주인은 이제 쥐 해적") : "애꾸 선장이 널빤지에 매달려 겨우 항구로 돌아옴";
-        string half = r.win ? "이겼으니 전리품 전부 챙김" : $"침몰해서 전리품 절반만 챙김 (주운 것: 목재 {r.plank} · 금화 {r.coin})";
-        resultText.text = $"{head}\n\n목재 +{r.gotPlank} · 치즈 금화 +{r.gotCoin} · 격침 {r.kills} · 구조한 쥐 {r.rescued}\n<size=16>{half}</size>";
+        bool hasNext = FillResult(r);
         if (resultNext) resultNext.gameObject.SetActive(hasNext);
         // 다음 바다 버튼이 없으면 남은 두 버튼을 가운데로
         if (resultOk && resultAgain)
@@ -147,7 +148,20 @@ public class PortUI : MonoBehaviour
         if (hasNext) { seaSel = next; Shipyard.PickSea(next); }
     }
 
+    bool FillResult(BattleResult r)
+    {
+        var sea = DB.seas[r.sea];
+        int next = r.sea + 1;
+        resultTitle.text = r.win ? Loc.F("result.win_title", Shipyard.SeaName(sea)) : Loc.T("result.lose_title");
+        string head = r.win ? (next < DB.seas.Count ? Loc.F("result.next_open", Shipyard.SeaName(DB.seas[next])) : Loc.T("result.all_clear")) : Loc.T("result.lose_head");
+        string half = r.win ? Loc.T("result.full") : Loc.F("result.half", r.plank, r.coin);
+        resultText.text = Loc.F("result.body", head, r.gotPlank, r.gotCoin, r.kills, r.rescued, half);
+        return r.win && next < DB.seas.Count && next <= Shipyard.Save.unlocked;
+    }
+
     void Say(string s) { talkText.text = s; }
+    // 조선공 말풍선 ("조선공: …")
+    void Talk(string s) { Say(Loc.F("talk.line", s)); }
 
     // ── 공용
     RowView Add(RowView template, RectTransform parent)
@@ -158,8 +172,8 @@ public class PortUI : MonoBehaviour
         return r;
     }
     void Clear() { foreach (var g in spawned) if (g) Destroy(g); spawned.Clear(); }
-    string Cost(int plank, int coin) => $"판자 {plank} · 금화 {coin}";
-    string Grade(PartDef p) => $"<color=#{ColorUtility.ToHtmlStringRGB(DB.gradeColors[p.grade])}>{DB.gradeNames[p.grade]}</color>";
+    string Cost(int plank, int coin) => Loc.F("cost", plank, coin);
+    string Grade(PartDef p) => $"<color=#{ColorUtility.ToHtmlStringRGB(DB.gradeColors[p.grade])}>{Shipyard.GradeName(p.grade)}</color>";
     string StatsText(Stats cur, Stats next)
     {
         var a = Shipyard.Summary(cur); var b = next != null ? Shipyard.Summary(next) : null;
@@ -171,17 +185,12 @@ public class PortUI : MonoBehaviour
     void SetButton(Button b, Text t, string label, bool on) { t.text = label; b.interactable = on; }
 
     // 탭을 처음 열 때 조선공이 한 번만 알려 줌 (Tutorial · TutorialFlags)
-    static readonly string[] TAB_TIPS = {
-        "바다를 골라 출항! 깬 바다 다음 바다가 열려. 추천 단계보다 배가 약하면 고생할 걸세",
-        "조선소: 판자 · 금화로 새 배를 만들지. 줄을 따라가면 윗 단계 배가 열려",
-        "장비: 칸을 고르고 아래 장비를 끼우게. 마우스를 올리면 능력치가 얼마나 바뀌는지 보여",
-        "의뢰: 금화를 많이 낼수록 좋은 등급이 잘 나와. 합성: 같은 장비 3개를 한 등급 위로!",
-    };
+    static readonly string[] TAB_TIPS = { "talk.tip_sea", "talk.tip_ship", "talk.tip_gear", "talk.tip_lab" };
 
     void Render()
     {
         Clear();
-        if (tab < TAB_TIPS.Length && !TutorialFlags.Seen("port_tab" + tab)) { TutorialFlags.Mark("port_tab" + tab); Say("조선공: " + TAB_TIPS[tab]); }
+        if (tab < TAB_TIPS.Length && !TutorialFlags.Seen("port_tab" + tab)) { TutorialFlags.Mark("port_tab" + tab); Talk(Loc.T(TAB_TIPS[tab])); }
         var s = Shipyard.Save;
         plankText.text = s.plank.ToString(); coinText.text = s.coin.ToString();
         for (int i = 0; i < tabPanels.Length; i++)
@@ -201,7 +210,7 @@ public class PortUI : MonoBehaviour
     {
         var s = Shipyard.Save;
         int tech = Shipyard.Tech(), n = DB.seas.Count;
-        if (seaMapTitle) seaMapTitle.text = $"바다 지도  <size=16>정복한 바다 {s.cleared.Count} / {n} · 지금 테크 {tech}단계</size>";
+        if (seaMapTitle) seaMapTitle.text = Loc.F("sea.map_title", s.cleared.Count, n, tech);
         float cw = seaList.rect.width / 4;
         var at = new Vector2[n];
         for (int i = 0; i < n; i++)
@@ -216,33 +225,33 @@ public class PortUI : MonoBehaviour
             bool open = i <= s.unlocked, clear = s.cleared.Contains(sea.id), built = sea.IsBuilt(DB);
             var r = Add(seaRow, seaList);
             ((RectTransform)r.transform).anchoredPosition = at[i];
-            r.title.text = $"{i + 1}번째 바다";
+            r.title.text = Loc.F("sea.nth", i + 1);
             string trait = TraitName(sea.trait);
-            r.desc.text = open ? $"<size=19><b>{sea.name}</b></size>\n추천 {sea.rec}단계" + (trait != "" ? $" · {trait}" : "") + (sea.rec > tech ? "  <color=#ff8a7a>위험</color>" : "") + (built ? "" : "\n준비 중") : "<size=19><b>???</b></size>\n앞 바다를 정복하면 열림";
-            r.right.text = clear ? "정복" : "";
+            r.desc.text = open ? $"<size=19><b>{Shipyard.SeaName(sea)}</b></size>\n{Loc.F("sea.rec", sea.rec)}" + (trait != "" ? $" · {trait}" : "") + (sea.rec > tech ? $"  <color=#ff8a7a>{Loc.T("sea.danger")}</color>" : "") + (built ? "" : "\n" + Loc.T("sea.wip")) : $"<size=19><b>???</b></size>\n{Loc.T("sea.locked")}";
+            r.right.text = clear ? Loc.T("sea.cleared") : "";
             ColorUtility.TryParseHtmlString(sea.col0, out var sc);
             r.bg.color = !open ? new Color(0.5f, 0.5f, 0.5f, 0.85f) : i == seaSel ? new Color(1f, 0.86f, 0.45f) : Color.Lerp(Color.white, sc, 0.45f);
             r.click.interactable = open;
             r.click.onClick.AddListener(() => { seaSel = k; Shipyard.PickSea(k); Sfx.Play("ui_click"); Render(); });
         }
         var S = DB.seas[seaSel];
-        seaTitle.text = $"{seaSel + 1}. {S.name}" + (s.cleared.Contains(S.id) ? "  <size=18>정복함</size>" : "");
+        seaTitle.text = $"{seaSel + 1}. {Shipyard.SeaName(S)}" + (s.cleared.Contains(S.id) ? $"  <size=18>{Loc.T("sea.cleared_title")}</size>" : "");
         var foes = S.waves.SelectMany(w => w.Split(',')).Select(x => x.Trim()).Distinct();
-        string tr = TraitName(S.trait), trDesc = S.trait == "fog" ? "시야 밖이 하얗게 가려짐 (망원경 · 레이더가 힘)" : S.trait == "storm" ? "바람에 밀리고 번개가 내리침" : S.trait == "whirl" ? "거대한 소용돌이가 끌어당김" : "";
-        string alert = S.rec > tech ? $"<color=#ff8a7a>추천 {S.rec}단계 — 지금 테크 {tech}단계. 적이 아주 셈, 조선소에서 배부터 키우기 추천</color>" : $"<color=#9fe07a>추천 {S.rec}단계 · 지금 테크 {tech}단계 — 출항 가능</color>";
-        seaInfo.text = $"{S.story}\n\n<color=#ffd84a>보스</color>  {FoeName(S.boss)}\n<color=#ffd84a>적</color>  {string.Join(" · ", foes.Select(FoeName))}\n<color=#ffd84a>웨이브</color>  {Shipyard.WavesOf(seaSel).Length}번 + 보스\n<color=#ffd84a>특성</color>  {(tr == "" ? "없음" : tr + " — " + trDesc)}\n<color=#ffd84a>배율</color>  적 체력 ×{S.mult} · 전리품도 더 많음\n\n{alert}\n<size=14>이기면 전리품 전부 + 다음 바다 열림. 침몰하면 절반만 챙김.</size>";
+        string tr = TraitName(S.trait), trDesc = tr == "" ? "" : Loc.T("trait." + S.trait + "_desc");
+        string alert = S.rec > tech ? $"<color=#ff8a7a>{Loc.F("sea.alert_hard", S.rec, tech)}</color>" : $"<color=#9fe07a>{Loc.F("sea.alert_ok", S.rec, tech)}</color>";
+        seaInfo.text = Loc.F("sea.info", Shipyard.SeaStory(S), FoeName(S.boss), string.Join(" · ", foes.Select(FoeName)), Shipyard.WavesOf(seaSel).Length, tr == "" ? Loc.T("trait.none") : tr + " — " + trDesc, S.mult, alert);
         var me = Shipyard.Ship(s.ship);
         if (seaShipText)
         {
-            var sum = Shipyard.Summary(Shipyard.Compute()).Where(x => x.label == "선체" || x.label == "속도" || x.label == "화력").Select(x => $"{x.label} {x.value}");
-            seaShipText.text = $"<b>{me.name}</b>  <size=14>{me.tier}단계 {me.kind}</size>\n<size=14>{string.Join(" · ", sum)}</size>";
+            var sum = Shipyard.Summary(Shipyard.Compute()).Where(x => x.id == "hull" || x.id == "speed" || x.id == "power").Select(x => $"{x.label} {x.value}");
+            seaShipText.text = Loc.F("sea.ship_line", Shipyard.ShipName(me), me.tier, Shipyard.ShipKind(me), string.Join(" · ", sum));
         }
         if (preview) preview.ShowShip(s.ship);
         bool ok = seaSel <= s.unlocked && S.IsBuilt(DB);
-        SetButton(sailButton, sailText, ok ? $"{me.name} 출항!" : "준비 중", ok);
+        SetButton(sailButton, sailText, ok ? Loc.F("sea.sail", Shipyard.ShipName(me)) : Loc.T("sea.wip"), ok);
     }
 
-    static string TraitName(string t) => t == "fog" ? "안개" : t == "storm" ? "폭풍" : t == "whirl" ? "소용돌이" : "";
+    static string TraitName(string t) => t == "fog" || t == "storm" || t == "whirl" ? Loc.T("trait." + t) : "";
 
     // 뱃길: 앞 바다 → 다음 바다 점선 (열린 길 = 금빛)
     void Link(Vector2 a, Vector2 b, bool on)
@@ -272,7 +281,7 @@ public class PortUI : MonoBehaviour
         var s = Shipyard.Save;
         shipSel ??= s.ship;
         int tech = Shipyard.Tech();
-        if (treeTitle) treeTitle.text = $"조선소 · 배 진화  <size=15>지금 테크 {tech}단계 · 부모 배가 있어야 다음 배 건조</size>";
+        if (treeTitle) treeTitle.text = Loc.F("ship.tree_title", tech);
         var size = shipGrid.rect.size;
         float colW = (size.x - laneWidth) / 6, rowH = size.y / 3;
         Vector2 Center(ShipDef d) => new Vector2(laneWidth + (d.tier + 0.5f) * colW, -(d.row + 0.5f) * rowH);
@@ -285,7 +294,7 @@ public class PortUI : MonoBehaviour
                 rt.anchoredPosition = new Vector2(laneWidth + (i + 0.5f) * colW, 18);
                 rt.sizeDelta = new Vector2(colW - 6, 26);
                 eraChips[i].color = TierCol(i);
-                eraChips[i].GetComponentInChildren<Text>().text = $"{i}단계 · {DB.eras[i]}";
+                eraChips[i].GetComponentInChildren<Text>().text = Loc.F("ship.era_chip", i, Shipyard.EraName(i));
             }
         if (laneBands != null)
             for (int r = 0; r < laneBands.Length; r++)
@@ -308,9 +317,9 @@ public class PortUI : MonoBehaviour
             rt.sizeDelta = nodeSize;
             bool own = Shipyard.Owns(sh.id), buy = Shipyard.ShipBuyable(sh), use = s.ship == sh.id, sel = sh.id == shipSel;
             r.icon.sprite = sh.sprite; r.icon.color = own || buy ? WHITE : new Color(0.3f, 0.3f, 0.3f, 0.7f);
-            r.title.text = sh.name;
-            string st = use ? "<color=#ffd84a>타는 중</color>" : own ? "<color=#9fe07a>보유</color>" : buy ? $"<size=11>{Cost(sh.costPlank, sh.costCoin)}</size>" : "잠김";
-            r.desc.text = $"<size=12>{sh.kind}</size>\n{st}";
+            r.title.text = Shipyard.ShipName(sh);
+            string st = use ? $"<color=#ffd84a>{Loc.T("ship.using")}</color>" : own ? $"<color=#9fe07a>{Loc.T("ship.owned")}</color>" : buy ? $"<size=11>{Cost(sh.costPlank, sh.costCoin)}</size>" : Loc.T("ship.locked");
+            r.desc.text = $"<size=12>{Shipyard.ShipKind(sh)}</size>\n{st}";
             // 고른 배 = 파랑, 타는 배 = 금빛, 가진 배 = 초록, 잠긴 배 = 어둡게
             r.bg.color = sel ? new Color(0.62f, 0.85f, 1f) : use ? ROW_ON : own ? new Color(0.72f, 0.95f, 0.78f) : buy ? ROW : new Color(0.55f, 0.52f, 0.5f, 0.55f);
             r.title.color = own || buy ? WHITE : DIM;
@@ -319,16 +328,16 @@ public class PortUI : MonoBehaviour
         }
         var f = Shipyard.Ship(shipSel);
         shipPic.sprite = f.sprite;
-        shipTitle.text = f.name;
-        if (shipTag) { shipTag.color = TierCol(f.tier); shipTagText.text = $"{f.tier}단계"; }
-        if (shipKind) shipKind.text = $"{f.kind} · {(string.IsNullOrEmpty(f.line) ? "시작 배" : Shipyard.LINES[f.line])} · {DB.eras[f.tier]}";
-        shipInfo.text = $"{f.desc}\n<color=#ffd84a>슬롯 {f.slots.Length}칸</color> · {string.Join(" · ", f.slots.Select(x => Shipyard.SlotType(x).name))}";
+        shipTitle.text = Shipyard.ShipName(f);
+        if (shipTag) { shipTag.color = TierCol(f.tier); shipTagText.text = Loc.F("tier", f.tier); }
+        if (shipKind) shipKind.text = $"{Shipyard.ShipKind(f)} · {(string.IsNullOrEmpty(f.line) ? Loc.T("ship.start") : Shipyard.LineName(f.line))} · {Shipyard.EraName(f.tier)}";
+        shipInfo.text = $"{Shipyard.ShipDesc(f)}\n<color=#ffd84a>{Loc.F("ship.slots", f.slots.Length)}</color> · {string.Join(" · ", f.slots.Select(x => Shipyard.SlotName(x)))}";
         StatColumns(Shipyard.Compute(), f.id == s.ship ? null : Shipyard.Compute(f.id));
         if (preview) preview.ShowShip(f.id);
-        if (s.ship == f.id) SetButton(shipButton, shipButtonText, "타는 중", false);
-        else if (Shipyard.Owns(f.id)) SetButton(shipButton, shipButtonText, "이 배로 바꾸기", true);
-        else if (Shipyard.ShipBuyable(f)) SetButton(shipButton, shipButtonText, $"건조 · {Cost(f.costPlank, f.costCoin)}", Shipyard.Can(f.costPlank, f.costCoin));
-        else SetButton(shipButton, shipButtonText, $"{Shipyard.Ship(f.req).kind} 먼저", false);
+        if (s.ship == f.id) SetButton(shipButton, shipButtonText, Loc.T("ship.using"), false);
+        else if (Shipyard.Owns(f.id)) SetButton(shipButton, shipButtonText, Loc.T("ship.switch"), true);
+        else if (Shipyard.ShipBuyable(f)) SetButton(shipButton, shipButtonText, Loc.F("ship.build", Cost(f.costPlank, f.costCoin)), Shipyard.Can(f.costPlank, f.costCoin));
+        else SetButton(shipButton, shipButtonText, Loc.F("ship.need", Shipyard.ShipKind(Shipyard.Ship(f.req))), false);
     }
 
     // 단계 색 (웹 TIER_COL)
@@ -347,7 +356,7 @@ public class PortUI : MonoBehaviour
         {
             names.Add(a[i].label); vals.Add(b[i].value);
             float d = Num(b[i].value) - Num(a[i].value);
-            bool lower = a[i].label == "장전" || a[i].label == "받는 피해";
+            bool lower = a[i].id == "reload" || a[i].id == "taken";
             bool good = lower ? d < 0 : d > 0;
             ds.Add(Mathf.Abs(d) < 0.005f ? "" : $"<color={(good ? "#9fe07a" : "#ff8a7a")}>{(d > 0 ? "+" : "")}{d:0.##}</color>");
         }
@@ -372,9 +381,9 @@ public class PortUI : MonoBehaviour
     void ShipAction()
     {
         var f = Shipyard.Ship(shipSel);
-        if (Shipyard.Owns(f.id)) { Shipyard.UseShip(f.id); Sfx.Play("ui_click"); Say($"{f.name} 출항 준비 완료!"); }
-        else if (Shipyard.BuyShip(f.id)) Say($"{f.name} 진수! 새 배는 장비 슬롯이 비어 있음 — 장비 탭에서 끼우기");
-        else { Say("판자나 금화가 모자람"); Sfx.Play("fail"); }
+        if (Shipyard.Owns(f.id)) { Shipyard.UseShip(f.id); Sfx.Play("ui_click"); Talk(Loc.F("talk.ready", Shipyard.ShipName(f))); }
+        else if (Shipyard.BuyShip(f.id)) Talk(Loc.F("talk.launched", Shipyard.ShipName(f)));
+        else { Talk(Loc.T("talk.no_money")); Sfx.Play("fail"); }
         if (Shipyard.Owns(f.id) && Shipyard.Save.ship == f.id) Sfx.Play("ui_buy");
         Render();
     }
@@ -390,7 +399,7 @@ public class PortUI : MonoBehaviour
         {
             var r = Add(chipRow, gearChips); int k = i;
             var sh = Shipyard.Ship(s.ships[i]);
-            r.icon.sprite = sh.sprite; r.title.text = sh.name;
+            r.icon.sprite = sh.sprite; r.title.text = Shipyard.ShipName(sh);
             r.bg.color = i == eqShip ? ROW_ON : ROW;
             r.click.onClick.AddListener(() => { eqShip = k; hoverPart = null; Render(); });
         }
@@ -401,13 +410,13 @@ public class PortUI : MonoBehaviour
             var it = Shipyard.ItemOf(Shipyard.EquippedUid(sid, sl));
             var p = it != null ? Shipyard.Part(it.id) : null;
             r.icon.sprite = p != null ? p.icon : st.icon; r.icon.color = p != null ? WHITE : DIM;
-            r.title.text = p != null ? $"{p.name}  {Grade(p)} · T{p.tier}" : $"{st.name} — 비어 있음";
+            r.title.text = p != null ? $"{p.Name}  {Grade(p)} · T{p.tier}" : Loc.F("gear.empty", Shipyard.SlotName(sl));
             // 슬롯 이름은 설명 앞에 (오른쪽 위에 두면 빼기 단추와 겹침)
-            r.desc.text = $"<color=#ffd84a>{st.name}</color>" + (p != null ? $" · {p.desc}" : "");
+            r.desc.text = $"<color=#ffd84a>{Shipyard.SlotName(sl)}</color>" + (p != null ? $" · {p.Desc}" : "");
             r.right.text = "";
             string slot = sl;
             r.button.gameObject.SetActive(p != null);
-            r.buttonText.text = "빼기";
+            r.buttonText.text = Loc.T("gear.unequip");
             r.button.onClick.AddListener(() => { Shipyard.Unequip(sid, slot); Sfx.Play("ui_click"); Render(); });
         }
         // 이 배에 맞는 장비 (등급 · 티어 높은 순), 같은 장비는 하나로 묶음
@@ -421,27 +430,27 @@ public class PortUI : MonoBehaviour
             var r = Add(partRow, invList);
             r.icon.sprite = p.icon;
             int n = g.Count();
-            r.title.text = $"{p.name}  {Grade(p)} · T{p.tier}" + (n > 1 ? $"  ×{n}" : "");
-            string note = here != null ? "  (이 배에 낌)" : free == null ? $"  (다른 배에 낌: {Shipyard.Ship(Shipyard.EquippedOn(g.First().uid)).name})" : "";
-            r.desc.text = $"{Shipyard.SlotType(p.slot).name} · {p.desc}{note}";
+            r.title.text = $"{p.Name}  {Grade(p)} · T{p.tier}" + (n > 1 ? $"  ×{n}" : "");
+            string note = here != null ? "  " + Loc.T("gear.on_this") : free == null ? "  " + Loc.F("gear.on_other", Shipyard.ShipName(Shipyard.Ship(Shipyard.EquippedOn(g.First().uid)))) : "";
+            r.desc.text = $"{Shipyard.SlotName(p.slot)} · {p.Desc}{note}";
             r.bg.color = hoverPart == p.id ? ROW_ON : ROW;
             var pick = here ?? free ?? g.First();
-            r.buttonText.text = here != null ? "낌" : "끼우기";
+            r.buttonText.text = here != null ? Loc.T("gear.equipped") : Loc.T("gear.equip");
             r.button.interactable = here == null;
             int uid = pick.uid; string pid = p.id;
-            r.button.onClick.AddListener(() => { if (Shipyard.Equip(uid, sid)) { Say($"{p.name} 장착"); Sfx.Play("ui_buy", 0.6f, 1.3f); } hoverPart = null; Render(); });
+            r.button.onClick.AddListener(() => { if (Shipyard.Equip(uid, sid)) { Talk(Loc.F("talk.equipped", p.Name)); Sfx.Play("ui_buy", 0.6f, 1.3f); } hoverPart = null; Render(); });
             r.click.onClick.AddListener(() => { hoverPart = hoverPart == pid ? null : pid; Render(); });
         }
-        if (!groups.Any()) Say("이 배에 낄 장비가 없음 — 의뢰 탭에서 조선공에게 만들어 달라고 하기");
+        if (!groups.Any()) Talk(Loc.T("talk.no_gear"));
         var cur = Shipyard.Compute(sid);
         Stats next = null;
         if (hoverPart != null) next = Shipyard.Compute(sid, new Dictionary<string, string> { { Shipyard.Part(hoverPart).slot, hoverPart } });
         if (gearStatNames != null && gearStatNames.Length == 2)
         {
-            gearStats.text = $"{f.name} 수치" + (hoverPart != null ? "  <size=14><color=#ffd84a>고른 장비를 끼면</color></size>" : "  <size=14>장비 줄을 누르면 바뀔 수치가 보임</size>");
+            gearStats.text = Loc.F("gear.stats_title", Shipyard.ShipName(f)) + (hoverPart != null ? $"  <size=14><color=#ffd84a>{Loc.T("gear.preview")}</color></size>" : $"  <size=14>{Loc.T("gear.hint")}</size>");
             for (int g = 0; g < 2; g++) FillStats(gearStatNames[g], gearStatValues[g], gearStatDeltas[g], cur, next, g * 4, g * 4 + 4);
         }
-        else gearStats.text = $"<b>{f.name}</b>" + (hoverPart != null ? "  (고른 장비를 끼면)" : "") + "\n" + StatsText(cur, next);
+        else gearStats.text = $"<b>{Shipyard.ShipName(f)}</b>" + (hoverPart != null ? $"  ({Loc.T("gear.preview")})" : "") + "\n" + StatsText(cur, next);
     }
 
     // ── 의뢰 · 합성
@@ -452,10 +461,10 @@ public class PortUI : MonoBehaviour
         var s = Shipyard.Save;
         plankText.text = s.plank.ToString(); coinText.text = s.coin.ToString();
         var cost = Shipyard.RequestCost(ReqCoin);
-        reqCost.text = $"의뢰 값  {Cost(cost.plank, cost.coin)}   (테크 배율 ×{Shipyard.ReqK:0.0})";
+        reqCost.text = Loc.F("lab.cost", Cost(cost.plank, cost.coin), Shipyard.ReqK.ToString("0.0"));
         var o = Shipyard.Odds(ReqCoin); var t = Shipyard.TierOdds();
-        reqOdds.text = "등급 확률  " + string.Join("  ", o.Select((v, g) => $"<color=#{ColorUtility.ToHtmlStringRGB(DB.gradeColors[g])}>{DB.gradeNames[g]} {v:0.#}%</color>"))
-            + "\n티어 확률  " + string.Join("  ", t.Select((v, k) => (v, k)).Where(x => x.v > 0).Reverse().Select(x => $"T{x.k} {x.v:0.#}%"));
+        reqOdds.text = Loc.T("lab.grade_odds") + "  " + string.Join("  ", o.Select((v, g) => $"<color=#{ColorUtility.ToHtmlStringRGB(DB.gradeColors[g])}>{Shipyard.GradeName(g)} {v:0.#}%</color>"))
+            + Loc.T("lab.tier_odds") + "  " + string.Join("  ", t.Select((v, k) => (v, k)).Where(x => x.v > 0).Reverse().Select(x => $"T{x.k} {x.v:0.#}%"));
         reqButton.interactable = Shipyard.Can(cost.plank, cost.coin);
 
         // 합성 재료: 끼지 않은 장비 전부
@@ -467,8 +476,8 @@ public class PortUI : MonoBehaviour
             var r = Add(fuseRow, fuseList);
             bool on = picks.Contains(it.uid);
             r.icon.sprite = p.icon;
-            r.title.text = $"{p.name}  {Grade(p)} · T{p.tier}";
-            r.desc.text = $"{Shipyard.SlotType(p.slot).name} · {p.desc}";
+            r.title.text = $"{p.Name}  {Grade(p)} · T{p.tier}";
+            r.desc.text = $"{Shipyard.SlotName(p.slot)} · {p.Desc}";
             r.right.text = on ? "✔" : "";
             r.bg.color = on ? ROW_ON : ROW;
             int uid = it.uid;
@@ -477,30 +486,30 @@ public class PortUI : MonoBehaviour
         var f = Shipyard.GetFuseInfo(picks);
         if (f == null)
         {
-            fuseInfo.text = picks.Count == 0 ? $"같은 티어 · 같은 등급 장비 {Shipyard.FUSE_N}개 → 한 등급 위 장비 1개\n전설 {Shipyard.FUSE_N}~{Shipyard.UP_MAX}개 → 티어 업 도전 (실패해도 같은 티어 전설 1개)" : $"고른 {picks.Count}개는 합성할 수 없음 (같은 티어 · 같은 등급 {Shipyard.FUSE_N}개)";
-            SetButton(fuseButton, fuseButtonText, "합성", false);
+            fuseInfo.text = picks.Count == 0 ? Loc.F("lab.fuse_help", Shipyard.FUSE_N, Shipyard.UP_MAX) : Loc.F("lab.fuse_bad", picks.Count, Shipyard.FUSE_N);
+            SetButton(fuseButton, fuseButtonText, Loc.T("lab.fuse"), false);
         }
         else if (f.up)
         {
-            fuseInfo.text = $"티어 업 도전: 전설 {picks.Count}개 → T{f.tier + 1} 전설 (성공 {f.chance}%)" + (f.block != null ? $"\n<color=#ff8a7a>{f.block}</color>" : "");
-            SetButton(fuseButton, fuseButtonText, "티어 업 도전", f.block == null);
+            fuseInfo.text = Loc.F("lab.tierup_info", picks.Count, f.tier + 1, f.chance) + (f.block != null ? $"\n<color=#ff8a7a>{f.block}</color>" : "");
+            SetButton(fuseButton, fuseButtonText, Loc.T("lab.tierup"), f.block == null);
         }
         else
         {
-            fuseInfo.text = $"합성: T{f.tier} {DB.gradeNames[f.grade]} {Shipyard.FUSE_N}개 → T{f.tier} {DB.gradeNames[f.grade + 1]} 1개";
-            SetButton(fuseButton, fuseButtonText, "합성", true);
+            fuseInfo.text = Loc.F("lab.fuse_info", f.tier, Shipyard.GradeName(f.grade), Shipyard.FUSE_N, Shipyard.GradeName(f.grade + 1));
+            SetButton(fuseButton, fuseButtonText, Loc.T("lab.fuse"), true);
         }
     }
 
     void DoRequest()
     {
         var it = Shipyard.Request(ReqCoin);
-        if (it == null) { Say("판자나 금화가 모자람"); Sfx.Play("fail"); RenderLab(); return; }
+        if (it == null) { Talk(Loc.T("talk.no_money")); Sfx.Play("fail"); RenderLab(); return; }
         var p = Shipyard.Part(it.id);
         Sfx.Play(p.grade >= 2 ? "clear" : "ui_buy");
         if (preview) preview.Hammer(p.grade >= 2);
-        reqResult.text = $"완성! {p.name}  {Grade(p)} · T{p.tier}\n{Shipyard.SlotType(p.slot).name} · {p.desc}";
-        Say("조선공: " + Pick(TALK[p.grade]));
+        reqResult.text = Loc.F("lab.done", p.Name, Grade(p), p.tier, Shipyard.SlotName(p.slot), p.Desc);
+        Talk(Loc.T(Pick(TALK[p.grade])));
         RenderLab();
     }
 
@@ -512,21 +521,18 @@ public class PortUI : MonoBehaviour
         picks.Clear();
         if (it == null) { RenderLab(); return; }
         var p = Shipyard.Part(it.id);
-        reqResult.text = (ok ? "성공! " : "아쉽게 실패… 대신 ") + $"{p.name}  {Grade(p)} · T{p.tier}\n{p.desc}";
-        Say("조선공: " + Pick(p.grade >= 3 && wasUp ? UP_TALK[ok ? 0 : 1] : TALK[p.grade]));
+        reqResult.text = Loc.Lead(ok ? "lab.success" : "lab.fail") + $"{p.Name}  {Grade(p)} · T{p.tier}\n{p.Desc}";
+        Talk(Loc.T(Pick(p.grade >= 3 && wasUp ? UP_TALK[ok ? 0 : 1] : TALK[p.grade])));
         if (preview) preview.Hammer(ok && p.grade >= 2);
         Sfx.Play(ok ? (p.grade >= 2 ? "clear" : "ui_buy") : "fail");
         RenderLab();
     }
 
 // 조선공 대사 (웹 TALK · UP_TALK): 나온 등급별
+    // 값 = 스트링 테이블 키
     static readonly string[][] TALK = {
-        new[] { "평범하지만 튼튼하게 만들었지!", "기본이 제일 중요함. 잘 써 보게." },
-        new[] { "오, 망치질이 잘 됐군!", "이건 꽤 쓸 만할 걸세." },
-        new[] { "이건… 내 설계도에도 없던 물건이야!", "바다 마녀의 축복이라도 받았나? 아껴 쓰게!" },
-        new[] { "해냈다! 평생 한 번 나올 걸작!!", "이거면 고양이 대제독도 두렵지 않지!" } };
+        new[] { "talk.g0a", "talk.g0b" }, new[] { "talk.g1a", "talk.g1b" }, new[] { "talk.g2a", "talk.g2b" }, new[] { "talk.g3a", "talk.g3b" } };
     static readonly string[][] UP_TALK = {
-        new[] { "다음 시대의 기술이 완성됐네! 새 시대의 걸작!!", "전설을 녹여 더 높은 전설로… 이게 조선술이지!" },
-        new[] { "으음… 녹이다가 하나만 겨우 건졌네.", "실패도 배를 짓는 일의 일부. 다음엔 더 넣어 보게." } };
+        new[] { "talk.up_ok_a", "talk.up_ok_b" }, new[] { "talk.up_fail_a", "talk.up_fail_b" } };
     static string Pick(string[] a) => a[Random.Range(0, a.Length)];
 }

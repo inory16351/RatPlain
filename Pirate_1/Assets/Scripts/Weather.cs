@@ -89,7 +89,7 @@ public class Weather : MonoBehaviour
             if (Pull(me.transform, guard, dt) < whirlCore && !gm.Over && !me.Invincible)
             {
                 me.hp -= whirlDps * guard * dt;
-                if ((sayT -= dt) <= 0) { sayT = 0.4f; gm.Text(me.transform.position, "소용돌이!", new Color(0.62f, 0.88f, 1f)); }
+                if ((sayT -= dt) <= 0) { sayT = 0.4f; gm.Text(me.transform.position, Loc.T("float.whirl"), new Color(0.62f, 0.88f, 1f)); }
             }
             foreach (var f in gm.foes) if (f.boss == BossKind.None) Pull(f.transform, 0.7f, dt);
         }
