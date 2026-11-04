@@ -7,3 +7,4 @@ gulls -i ref_style_top.png -i ref_icons.png
 boss_shark -i ref_shark_top.png -i ref_style_top.png -i ref_shark.png
 boss_shark2 -i ref_shark_top.png -i ref_style_top.png
 mortar -i ref_style_top.png -i ref_icons.png
+title_bg -i ref_title.jpg -i ref_capt.png -i ref_navy.png

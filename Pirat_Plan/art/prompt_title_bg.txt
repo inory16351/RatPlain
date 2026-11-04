@@ -1,0 +1,10 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: title_bg.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. Do NOT edit or post-process the image with code. After saving, reply only with the file name.
+
+The FIRST attached image is our CURRENT title screen background. Redraw the SAME scene in the SAME art style, colors and characters (the one-eyed pirate mouse captain on his small wooden ship with a mouse-head figurehead and the red cheese-and-crossbones sail, the navy-blue cat navy warship with paw-print sails, a shark fin, islands, bright blue sky with flat clouds, blue sea with flat white wave crests), but with a NEW LAYOUT. The other attached images show the captain and the cat navy for reference. NO text, NO letters, NO logos, NO watermark anywhere in the image.
+
+Image spec: 1536x1024 landscape. NEW LAYOUT (most important): the game will put a big title logo and a menu box over the CENTER of the image, covering the whole middle column from 30% to 70% of the width, top to bottom. So:
+- The pirate mouse captain and his ship must be COMPLETELY inside the LEFT 28% of the image. The ship's bow points to the right toward the center. The captain stands on the bow, fully visible, with his whole head, face, eye patch and tricorn hat clearly inside the left 28% at about one third of the image height from the top. Nothing of the captain may be in the middle column.
+- The cat navy warship must be inside the RIGHT 28% of the image, sailing toward the left, a bit smaller and farther away. The shark fin is in the lower right.
+- The middle column (30% to 70% of the width) contains ONLY open sky, a few soft clouds, a far small island on the horizon and the sea with waves. No characters, no ships, no important objects there.
+
+ART STYLE: exactly like the first attached image: flat 2D cartoon illustration, big simple flat color shapes with one soft darker shadow shape, a very faint paper texture, bright friendly colors, no black outlines, no gradients, no 3D rendering.
