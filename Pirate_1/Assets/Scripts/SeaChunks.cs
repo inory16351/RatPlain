@@ -76,7 +76,13 @@ public class SeaChunks : MonoBehaviour
     Vector2 home;
     int look;
 
-    static float Hash(float a, float b) { float s = Mathf.Sin(a * 127.1f + b * 311.7f) * 43758.5453f; return s - Mathf.Floor(s); }
+    // 0 이상 1 미만. 소수 부분을 double 로 끝까지 계산 (float 로 섞어 계산하면 Floor 가 반올림돼 아주 작은 음수가 나와 배열 번호가 -1 이 됐음)
+    static float Hash(float a, float b)
+    {
+        double s = System.Math.Sin((double)a * 127.1 + (double)b * 311.7) * 43758.5453;
+        float f = (float)(s - System.Math.Floor(s));
+        return f >= 1f ? 0f : f;
+    }
 
     void Start()
     {
