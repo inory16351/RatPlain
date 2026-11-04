@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>쥐 해적 기획서 구조도</title>
+<style>
+  :root {
+    --navy: #16324f; --teal: #1f7a85; --teal-l: #d8eef0; --line: #9fc9cd;
+    --card: #ffffff; --bg: #ffffff; --ink: #1c2b39; --sub: #5b6b78;
+    --done: #2f7d4f; --plan: #b86a14; --in: #6a6f9a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .page { width: 1180px; margin: 0 auto; padding: 36px 40px 40px; }
+  h1 { text-align: center; font-size: 34px; margin: 0 0 30px; color: var(--navy); letter-spacing: 1px; }
+  h2 { font-size: 20px; margin: 0 0 18px; color: var(--navy); }
+  h2 b { margin-right: 12px; }
+
+  /* 위계 */
+  .top { width: 440px; margin: 0 auto; background: var(--navy); color: #fff; border-radius: 8px;
+    text-align: center; padding: 14px 10px 12px; position: relative; }
+  .top .t { font-size: 22px; font-weight: 700; }
+  .top .d { font-size: 12px; opacity: .8; margin-top: 6px; }
+  .top .tag { position: absolute; right: 10px; top: 10px; }
+  .bus { position: relative; height: 34px; }
+  .bus::before { content: ""; position: absolute; left: 50%; top: 0; height: 17px; border-left: 2px solid var(--navy); }
+  .bus::after { content: ""; position: absolute; left: 10%; right: 10%; top: 17px; border-top: 2px solid var(--navy); }
+  .cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .col { background: #f3f9fa; border: 1px solid var(--line); border-radius: 6px; padding: 0 10px 12px; position: relative; }
+  .col::before { content: ""; position: absolute; left: 50%; top: -17px; height: 17px; border-left: 2px solid var(--navy); }
+  .col > .h { background: var(--teal-l); margin: 0 -10px 12px; padding: 9px 4px; text-align: center;
+    font-weight: 700; font-size: 14px; border-radius: 6px 6px 0 0; border-bottom: 1px solid var(--line); }
+  .doc { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 10px 9px 9px; margin-bottom: 10px; }
+  .doc .n { font-weight: 700; font-size: 14.5px; text-align: center; line-height: 1.35; }
+  .doc .f { text-align: center; font-size: 11px; color: var(--sub); margin: 3px 0 7px; }
+  .doc ul { margin: 0; padding-left: 15px; font-size: 11.5px; line-height: 1.6; color: #34444f; }
+  .doc.plan { border-style: dashed; border-color: #d9a868; background: #fffaf3; }
+  .doc.in { border-style: dotted; border-color: #a9acc9; background: #f7f7fc; }
+  .arrow { text-align: center; color: var(--teal); font-size: 16px; line-height: 1; margin: -4px 0 6px; }
+  .tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 9px; color: #fff; vertical-align: 1px; }
+  .tag.done { background: var(--done); } .tag.plan { background: var(--plan); } .tag.in { background: var(--in); }
+  .legend { display: flex; gap: 18px; justify-content: center; font-size: 12px; color: var(--sub); margin: 14px 0 0; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+
+  /* 작성 순서 */
+  .steps { margin-top: 36px; }
+  .step { display: grid; grid-template-columns: 44px 250px 1fr 70px; align-items: center;
+    background: #f3f8fa; border: 1px solid #cfe2e6; border-radius: 6px; padding: 10px 14px; }
+  .step .no { width: 30px; height: 30px; border-radius: 50%; background: var(--teal); color: #fff;
+    font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .step.next .no { background: var(--plan); }
+  .step .k { font-weight: 700; font-size: 15px; }
+  .step .v { font-size: 13px; color: #3d4d59; }
+  .step .s { text-align: right; }
+  .down { text-align: center; color: var(--teal); font-size: 12px; line-height: 14px; height: 14px; }
+  .note { margin-top: 22px; background: #e8f4f5; border: 1px solid #bcdde0; border-radius: 6px;
+    text-align: center; padding: 14px; font-weight: 700; font-size: 14px; line-height: 1.8; color: var(--navy); }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>쥐 해적 기획서 구조도</h1>
+
+  <h2><b>01</b>문서 위계</h2>
+  <div class="top">
+    <span class="tag done">작성</span>
+    <div class="t">컨셉 기획서</div>
+    <div class="d">기획의도 · 원페이지 · 스토리 · 세력 · 핵심 재미 · 게임 루프</div>
+  </div>
+  <div class="bus"></div>
+
+  <div class="cols">
+    <!-- 1 -->
+    <div class="col">
+      <div class="h">인게임 플레이</div>
+      <div class="doc plan">
+        <div class="n">전투 기획서 <span class="tag plan">예정</span></div>
+        <div class="f">컨셉서 인게임 시스템에서 분리</div>
+        <ul><li>조작 · 측면 일제 사격</li><li>자동 무기</li><li>선원 구조 · 콤보</li></ul>
+      </div>
+      <div class="doc">
+        <div class="n">오브젝트 · 아이템<br>시스템 기획서 <span class="tag done">작성</span></div>
+        <div class="f">md + pptx</div>
+        <ul><li>바다 오브젝트 7종</li><li>배치 규칙</li><li>사용 아이템 5종 (1칸 교체)</li><li>아이템 UI · 연출</li></ul>
+      </div>
+    </div>
+    <!-- 2 -->
+    <div class="col">
+      <div class="h">스테이지 · 적</div>
+      <div class="doc plan">
+        <div class="n">스테이지 기획서 <span class="tag plan">예정</span></div>
+        <div class="f">컨셉서 인게임 시스템에서 분리</div>
+        <ul><li>8바다 구성 · 웨이브</li><li>몬스터 (세력별 적)</li><li>보스 패턴</li><li>맵 특성 · 날씨</li></ul>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="doc in">
+        <div class="n">세력 · 몬스터 <span class="tag in">컨셉서 안</span></div>
+        <div class="f">현재 컨셉 기획서 항목</div>
+        <ul><li>고양이 해군 · 라이벌 · 상어</li><li>몬스터 · 스테이지 / 보스</li></ul>
+      </div>
+    </div>
+    <!-- 3 -->
+    <div class="col">
+      <div class="h">아웃게임 성장</div>
+      <div class="doc">
+        <div class="n">아웃게임 강화<br>시스템 기획서 <span class="tag done">작성</span></div>
+        <div class="f">md + pptx</div>
+        <ul><li>항구 화면 (4개 탭)</li><li>함선 강화 (테크 · 시대)</li><li>장비 (슬롯 · 등급)</li><li>조선소 의뢰</li><li>합성 · 티어 업 · 분해</li><li>재화 (금화 · 목재)</li></ul>
+      </div>
+    </div>
+    <!-- 4 -->
+    <div class="col">
+      <div class="h">밸런스 · 데이터</div>
+      <div class="doc">
+        <div class="n">밸런스 분석<br>기획서 <span class="tag done">작성</span></div>
+        <div class="f">pptx</div>
+        <ul><li>바다별 난이도 곡선</li><li>성장 · 전멸 시간 · 위험도</li><li>함선 성장 · 경제</li><li>문제 정리 · 조정안</li></ul>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="doc">
+        <div class="n">데이터 테이블 <span class="tag done">작성</span></div>
+        <div class="f">Pirat_Table/ 엑셀 (확정 수치)</div>
+        <ul><li>바다 · 배 · 적</li><li>장비</li><li>오브젝트 아이템</li></ul>
+      </div>
+    </div>
+    <!-- 5 -->
+    <div class="col">
+      <div class="h">표현 · 제작 기준</div>
+      <div class="doc in">
+        <div class="n">비주얼 가이드 <span class="tag in">컨셉서 안</span></div>
+        <div class="f">현재 컨셉 기획서 항목</div>
+        <ul><li>플랫 그림체 · 탑뷰</li><li>세력별 함선 디자인</li><li>이펙트 · 바다 표현</li></ul>
+      </div>
+      <div class="doc in">
+        <div class="n">사운드 <span class="tag in">컨셉서 안</span></div>
+        <ul><li>BGM 3곡</li><li>효과음 목록</li></ul>
+      </div>
+      <div class="doc in">
+        <div class="n">플랫폼 · BM · 리스크 <span class="tag in">컨셉서 안</span></div>
+        <ul><li>스팀 패키지 · 뽑기 현금 없음</li><li>개발 방향 · 리스크 대응</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="tag done">작성</i> 별도 문서 있음</span>
+    <span><i class="tag plan">예정</i> 컨셉서에서 분리할 상세 기획서</span>
+    <span><i class="tag in">컨셉서 안</i> 아직 컨셉 기획서 안의 항목</span>
+  </div>
+
+  <div class="steps">
+    <h2><b>02</b>작성 순서</h2>
+    <div class="step"><div class="no">1</div><div class="k">컨셉 기획서</div><div class="v">정체성 · 핵심 재미 · 인게임 / 아웃게임 방향 확정</div><div class="s"><span class="tag done">작성</span></div></div>
+    <div class="down">▼</div>
+    <div class="step"><div class="no">2</div><div class="k">오브젝트 · 아이템 기획서</div><div class="v">바다 오브젝트 · 사용 아이템 규칙 + 테이블</div><div class="s"><span class="tag done">작성</span></div></div>
+    <div class="down">▼</div>
+    <div class="step"><div class="no">3</div><div class="k">아웃게임 강화 기획서</div><div class="v">함선 테크 ↔ 장비 ↔ 조선소 ↔ 재화 순환</div><div class="s"><span class="tag done">작성</span></div></div>
+    <div class="down">▼</div>
+    <div class="step"><div class="no">4</div><div class="k">밸런스 분석 기획서</div><div class="v">Unity 빌드 수치로 난이도 · 성장 · 경제 곡선 점검 → 조정안</div><div class="s"><span class="tag done">작성</span></div></div>
+    <div class="down">▼</div>
+    <div class="step next"><div class="no">5</div><div class="k">전투 기획서</div><div class="v">조작 · 측면 사격 · 자동 무기 · 선원을 상세 규칙으로</div><div class="s"><span class="tag plan">예정</span></div></div>
+    <div class="down">▼</div>
+    <div class="step next"><div class="no">6</div><div class="k">스테이지 기획서</div><div class="v">8바다 · 웨이브 · 몬스터 · 보스 · 날씨를 실제 배치로</div><div class="s"><span class="tag plan">예정</span></div></div>
+
+    <div class="note">확정 수치는 기획서가 아니라 데이터 테이블 (Pirat_Table) 에서 관리<br>밸런스 분석 결과는 스테이지 · 전투 기획서 작성 때 반영</div>
+  </div>
+</div>
+</body>
+</html>
