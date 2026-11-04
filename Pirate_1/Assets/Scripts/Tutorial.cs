@@ -57,20 +57,20 @@ public class Tutorial : MonoBehaviour
 
     public List<TutorialTip> tips = new List<TutorialTip>
     {
-        new TutorialTip { key = "obj_Treasure", title = "보물상자", text = "포탄으로 부숴야 열림. 금화가 잔뜩!" },
-        new TutorialTip { key = "obj_Supply", title = "보급 상자", text = "부수면 아이템 · 금화 조금" },
-        new TutorialTip { key = "obj_BombCrate", title = "폭탄 상자", text = "닿거나 맞으면 펑! 적 근처에서 터뜨려라" },
-        new TutorialTip { key = "obj_Reef", title = "암초", text = "포탄을 막아 줌. 뒤에 숨어 장전하라" },
-        new TutorialTip { key = "obj_Wreck", title = "난파선", text = "포탄을 막다가 많이 맞으면 부서짐" },
-        new TutorialTip { key = "obj_Current", title = "해류", text = "화살표 쪽으로 밀림. 타면 빠르고 거스르면 느림" },
-        new TutorialTip { key = "obj_Wind", title = "바람 구역", text = "배도 포탄도 바람에 밀림. 조준할 때 감안!" },
-        new TutorialTip { key = "foe_shark", title = "상어", text = "지느러미만 보일 땐 잠수 중. 떠오를 때 쏴라" },
-        new TutorialTip { key = "foe_mine", title = "떠다니는 폭탄통", text = "부딪히면 터짐. 멀리서 쏴서 치워라" },
-        new TutorialTip { key = "foe_speeder", title = "쾌속정", text = "빠르게 들이받음. 다가오기 전에 쏴라" },
-        new TutorialTip { key = "foe_mortar", title = "박격포선", text = "빨간 원이 떨어질 곳. 원 밖으로 피하라" },
-        new TutorialTip { key = "boss", title = "보스 출현!", text = "체력이 많다. 아이템을 아껴 뒀다면 지금 써라" },
-        new TutorialTip { key = "loot", title = "승리!", text = "떨어진 전리품을 줍고 Enter 로 항구로" },
-        new TutorialTip { key = "item_drop", title = "아이템", text = "가까이 가면 주움. 12초 뒤 사라짐" },
+        new TutorialTip { key = "obj_Treasure", title = "보물상자", text = "포탄으로 박살 내야 열린다. 안에 금화가 그득하지!" },
+        new TutorialTip { key = "obj_Supply", title = "보급 상자", text = "부숴 봐라. 아이템 하나랑 금화 몇 닢이 들었다" },
+        new TutorialTip { key = "obj_BombCrate", title = "폭탄 상자", text = "건드리거나 맞히면 쾅! 고양이 놈들 곁에서 터뜨려라" },
+        new TutorialTip { key = "obj_Reef", title = "암초", text = "포탄을 막아 주는 바위다. 뒤에 숨어서 장전해라" },
+        new TutorialTip { key = "obj_Wreck", title = "난파선", text = "잠깐은 방패가 돼 주지만, 많이 맞으면 박살 난다" },
+        new TutorialTip { key = "obj_Current", title = "해류", text = "화살표 쪽으로 배를 떠민다. 올라타면 빠르고, 거스르면 굼뜨다" },
+        new TutorialTip { key = "obj_Wind", title = "바람 구역", text = "배도 포탄도 바람에 밀린다. 바람을 읽고 쏴라!" },
+        new TutorialTip { key = "foe_shark", title = "상어", text = "지느러미만 보이면 물속에 숨은 거다. 떠오를 때 쏴라" },
+        new TutorialTip { key = "foe_mine", title = "떠다니는 폭탄통", text = "부딪히면 펑 터진다! 멀찍이서 쏴서 치워 버려라" },
+        new TutorialTip { key = "foe_speeder", title = "쾌속정", text = "냅다 달려와 들이받는다. 붙기 전에 쏴서 가라앉혀라" },
+        new TutorialTip { key = "foe_mortar", title = "박격포선", text = "빨간 원에 포탄이 떨어진다. 원 밖으로 키를 돌려라!" },
+        new TutorialTip { key = "boss", title = "보스 출현!", text = "놈은 맷집이 엄청나다. 아껴 둔 아이템이 있으면 지금 써라!" },
+        new TutorialTip { key = "loot", title = "승리!", text = "전리품을 싹 쓸어 담고 Enter로 항구에 돌아가자!" },
+        new TutorialTip { key = "item_drop", title = "아이템", text = "가까이 대면 줍는다. 12초 뒤엔 사라지니 서둘러라!" },
     };
 
     int step = -1;
