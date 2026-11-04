@@ -1,7 +1,7 @@
 """스트링 테이블 → Unity 런타임 TSV.
 
 Pirat_Table/스트링 테이블.xlsx 의 '스트링' 시트를 읽어
-Pirate_1/Assets/Resources/Localization/strings.tsv 로 내보낸다.
+Pirate_1/Assets/Resources/Localization/strings.txt 로 내보낸다.
 번역을 고친 뒤 이 스크립트만 다시 돌리면 게임에 반영됨 (Unity 가 TSV 를 다시 임포트).
 
 검사: 빈 칸 · 자리 표시({0}) 개수 · 리치 텍스트 태그(<b> <size> <color>) 짝이 한국어와 같은지.
@@ -15,7 +15,7 @@ import openpyxl
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 XLSX = os.path.join(ROOT, 'Pirat_Table', '스트링 테이블.xlsx')
-OUT = os.path.join(ROOT, 'Pirate_1', 'Assets', 'Resources', 'Localization', 'strings.tsv')
+OUT = os.path.join(ROOT, 'Pirate_1', 'Assets', 'Resources', 'Localization', 'strings.txt')
 LANGS = ['ko', 'en', 'ru', 'fr', 'de', 'zh', 'ja', 'ar']
 
 PH = re.compile(r'\{\d+(?::[^}]*)?\}')

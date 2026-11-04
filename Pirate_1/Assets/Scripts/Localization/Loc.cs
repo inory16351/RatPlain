@@ -62,7 +62,8 @@ public static class Loc
         }
     }
 
-    static string Norm(string s) => s.Replace("\r", "").Trim();
+    // 씬 글자 찾기용: 공백 · 줄바꿈 개수 차이는 무시
+    static string Norm(string s) => System.Text.RegularExpressions.Regex.Replace(s, @"\s+", " ").Trim();
 
     public static bool Has(string key) { Load(); return key != null && table.ContainsKey(key); }
 
@@ -138,7 +139,18 @@ public static class Loc
     {
         Load();
         SceneManager.sceneLoaded += (s, m) => LocTexts.Scan();
-        Canvas.willRenderCanvases += LocTexts.BeforeRender;
+        // 모든 Update · LateUpdate 가 글자를 바꾼 뒤, UI 다시 그리기(PostLateUpdate) 전에 한 번
+        // (Canvas.willRenderCanvases 는 UI 다시 그리기보다 늦게 불려 매 프레임 바뀌는 글자가 뒤집히지 않은 채 그려짐)
+        var loop = UnityEngine.LowLevel.PlayerLoop.GetCurrentPlayerLoop();
+        for (int i = 0; i < loop.subSystemList.Length; i++)
+        {
+            if (loop.subSystemList[i].type != typeof(UnityEngine.PlayerLoop.PreLateUpdate)) continue;
+            var subs = new List<UnityEngine.LowLevel.PlayerLoopSystem>(loop.subSystemList[i].subSystemList);
+            if (subs.Exists(x => x.type == typeof(LocTexts))) return;
+            subs.Add(new UnityEngine.LowLevel.PlayerLoopSystem { type = typeof(LocTexts), updateDelegate = LocTexts.BeforeRender });
+            loop.subSystemList[i].subSystemList = subs.ToArray();
+        }
+        UnityEngine.LowLevel.PlayerLoop.SetPlayerLoop(loop);
     }
 }
 
@@ -151,6 +163,7 @@ public static class LocTexts
         public Font font;           // 원래 글꼴 (한국어로 돌아올 때)
         public bool bestFit; public int minSize, maxSize;
         public TextAnchor align;
+        public HorizontalWrapMode hOver; public VerticalWrapMode vOver;
         public string shown;        // 마지막으로 RTL 처리해 넣은 글자 (코드가 바꿨는지 알아보려고)
     }
     static readonly Dictionary<Text, Info> all = new Dictionary<Text, Info>();
@@ -162,7 +175,7 @@ public static class LocTexts
         foreach (var t in Resources.FindObjectsOfTypeAll<Text>())
         {
             if (!t || all.ContainsKey(t) || !t.gameObject.scene.IsValid()) continue;
-            var i = new Info { key = Loc.KeyOfSource(t.text), font = t.font, bestFit = t.resizeTextForBestFit, minSize = t.resizeTextMinSize, maxSize = t.resizeTextMaxSize, align = t.alignment };
+            var i = new Info { key = Loc.KeyOfSource(t.text), font = t.font, bestFit = t.resizeTextForBestFit, minSize = t.resizeTextMinSize, maxSize = t.resizeTextMaxSize, align = t.alignment, hOver = t.horizontalOverflow, vOver = t.verticalOverflow };
             // 이미 바뀐 원본을 복제한 줄 (조선소 줄 · 바다 카드 등): 원래 값은 한국어 기본값으로
             if (t.font && t.font.name.StartsWith("Loc_"))
             {
@@ -193,6 +206,9 @@ public static class LocTexts
         t.resizeTextForBestFit = fit || i.bestFit;
         t.resizeTextMaxSize = fit && !i.bestFit ? t.fontSize : i.maxSize;
         t.resizeTextMinSize = fit && !i.bestFit ? Mathf.Max(8, Mathf.RoundToInt(t.fontSize * 0.55f)) : i.minSize;
+        // 줄이기는 칸 안에 가둘 때만 먹힘 (넘침 허용이면 Unity 가 안 줄임) → 다른 언어에선 줄바꿈 + 칸 안으로
+        t.horizontalOverflow = fit ? HorizontalWrapMode.Wrap : i.hOver;
+        t.verticalOverflow = fit ? VerticalWrapMode.Truncate : i.vOver;
         t.alignment = Loc.RTL ? Mirror(i.align) : i.align;
         if (i.key != null) t.text = Loc.T(i.key);
         if (Loc.RTL) Shape(t, i);

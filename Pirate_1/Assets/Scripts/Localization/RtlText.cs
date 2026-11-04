@@ -79,7 +79,8 @@ public static class RtlText
         }
         return false;
     }
-    static char Prev(List<char> s, int i) { for (int j = i - 1; j >= 0; j--) { if (s[j] == '>') return '\0'; return Joins(s[j]) ? s[j] : '\0'; } return '\0'; }
+    // 바로 앞 글자 (태그 끝 '>' 이나 잇지 않는 글자면 없음)
+    static char Prev(List<char> s, int i) => i > 0 && Joins(s[i - 1]) ? s[i - 1] : '\0';
     static char Next(List<char> s, int i) { int j = IndexOfNext(s, i); return j < s.Count ? s[j] : '\0'; }
     static int IndexOfNext(List<char> s, int i) => i + 1;
 
