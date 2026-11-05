@@ -235,8 +235,8 @@ MonoBehaviour:
   explodeDmg: 0
   explodeRadius: 0
   push: 0
-  goldMin: 4
-  goldMax: 6
+  goldMin: 15
+  goldMax: 25
   plank: 1
   itemChance: 0
   blockShot: 0
