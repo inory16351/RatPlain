@@ -1,5 +1,9 @@
 key	src	ko	en	ru	fr	de	zh	ja	ar
 lang.self		한국어	English	Русский	Français	Deutsch	简体中文	日本語	العربية
+lab.dismantle		분해	Dismantle	Разобрать	Démonter	Zerlegen	分解	分解	تفكيك
+lab.dismantle_confirm		분해 확정	Confirm	Подтвердить	Confirmer	Bestätigen	确认	確定	تأكيد
+lab.dismantle_value		목재 +{0} / 금화 +{1} (장비 소모)	Wood +{0} / Gold +{1} (consumes equipment)	Дерево +{0} / Золото +{1}	Bois +{0} / Or +{1}	Holz +{0} / Gold +{1}	木材 +{0} / 金币 +{1}	木材 +{0} / 金貨 +{1}	خشب +{0} / ذهب +{1}
+lab.dismantle_done		분해 완료	Dismantled	Разобрано	Démonté	Zerlegt	分解完成	分解完了	تم التفكيك
 common.yes		예	Yes	Да	Oui	Ja	是	はい	نعم
 common.no	아니오	아니요	No	Нет	Non	Nein	否	いいえ	لا
 common.close		닫기	Close	Закрыть	Fermer	Schließen	关闭	閉じる	إغلاق

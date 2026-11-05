@@ -281,8 +281,8 @@ public static class Shipyard
         return o;
     }
     public static float ReqK => 1 + 0.6f * Tech();
-    // 의뢰 비용: 목재 = 금화 ÷ 5 (목재는 주로 배, 금화는 주로 장비에 쓰이게)
-    public static (int plank, int coin) RequestCost(int coin) => (Mathf.RoundToInt(coin * ReqK / 5), Mathf.RoundToInt(coin * ReqK));
+    // 목재는 선박 성장에 우선 사용. 의뢰는 황금 중심이며 표시와 결제에 같은 비용 사용.
+    public static (int plank, int coin) RequestCost(int coin) => (Mathf.RoundToInt(coin * ReqK / 10), Mathf.RoundToInt(coin * ReqK));
     static int Roll(float[] p) { float r = Random.value * p.Sum(); int i = 0; while (i < p.Length - 1 && r >= p[i]) { r -= p[i]; i++; } return i; }
     static T Pick<T>(List<T> a) => a[Random.Range(0, a.Count)];
     static List<PartDef> Candidates(int t, int g)
@@ -300,6 +300,25 @@ public static class Shipyard
         var it = Give(Save, Pick(Candidates(t, g)).id);
         Save.requests++; Store();
         return it;
+    }
+
+    public static (int plank, int coin) DismantleValue(PartDef part)
+    {
+        int coin = Mathf.FloorToInt((3 << Mathf.Clamp(part.grade, 0, 3)) * (1 + 0.6f * part.tier));
+        return (coin / 10, coin);
+    }
+    public static bool Dismantle(int uid)
+    {
+        var item = ItemOf(uid);
+        if (item == null || IsEquipped(uid)) return false;
+        var part = Part(item.id);
+        if (part == null) return false;
+        var refund = DismantleValue(part);
+        Save.items.Remove(item);
+        Save.plank += refund.plank;
+        Save.coin += refund.coin;
+        Store();
+        return true;
     }
 
     // 합성: 같은 티어 · 등급 3개 → 한 등급 위. 티어 업 도전: 같은 티어 전설 3~6개 → 한 티어 위 전설 (실패하면 같은 티어 전설 하나)
@@ -334,6 +353,14 @@ public static class Shipyard
     {
         float k = win ? 1 : 0.5f;
         int p = Mathf.FloorToInt(plank * k), c = Mathf.FloorToInt(coin * k);
+        // 해역별 최초 승리 보상: 초반 배 교체 지원, 후반에는 해역 배율만큼 증가.
+        // 기존 cleared 기록을 사용하므로 재클리어/로드로 중복 지급되지 않는다.
+        if (win && !Save.cleared.Contains(DB.seas[sea].id))
+        {
+            float rewardScale = DB.seas[sea].mult;
+            p += Mathf.RoundToInt(40 * rewardScale);
+            c += Mathf.RoundToInt(120 * rewardScale);
+        }
         Save.plank += p; Save.coin += c; Save.sorties++;
         if (win)
         {
