@@ -109,6 +109,18 @@ public class GameManager : MonoBehaviour
     float waveT;
     bool waiting;
 
+    [Header("웨이브 소환 (한꺼번에 몰려나오지 않게 한 척씩)")]
+    [Tooltip("적을 한 척씩 내보내는 간격 (초)")]
+    public float spawnGap = 0.8f;
+    [Tooltip("바다에 동시에 떠 있는 적 최대 수 (폭탄통 제외). 넘으면 줄어들 때까지 다음 적을 기다림")]
+    public int maxAlive = 6;
+    [Tooltip("섬 · 암초에 끼어 이 시간(초) 동안 거의 못 움직인 적은 빈 바다로 옮김")]
+    public float stuckTime = 3f;
+    readonly Queue<string> spawnQueue = new Queue<string>();
+    float spawnT;
+    readonly Dictionary<EnemyShip, Vector3> stuckAt = new Dictionary<EnemyShip, Vector3>(); // x, y = 끼인 자리, z = 끼어 있던 시간
+    float stuckCheckT;
+
     public bool Over => state != 0;
     [HideInInspector] public bool tutorialSafe; // 첫 전투 조작 안내 중엔 내 배가 피해를 안 받음 (Tutorial)
     // 이긴 뒤 항구로 가기 전: 배를 몰아 떨어진 금화 · 목재를 주움 (Enter 로 정산)
@@ -159,6 +171,14 @@ void Start()
         if (msgT > 0) msgT -= dt;
         if (state == 0)
         {
+            // 대기 줄의 적을 spawnGap 마다 한 척씩 (동시에 maxAlive 척까지)
+            if (spawnQueue.Count > 0 && (spawnT -= dt) <= 0 && foes.FindAll(f => f.ai != FoeAI.Mine).Count < maxAlive)
+            {
+                spawnT = spawnGap;
+                string k = spawnQueue.Dequeue();
+                Spawn(k, FreeSpot(7f, 13f, ClearOf(k)));
+            }
+            if ((stuckCheckT -= dt) <= 0) { UnstickFoes(0.5f); stuckCheckT = 0.5f; }
             if (player.hp <= 0)
             {
                 state = -1;
@@ -167,7 +187,7 @@ void Start()
                 Blast(player.transform.position, 1.2f);
                 if (bgm) bgm.Stop();
             }
-            else if (!waiting && !foes.Exists(f => f.ai != FoeAI.Mine))
+            else if (!waiting && spawnQueue.Count == 0 && !foes.Exists(f => f.ai != FoeAI.Mine))
             {
                 if (wave > waves.Length)
                 {
@@ -222,9 +242,10 @@ void Start()
         wave++;
         if (wave > waves.Length)
         {
-            bossShip = Spawn(boss, FreeSpot(8f, 11f));
+            bossShip = Spawn(boss, FreeSpot(8f, 11f, ClearOf(boss)));
             int n = 0;
-            foreach (var k in waves[0].Split(',')) if (k.Trim() != "mine" && n++ < 2) Spawn(k.Trim(), FreeSpot(7f, 13f));
+            foreach (var k in waves[0].Split(',')) if (k.Trim() != "mine" && n++ < 2) spawnQueue.Enqueue(k.Trim()); // 호위는 보스 뒤로 한 척씩
+            spawnT = spawnGap;
             Message(bossShip ? bossShip.Name : Loc.T("foe." + boss, boss), Loc.T("msg.boss"), 3f);
             PlayMusic(bossClip);
             Sfx.Play("roar");
@@ -232,7 +253,8 @@ void Start()
         }
         else
         {
-            foreach (var k in waves[wave - 1].Split(',')) Spawn(k.Trim(), FreeSpot(7f, 13f));
+            foreach (var k in waves[wave - 1].Split(',')) if (k.Trim() != "") spawnQueue.Enqueue(k.Trim()); // 한꺼번에 말고 spawnGap 마다 한 척씩
+            spawnT = 0.3f; // 첫 척은 곧바로 (바다 칸 · 섬이 먼저 깔리도록 아주 잠깐 뒤)
             for (int i = 0; i < treasurePerWave; i++) SpawnTreasure();
             if (Random.value < extraTreasureChance) SpawnTreasure();
             Message(Loc.F("msg.wave", seaName, wave, waves.Length), wave == 1 ? story : "", 2.8f);
@@ -276,17 +298,65 @@ void Start()
         c.plank = Mathf.RoundToInt(c.plank * LootMult);
     }
 
-    public Vector2 FreeSpot(float minD, float maxD)
+    // 배 둘레 빈 바다 한 곳. clear = 섬 · 암초 · 다른 적과 띄울 거리 (배가 클수록 크게)
+    // 빈자리를 못 찾으면 그나마 가장 넓은 자리 (예전엔 마지막으로 뽑은 자리를 그대로 써서 섬 속에 나오곤 했음)
+    public Vector2 FreeSpot(float minD, float maxD, float clear = 0.9f)
     {
-        Vector2 me = player.transform.position, p = me;
+        Vector2 me = player.transform.position, best = me + Vector2.right * maxD;
+        float bestRoom = float.MinValue;
         for (int n = 0; n < 300; n++)
         {
             float a = Random.value * Mathf.PI * 2, d = Random.Range(minD, maxD);
-            p = me + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * d;
-            if (!Island.All.Exists(o => Vector2.Distance(o.transform.position, p) < o.radius + 0.9f)
-                && !SeaObject.All.Exists(o => !o.Zone && Vector2.Distance(o.transform.position, p) < o.radius + 0.9f)) break;
+            Vector2 p = me + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * d;
+            float room = RoomAt(p);
+            if (room >= clear) return p;
+            if (room > bestRoom) { bestRoom = room; best = p; }
         }
-        return p;
+        return best;
+    }
+
+    // p 에서 가장 가까운 섬 · 단단한 오브젝트 · 적 가장자리까지 거리
+    float RoomAt(Vector2 p)
+    {
+        float room = float.MaxValue;
+        foreach (var o in Island.All) room = Mathf.Min(room, Vector2.Distance(o.transform.position, p) - o.radius);
+        foreach (var o in SeaObject.All) if (!o.Zone) room = Mathf.Min(room, Vector2.Distance(o.transform.position, p) - o.radius);
+        foreach (var f in foes) if (f) room = Mathf.Min(room, Vector2.Distance(f.transform.position, p) - f.len * 0.3f);
+        return room;
+    }
+
+    // 이 종류 배가 나올 때 비워 둘 거리 (원본 프리팹 길이 기준)
+    public float ClearOf(string kind)
+    {
+        var prefab = System.Array.Find(enemyPrefabs, p => p && p.kind == kind);
+        return (prefab ? prefab.len * 0.3f : 0.5f) + 0.9f;
+    }
+
+    // 섬 · 암초에 붙어 거의 못 움직이는 적은 빈 바다로 옮김 (끼인 적 때문에 웨이브가 안 끝나던 문제)
+    void UnstickFoes(float step)
+    {
+        foreach (var f in foes.ToArray())
+        {
+            if (!f || f.ai == FoeAI.Mine || f.boss != BossKind.None) { stuckAt.Remove(f); continue; }
+            Vector2 p = f.transform.position;
+            bool touching = RoomAtSolid(p) < f.len * 0.3f + 0.15f;
+            if (!touching) { stuckAt.Remove(f); continue; }
+            if (stuckAt.TryGetValue(f, out var s) && Vector2.Distance(s, p) < 0.4f)
+            {
+                s.z += step;
+                if (s.z >= stuckTime) { f.transform.position = FreeSpot(7f, 12f, ClearOf(f.kind)); stuckAt.Remove(f); continue; }
+                stuckAt[f] = s;
+            }
+            else stuckAt[f] = new Vector3(p.x, p.y, 0);
+        }
+    }
+
+    float RoomAtSolid(Vector2 p)
+    {
+        float room = float.MaxValue;
+        foreach (var o in Island.All) room = Mathf.Min(room, Vector2.Distance(o.transform.position, p) - o.radius);
+        foreach (var o in SeaObject.All) if (!o.Zone) room = Mathf.Min(room, Vector2.Distance(o.transform.position, p) - o.radius);
+        return room;
     }
 
 // 가장 가까운 적 (폭탄통 제외). needTargetable = 잠수한 상어 빼기
