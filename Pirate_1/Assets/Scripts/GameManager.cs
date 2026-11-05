@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     public Vector2 foeSpread = new Vector2(0.3f, 0.15f);
     [Tooltip("적 폭격이 노린 곳에서 빗나가는 거리 (유닛, 처음 바다, 마지막 바다)")]
     public Vector2 foeLobScatter = new Vector2(0.5f, 0.25f);
+    [Tooltip("적 박격포 비행 시간 배율 (1보다 크면 느리게 날아와 피할 시간이 늘어남)")]
+    public float foeLobSlow = 1.2f;
     float SeaT => Shipyard.DB ? Mathf.Clamp01(seaIndex / Mathf.Max(1f, Shipyard.DB.seas.Count - 1)) : 0;
     public float FoeSpreadNow => Mathf.Lerp(foeSpread.x, foeSpread.y, SeaT);
 
@@ -416,6 +418,7 @@ void Start()
     public MortarShell Lob(Vector2 at, float dmg, float radius, float delay, bool foe, Vector2? from = null)
     {
         if (foe) at += Random.insideUnitCircle * Mathf.Lerp(foeLobScatter.x, foeLobScatter.y, SeaT); // 적 폭격은 조금 빗나감
+        if (foe) delay *= foeLobSlow;
         var s = Instantiate(shellPrefab, at, Quaternion.identity, world);
         s.Setup(dmg, radius, delay, foe);
         if (from.HasValue)
