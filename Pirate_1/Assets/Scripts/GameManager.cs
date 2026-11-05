@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
     [Tooltip("보물상자 (웨이브마다 생김, 포탄으로 부숴야 열림)")]
     public SeaObject treasurePrefab;
     [Tooltip("웨이브마다 생기는 보물상자 수 (Item_Config treasure_per_wave)")]
-    public int treasurePerWave = 2;
+    public int treasurePerWave = 1;
     [Tooltip("웨이브마다 이 확률로 보물상자 하나 더")]
     [Range(0, 1)] public float extraTreasureChance = 0.5f;
     [Tooltip("일반 적이 사용 아이템을 떨굴 확률 (오브젝트 아이템 테이블 Drop)")]
@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
     public float goldMul = 1.08f;
     [Tooltip("모든 목재 (격침 · 보물상자 · 난파선) 에 곱함")]
     public float plankMul = 1.02f;
-    public float shipPlankMul = 4f;
+    public float shipPlankMul = 1f;
     [Tooltip("이 바다 번호들에선 일반 상어가 한 방에 가라앉음 (상어 암초 = 1)")]
     public int[] oneShotSharkSeas = { 1 };
     public Effect splashPrefab, blastPrefab, smokePrefab;

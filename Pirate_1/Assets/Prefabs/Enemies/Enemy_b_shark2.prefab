@@ -430,8 +430,8 @@ MonoBehaviour:
   armor: 1
   bowGun: 0
   fireChance: 0
-  gold: 260
-  plank: 40
+  gold: 200
+  plank: 110
   itemDropChance: 0
   body: {fileID: 4962193307822339122}
   fin: {fileID: 8225252689452894090}
