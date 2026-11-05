@@ -53,23 +53,23 @@ public class Tutorial : MonoBehaviour
         "<b>보급 상자</b>(치즈 그림)를 쏴서 부수면 아이템이 나온다",
         "아이템을 얻었다! <b>F</b> 로 써라 (하나만 들 수 있고, 새로 주우면 바뀜)",
     };
-    [TextArea] public string doneText = "좋아, 이제 바다는 네 것이다! 일곱 바다를 정복하라!";
+    [TextArea] public string doneText = "좋아, 이제 바다는 우리 것이다! 일곱 바다를 정복하자!";
 
     public List<TutorialTip> tips = new List<TutorialTip>
     {
         new TutorialTip { key = "obj_Treasure", title = "보물상자", text = "포탄으로 박살 내야 열린다. 안에 금화가 그득하지!" },
-        new TutorialTip { key = "obj_Supply", title = "보급 상자", text = "부숴 봐라. 아이템 하나랑 금화 몇 닢이 들었다" },
-        new TutorialTip { key = "obj_BombCrate", title = "폭탄 상자", text = "건드리거나 맞히면 쾅! 고양이 놈들 곁에서 터뜨려라" },
+        new TutorialTip { key = "obj_Supply", title = "보급 상자", text = "부숴 봐라. 아이템 하나랑 금화 몇 닢이 들어있다" },
+        new TutorialTip { key = "obj_BombCrate", title = "폭탄 상자", text = "건드리거나 맞히면 쾅! 고양이 놈들 곁에서 터트려라." },
         new TutorialTip { key = "obj_Reef", title = "암초", text = "포탄을 막아 주는 바위다. 뒤에 숨어서 장전해라" },
         new TutorialTip { key = "obj_Wreck", title = "난파선", text = "잠깐은 방패가 돼 주지만, 많이 맞으면 박살 난다" },
-        new TutorialTip { key = "obj_Current", title = "해류", text = "화살표 쪽으로 배를 떠민다. 올라타면 빠르고, 거스르면 굼뜨다" },
+        new TutorialTip { key = "obj_Current", title = "해류", text = "화살표 쪽으로 배를 떠민다. 올라타면 빠르고, 거스르면 굼뜨다!" },
         new TutorialTip { key = "obj_Wind", title = "바람 구역", text = "배도 포탄도 바람에 밀린다. 바람을 읽고 쏴라!" },
-        new TutorialTip { key = "foe_shark", title = "상어", text = "지느러미만 보이면 물속에 숨은 거다. 떠오를 때 쏴라" },
+        new TutorialTip { key = "foe_shark", title = "상어", text = "지느러미만 보이면 물속에 숨은 거다. 떠오를 때 쏴라!!" },
         new TutorialTip { key = "foe_mine", title = "떠다니는 폭탄통", text = "부딪히면 펑 터진다! 멀찍이서 쏴서 치워 버려라" },
-        new TutorialTip { key = "foe_speeder", title = "쾌속정", text = "냅다 달려와 들이받는다. 붙기 전에 쏴서 가라앉혀라" },
+        new TutorialTip { key = "foe_speeder", title = "쾌속정", text = "냅다 달려와 들이받는다. 붙기 전에 쏴서 가라앉혀라!" },
         new TutorialTip { key = "foe_mortar", title = "박격포선", text = "빨간 원에 포탄이 떨어진다. 원 밖으로 키를 돌려라!" },
         new TutorialTip { key = "boss", title = "보스 출현!", text = "놈은 맷집이 엄청나다. 아껴 둔 아이템이 있으면 지금 써라!" },
-        new TutorialTip { key = "loot", title = "승리!", text = "전리품을 싹 쓸어 담고 Enter로 항구에 돌아가자!" },
+        new TutorialTip { key = "loot", title = "승리!", text = "전리품을 싹 다 쓸어 담고 Enter로 항구에 돌아가자!" },
         new TutorialTip { key = "item_drop", title = "아이템", text = "가까이 대면 줍는다. 12초 뒤엔 사라지니 서둘러라!" },
     };
 
