@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7328072, y: 0.7328072, z: 1}
+  m_LocalScale: {x: 0.3664036, y: 0.3664036, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9010668064012920234}
@@ -303,7 +303,7 @@ MonoBehaviour:
   mk2: 0
   rage: 0
   hp: 700
-  len: 6.5
+  len: 3.25
   speed: 1.5
   turn: 1.6
   guns: 0
@@ -358,7 +358,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5.85, y: 5.85, z: 5.85}
+  m_LocalScale: {x: 2.925, y: 2.925, z: 2.925}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9010668064012920234}
@@ -631,7 +631,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 8.478261, y: 8.478261, z: 8.478261}
+  m_LocalScale: {x: 4.2391305, y: 4.2391305, z: 4.2391305}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9010668064012920234}

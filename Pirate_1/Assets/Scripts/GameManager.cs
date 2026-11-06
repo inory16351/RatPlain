@@ -138,6 +138,8 @@ public class GameManager : MonoBehaviour
     public float LootMult => 1 + (hpMult - 1) * 0.8f;
 
     void Awake() { I = this; }
+    // 플레이 중 스크립트 재컴파일 뒤에도 정적 참조를 다시 연결한다.
+    void OnEnable() { I = this; }
 
 void Start()
     {
@@ -460,6 +462,25 @@ void Start()
             e.Setup(1 + len * 0.35f);
             e.vel = side * sd * 0.4f - f * 0.1f;
         }
+    }
+    // 보스 돌진: 기존 물결 원본을 복제해 양옆으로 퍼지는 선수파와 후방 포말을 남김.
+    public void SharkChargeWake(Transform shark, float len, float speed)
+    {
+        if (!wakePrefab) return;
+        Vector2 forward = shark.right, side = shark.up, center = shark.position;
+        float size = 0.8f + len * 0.14f;
+        foreach (int sign in new[] { -1, 1 })
+        {
+            var bow = Instantiate(wakePrefab, center + forward * len * 0.28f + side * sign * len * 0.11f, shark.rotation, world);
+            bow.Setup(size);
+            bow.vel = side * sign * 1.4f - forward * Mathf.Abs(speed) * 0.4f;
+            var flank = Instantiate(wakePrefab, center - forward * len * 0.1f + side * sign * len * 0.15f, shark.rotation, world);
+            flank.Setup(size * 0.75f);
+            flank.vel = side * sign * 0.65f - forward * Mathf.Abs(speed) * 0.5f;
+        }
+        var trail = Instantiate(wakePrefab, center - forward * len * 0.42f, shark.rotation, world);
+        trail.Setup(size * 0.85f);
+        trail.vel = -forward * Mathf.Abs(speed) * 0.3f;
     }
     public void Debris(Vector2 p, float size) { if (debrisPrefab) Instantiate(debrisPrefab, p, Quaternion.Euler(0, 0, Random.value * 360), world).Setup(size); }
     public void Sparkle(Vector2 p) { if (sparklePrefab) Instantiate(sparklePrefab, p, Quaternion.identity, world).Setup(1); }

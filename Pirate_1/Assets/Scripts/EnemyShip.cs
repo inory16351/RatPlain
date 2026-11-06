@@ -46,6 +46,7 @@ public class EnemyShip : MonoBehaviour
     Vector3 sharkBodyScale;
     Quaternion sharkBodyRotation;
     float biteSnap;
+    float chargeWakeT;
     [Tooltip("갑판 선원 (없으면 비움)")]
     public ShipCrew crewView;
     [Tooltip("머리 위 체력 막대 (보스는 화면 위 막대를 씀) — Fill 은 피벗이 왼쪽")]
@@ -201,6 +202,12 @@ public class EnemyShip : MonoBehaviour
 
         // 물결 · 부서진 배 연기
         if (ai != FoeAI.Mine && Targetable) gm.Wake(transform, len, v);
+        if (boss == BossKind.Shark && phase == Phase.Charge)
+        {
+            chargeWakeT -= dt;
+            if (dt > 0 && chargeWakeT <= 0) { chargeWakeT = 0.06f; gm.SharkChargeWake(transform, len, v); }
+        }
+        else chargeWakeT = 0;
         if (ai != FoeAI.Shark && ai != FoeAI.Mine && hp < maxHp * 0.5f && (fxT -= dt) <= 0) { fxT = 0.12f; gm.Smoke((Vector2)transform.position + Random.insideUnitCircle * len * 0.15f, 0.6f); }
 
         // 그림: 잠수 중이면 지느러미만, 예고선은 조준 때만
