@@ -41,6 +41,11 @@ public class EnemyShip : MonoBehaviour
     public SpriteRenderer fin;
     [Tooltip("거대 상어: 돌진 예고선")]
     public SpriteRenderer aimLine;
+    [Header("상어 보스 모션 (오른쪽을 향한 탑뷰)")]
+    public Sprite sharkIdle, sharkBite, sharkRest;
+    Vector3 sharkBodyScale;
+    Quaternion sharkBodyRotation;
+    float biteSnap;
     [Tooltip("갑판 선원 (없으면 비움)")]
     public ShipCrew crewView;
     [Tooltip("머리 위 체력 막대 (보스는 화면 위 막대를 씀) — Fill 은 피벗이 왼쪽")]
@@ -68,6 +73,14 @@ public class EnemyShip : MonoBehaviour
         bob = Random.value * 7;
         dive = ai == FoeAI.Shark;
         pt = 3;
+        if (boss == BossKind.Shark && body && sharkIdle)
+        {
+            body.sprite = sharkIdle;
+            float scale = len / sharkIdle.bounds.size.x;
+            sharkBodyScale = new Vector3(scale, scale, 1);
+            sharkBodyRotation = body.transform.localRotation;
+            body.transform.localScale = sharkBodyScale;
+        }
     }
 
     // 잠수 중인 상어 · 떠오르지 않은 거대 상어는 포탄이 안 맞음 (폭격만)
@@ -194,14 +207,32 @@ public class EnemyShip : MonoBehaviour
         bool under = !Targetable;
         if (body)
         {
-            body.enabled = !under || boss == BossKind.Shark && phase == Phase.Aim;
+            bool sharkAttacking = boss == BossKind.Shark && (phase == Phase.Aim || phase == Phase.Charge);
+            body.enabled = !under || sharkAttacking;
             var c = hitT > 0 ? new Color(1f, 0.55f, 0.55f) : burn > 0 ? new Color(1f, 0.75f, 0.55f) : Color.white;
-            if (under) c.a = 0.35f;
+            if (under && !(boss == BossKind.Shark && phase == Phase.Charge)) c.a = 0.35f;
             body.color = c;
         }
-        if (fin) fin.enabled = under;
+        if (fin) fin.enabled = under && !(boss == BossKind.Shark && phase == Phase.Charge);
+        AnimateShark(dt);
         if (aimLine) aimLine.enabled = boss == BossKind.Shark && phase == Phase.Aim;
         if (hp <= 0) { dead = true; gm.Sink(this, exploded); }
+    }
+
+    void AnimateShark(float dt)
+    {
+        if (boss != BossKind.Shark || !body || !sharkIdle) return;
+        biteSnap = Mathf.Max(0, biteSnap - dt);
+        bool charging = phase == Phase.Charge;
+        bool resting = phase == Phase.Surface;
+        bool open = (charging && !bit) || (phase == Phase.Aim && pt < 0.25f);
+        body.sprite = open && sharkBite ? sharkBite : resting && sharkRest ? sharkRest : sharkIdle;
+        // Visual-only movement; steering, collision distance and attack timing stay in BossShark.
+        float sway = Mathf.Sin(bob * (charging ? 17f : resting ? 3f : 5f));
+        float breath = resting ? Mathf.Sin(bob * 4f) * 0.018f : 0;
+        float snap = biteSnap > 0 ? Mathf.Sin(biteSnap / 0.12f * Mathf.PI) * 0.035f : 0;
+        body.transform.localRotation = sharkBodyRotation * Quaternion.Euler(0, 0, sway * (charging ? 1.2f : 0.7f));
+        body.transform.localScale = Vector3.Scale(sharkBodyScale, new Vector3(1 + snap, 1 + breath - snap, 1));
     }
 
 // 머리 위 체력 막대 · 묶임 고리: 배가 돌아도 화면 기준으로 서 있음
@@ -306,7 +337,7 @@ public class EnemyShip : MonoBehaviour
                 break;
             case Phase.Charge:
                 v = speed * 3.4f;
-                if (!bit && d < len * 0.35f + me.len * 0.3f && !gm.Over) { bit = true; me.Hurt(dmg, transform.position); CameraFollow.Shake(16); Sfx.Play("bite"); }
+                if (!bit && d < len * 0.35f + me.len * 0.3f && !gm.Over) { bit = true; biteSnap = 0.12f; me.Hurt(dmg, transform.position); CameraFollow.Shake(16); Sfx.Play("bite"); }
                 if (pt <= 0)
                 {
                     if (++charges % 2 == 0 && gm.foes.Count < 8)
