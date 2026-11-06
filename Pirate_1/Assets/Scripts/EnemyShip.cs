@@ -42,7 +42,7 @@ public class EnemyShip : MonoBehaviour
     [Tooltip("거대 상어: 돌진 예고선")]
     public SpriteRenderer aimLine;
     [Header("상어 보스 모션 (오른쪽을 향한 탑뷰)")]
-    public Sprite sharkIdle, sharkBite, sharkRest;
+    public Sprite sharkIdle, sharkRest;
     Vector3 sharkBodyScale;
     Quaternion sharkBodyRotation;
     float biteSnap;
@@ -225,8 +225,7 @@ public class EnemyShip : MonoBehaviour
         biteSnap = Mathf.Max(0, biteSnap - dt);
         bool charging = phase == Phase.Charge;
         bool resting = phase == Phase.Surface;
-        bool open = (charging && !bit) || (phase == Phase.Aim && pt < 0.25f);
-        body.sprite = open && sharkBite ? sharkBite : resting && sharkRest ? sharkRest : sharkIdle;
+        body.sprite = resting && sharkRest ? sharkRest : sharkIdle;
         // Visual-only movement; steering, collision distance and attack timing stay in BossShark.
         float sway = Mathf.Sin(bob * (charging ? 17f : resting ? 3f : 5f));
         float breath = resting ? Mathf.Sin(bob * 4f) * 0.018f : 0;

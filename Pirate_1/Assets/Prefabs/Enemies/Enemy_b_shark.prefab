@@ -320,7 +320,6 @@ MonoBehaviour:
   fin: {fileID: 4285916162378762857}
   aimLine: {fileID: 8230736949110214234}
   sharkIdle: {fileID: 21300000, guid: 3cd7a214da21e534ead47dfb981fadf9, type: 3}
-  sharkBite: {fileID: 21300000, guid: ea29d957bfe8be64f92c4fb9b056f78b, type: 3}
   sharkRest: {fileID: 21300000, guid: a134e08afbc65bc44a425572b5183612, type: 3}
   crewView: {fileID: 0}
   hpBar: {fileID: 3014447966211799503}
