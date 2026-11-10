@@ -160,6 +160,7 @@ public static class Shipyard
     static void Load()
     {
         save = null;
+        WebSave.Recover(KEY);
         try { var j = PlayerPrefs.GetString(KEY, ""); if (j != "") save = JsonUtility.FromJson<SaveData>(j); } catch { save = null; }
         if (save == null || save.v != 1) save = Fresh();
         Tidy();
@@ -172,11 +173,12 @@ public static class Shipyard
         var seen = new HashSet<int>();
         save.equip.RemoveAll(e => { var it = ItemOf(e.uid); var bad = it == null || Ship(e.ship) == null || !Part(it.id).fits.Contains(e.ship) || Part(it.id).slot != e.slot || seen.Contains(e.uid); if (!bad) seen.Add(e.uid); return bad; });
     }
-    public static void Store() { Save.savedAt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); PlayerPrefs.SetString(KEY, JsonUtility.ToJson(Save)); PlayerPrefs.Save(); }
+    // 웹: 주소가 바뀌어도 남도록 고정 파일에도 같이 씀 (WebSave)
+    public static void Store() { Save.savedAt = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm"); var j = JsonUtility.ToJson(Save); WebSave.Write(j); PlayerPrefs.SetString(KEY, j); PlayerPrefs.Save(); }
     // 이어할 기록이 있는지 (한 번이라도 저장됐으면)
-    public static bool HasSave => PlayerPrefs.HasKey(KEY);
-    // 새 게임: 저장 · 안내 기록을 지우고 처음 상태로 (첫 저장은 이야기를 보고 나서)
-    public static void NewGame() { PlayerPrefs.DeleteKey(KEY); save = Fresh(); TutorialFlags.Reset(); }
+    public static bool HasSave { get { WebSave.Recover(KEY); return PlayerPrefs.HasKey(KEY); } }
+    // 새 게임: 저장 · 안내 기록을 지우고 처음 상태로 (첫 저장은 이야기를 보고 나서). 고정 파일은 비워 둠 (이전 기록을 다시 가져오지 않게)
+    public static void NewGame() { PlayerPrefs.DeleteKey(KEY); WebSave.Write(""); save = Fresh(); TutorialFlags.Reset(); }
     // 이어하기 화면 한 줄 요약
     public static string SaveSummary()
     {
