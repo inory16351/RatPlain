@@ -564,8 +564,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uCE58\uC988 \uD56D\uAD6C\uB3C4, \uBCF4\uBB3C\uC12C \uBC43\uAE38\uB3C4,
-    \uC950\uB4E4\uC758 \uB3DB\uB3C4 \uB2E4\uC2DC \uC6B0\uB9AC \uAC70\uB2E4."
+  m_Text: "\uB300\uC81C\uB3C5 \uC694\uC0C8\uB294 \uBC14\uB2E5\uC5D0 \uCC98\uBC15\uD614\uACE0, \uD574\uAD70\uC740 \uB05D\uC7A5\uB0AC\uB2E4."
 --- !u!1 &55702797
 GameObject:
   m_ObjectHideFlags: 0
@@ -9919,7 +9918,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uBC14\uB2E4\uB97C \uB418\uCC3E\uC558\uB2E4"
+  m_Text: "\uC774 \uBC14\uB2E4\uB294 \uB0B4 \uAC70\uB2E4"
 --- !u!222 &947632020
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -14374,8 +14373,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uD6D4\uCE5C \uAC24\uB9AC\uC120 \uD55C \uCC99\uC73C\uB85C \uC2DC\uC791\uD574\uC11C
-    \uC5EC\uAE30\uAE4C\uC9C0 \uC654\uB2E4."
+  m_Text: "\uC774 \uD574\uC5ED\uC740 \uC624\uB298\uBD80\uB85C \uC6B0\uB9AC\uAC00 \uC810\uAC70\uD55C\uB2E4."
 --- !u!1 &1505851704
 GameObject:
   m_ObjectHideFlags: 0
@@ -17059,8 +17057,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uC624\uB298 \uBC24\uC740 \uCE58\uC988 \uC794\uCE58\uB2E4. \uB0B4\uC77C?
-    \uB610 \uBC14\uB2E4\uB85C \uB098\uAC00\uC57C\uC9C0!"
+  m_Text: "\uACE0\uC591\uC774\uB4E0 \uB204\uAD6C\uB4E0, \uB4E4\uC5B4\uC624\uB824\uBA74 \uB098\uD55C\uD14C \uD5C8\uB77D\uBC1B\uC544\uB77C!"
 --- !u!1 &1731908225
 GameObject:
   m_ObjectHideFlags: 0
@@ -21249,8 +21246,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "\uACE0\uC591\uC774 \uD574\uAD70\uC774 \uBC31\uAE30\uB97C \uB4E4\uC5C8\uB2E4.
-    \uC81C\uB3C5\uC740 \uAF2C\uB9AC\uB97C \uB9D0\uACE0 \uB3C4\uB9DD\uAC14\uB2E4."
+  m_Text: "\uB4DC\uB514\uC5B4 \uC7A1\uC558\uB2E4, \uC774 \uB9DD\uD560 \uACE0\uC591\uC774 \uB188\uB4E4."
 --- !u!1001 &1058240275907186243
 PrefabInstance:
   m_ObjectHideFlags: 0
