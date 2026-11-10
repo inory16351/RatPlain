@@ -29,6 +29,8 @@ public class TitleScreen : MonoBehaviour
     public ExitMenu exitMenu;
     [Tooltip("Esc 로 먼저 닫을 항구 창 (결과 창 등)")]
     public GameObject[] popups;
+    [Tooltip("엔딩 (열려 있으면 Esc 로 닫음)")]
+    public EndingScreen ending;
 
     public GameObject titlePanel, storyPanel;
     public Button titleGo, storyGo, storyNext;
@@ -138,6 +140,7 @@ public class TitleScreen : MonoBehaviour
     void Escape()
     {
         if (exitMenu && exitMenu.IsOpen) { exitMenu.Close(); return; }
+        if (ending && ending.IsOpen) { ending.Close(); return; }
         if (settingsPanel && settingsPanel.activeSelf) { settingsPanel.SetActive(false); return; }
         if (confirmPanel && confirmPanel.activeSelf) { confirmPanel.SetActive(false); return; }
         if (storyPanel.activeSelf) { EndStory(); return; }

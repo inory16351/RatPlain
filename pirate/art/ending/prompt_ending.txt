@@ -1,0 +1,13 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: ending.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit, clean or post-process the image with code or scripts: save the generated image as-is.
+
+The attached cover_v2.png is the key art of our game (a one-eyed PIRATE MOUSE captain in a black tricorn hat with gold trim, eye patch, pink ears, brown fur, red coat, sailing a small wooden mouse-shaped ship with a red cheese-and-crossbones sail; enemies are the CAT NAVY with paw-print sails, and sharks). The other attached images show the original art style. Match cover_v2.png exactly in style, palette and characters.
+
+- ART STYLE: soft flat 2D vector illustration, muted slightly desaturated warm natural colors, simple rounded big shapes, flat fills with one subtle shadow tone, NO gradients, NO glossy highlights, NO 3D, NO anime style, few small details. Cute and funny.
+- NO text, NO letters, NO logo, NO speech bubbles anywhere.
+
+Image spec:
+- 1536x1024 landscape, full scene with background (NOT magenta). This is the happy ENDING of the game: all seven seas conquered.
+- Warm golden sunset over a calm turquoise Caribbean sea, a small palm island on the horizon.
+- Center: the pirate mouse captain stands proudly on the bow of his mouse-figurehead ship, one foot on a big open treasure chest overflowing with gold coins and cheese wedges, cutlass raised in victory. Three little sailor mice crew cheer and toss their hats behind him on deck.
+- Far background right: a defeated cat navy warship with a white flag, small cat sailors sulking; a shark fin swimming away.
+- IMPORTANT: the picture will be cropped to 16:9 (top and bottom ~80px each are cut), and the bottom fifth will be covered by a text box: keep the captain, crew and chest in the upper-middle area, nothing important near the top/bottom edges.
