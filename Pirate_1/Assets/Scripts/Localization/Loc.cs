@@ -44,22 +44,8 @@ public static class Loc
                 if (c[1] != "") bySource[Norm(c[1].Replace("\\n", "\n"))] = c[0];
             }
         }
-        if (lang < 0) lang = PlayerPrefs.HasKey(PREF) ? Mathf.Clamp(PlayerPrefs.GetInt(PREF), 0, Codes.Length - 1) : FromSystem();
-    }
-
-    static int FromSystem()
-    {
-        switch (Application.systemLanguage)
-        {
-            case SystemLanguage.Korean: return 0;
-            case SystemLanguage.Russian: case SystemLanguage.Ukrainian: case SystemLanguage.Belarusian: return 2;
-            case SystemLanguage.French: return 3;
-            case SystemLanguage.German: return 4;
-            case SystemLanguage.Chinese: case SystemLanguage.ChineseSimplified: case SystemLanguage.ChineseTraditional: return 5;
-            case SystemLanguage.Japanese: return 6;
-            case SystemLanguage.Arabic: return 7;
-            default: return 1;
-        }
+        // 처음 켜면 영어 (설정에서 고른 언어가 있으면 그것)
+        if (lang < 0) lang = PlayerPrefs.HasKey(PREF) ? Mathf.Clamp(PlayerPrefs.GetInt(PREF), 0, Codes.Length - 1) : 1;
     }
 
     // 씬 글자 찾기용: 공백 · 줄바꿈 개수 차이는 무시

@@ -1,0 +1,8 @@
+Use your built-in image generation tool to create ONE image and save it as PNG to: cut_3.png (in the current working directory). Do not write code to draw it; it must be a generated illustration. After saving, reply only with the file name. Do NOT edit or post-process the image with code: save the generated image as-is.
+
+The attached ref_cover.png is the key art of our game (a one-eyed PIRATE MOUSE captain in a black tricorn hat with gold trim, eye patch, pink ears, brown fur, red coat; rat sailors; enemies are the CAT NAVY with blue paw-print sails). ref_ending.png is another scene in the same style. Match them exactly in style, palette and characters.
+- ART STYLE: soft flat 2D vector illustration, muted slightly desaturated warm natural colors, simple rounded big shapes, flat fills with one subtle shadow tone, NO gradients, NO glossy highlights, NO 3D, NO anime style, few small details. Cute and a bit funny, never gory.
+- NO text, NO letters, NO logo, NO speech bubbles anywhere.
+
+- 1536x1024 landscape, full scene with background. It will be cropped to 16:9 (top and bottom ~80px cut) and the bottom fifth is covered by a subtitle box: keep the important things in the upper-middle area.
+Opening cut 3 (lost everything): night, after the battle. The mouse captain sits alone on a broken plank floating in the dark sea, a fresh eye patch on one eye, hat crooked, looking angry and determined. Wreckage of mouse boats around, a few torn red sails. Far away, the cat fleet sails off with lanterns, carrying cheese wheels.

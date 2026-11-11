@@ -32,6 +32,13 @@ public class TitleScreen : MonoBehaviour
     [Tooltip("엔딩 (열려 있으면 Esc 로 닫음)")]
     public EndingScreen ending;
 
+    [Header("오프닝 컷씬 · 항구 안내 · 항구 설정 버튼")]
+    [Tooltip("있으면 이야기를 컷씬으로 (없으면 storyPanel 글 줄)")]
+    public StoryCutscene cutscene;
+    public PortGuide guide;
+    [Tooltip("항구 위 재화 옆 톱니바퀴 (로비 설정 창을 그대로 엶)")]
+    public Button portSettingsButton;
+
     public GameObject titlePanel, storyPanel;
     public Button titleGo, storyGo, storyNext;
     [Tooltip("이야기 줄 (차례로 나타남)")]
@@ -50,6 +57,7 @@ public class TitleScreen : MonoBehaviour
         titleGo.onClick.AddListener(() => { Sfx.Play("ui_click"); seenTitle = true; if (Shipyard.Save.story < 1) OpenStory(); else Close(); });
         if (newGame) newGame.onClick.AddListener(() => { Sfx.Play("ui_click"); if (Shipyard.HasSave && confirmPanel) confirmPanel.SetActive(true); else StartNew(); });
         if (settingsButton) settingsButton.onClick.AddListener(() => { Sfx.Play("ui_click"); OpenSettings(); });
+        if (portSettingsButton) portSettingsButton.onClick.AddListener(() => { Sfx.Play("ui_click"); OpenSettings(); });
         if (settingsClose) settingsClose.onClick.AddListener(() => { Sfx.Play("ui_click"); settingsPanel.SetActive(false); });
         if (soundToggle) soundToggle.onValueChanged.AddListener(on => { Sfx.Muted = !on; Sfx.Play("ui_click"); });
         if (volumeSlider) volumeSlider.onValueChanged.AddListener(v => Sfx.Volume = v);
@@ -99,6 +107,7 @@ public class TitleScreen : MonoBehaviour
         if (soundToggle) soundToggle.SetIsOnWithoutNotify(!Sfx.Muted);
         if (volumeSlider) volumeSlider.SetValueWithoutNotify(Sfx.Volume);
         settingsPanel.SetActive(true);
+        settingsPanel.transform.SetAsLastSibling(); // 로비 · 항구 어디서 열어도 맨 위
     }
 
     void Quit()
@@ -124,6 +133,7 @@ public class TitleScreen : MonoBehaviour
     void OpenStory()
     {
         titlePanel.SetActive(false);
+        if (cutscene) { storyPanel.SetActive(false); cutscene.Play(EndStory); return; }
         storyPanel.SetActive(true);
         shown = 0; t = 0;
         foreach (var l in storyLines) l.color = new Color(l.color.r, l.color.g, l.color.b, 0);
@@ -142,6 +152,8 @@ public class TitleScreen : MonoBehaviour
         if (exitMenu && exitMenu.IsOpen) { exitMenu.Close(); return; }
         if (ending && ending.IsOpen) { ending.Close(); return; }
         if (settingsPanel && settingsPanel.activeSelf) { settingsPanel.SetActive(false); return; }
+        if (cutscene && cutscene.Playing) { cutscene.Finish(); return; }
+        if (guide && guide.Showing) { guide.Skip(); return; }
         if (confirmPanel && confirmPanel.activeSelf) { confirmPanel.SetActive(false); return; }
         if (storyPanel.activeSelf) { EndStory(); return; }
         if (titlePanel.activeSelf) return;
