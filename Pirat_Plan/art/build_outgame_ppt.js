@@ -1,10 +1,10 @@
-// 쥐 해적 아웃게임 강화 시스템 기획서 PPT → Pirat_Plan/쥐해적_아웃게임강화기획서.pptx
-// 원본: Pirat_Plan/아웃게임 강화 시스템 기획서.md (사용자 컨펌본)
+// 쥐 해적 아웃게임 강화 시스템 기획서 PPT → Pirat_Plan/아웃게임/쥐해적_아웃게임강화기획서.pptx
+// 원본: Pirat_Plan/아웃게임/아웃게임 강화 시스템 기획서.md (사용자 컨펌본)
 // 사용: NODE_PATH=<pptxgenjs · sharp · jszip 설치 폴더>/node_modules node Pirat_Plan/art/build_outgame_ppt.js
 const path = require('path');
 const { kit, C, W, H, X0, CW } = require('./ppt_kit');
 
-const OUT = path.join(__dirname, '..', '쥐해적_아웃게임강화기획서.pptx');
+const OUT = path.join(__dirname, '..', '아웃게임', '쥐해적_아웃게임강화기획서.pptx');
 const k = kit('쥐 해적 · 아웃게임 강화 시스템 기획서');
 const { pres } = k;
 
