@@ -6310,7 +6310,7 @@ MonoBehaviour:
   - shark
   goldMul: 1.08
   plankMul: 1.02
-  shipPlankMul: 1.7
+  shipPlankMul: 1
   oneShotSharkSeas: 01000000
   splashPrefab: {fileID: 6448607049961765147, guid: 62a957464e8f24843bd37af768f8f92a, type: 3}
   blastPrefab: {fileID: 7102378811822301365, guid: d619f9236f4a4ad42b4cf1bbbaa96996, type: 3}

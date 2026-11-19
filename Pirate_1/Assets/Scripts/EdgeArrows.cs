@@ -19,6 +19,11 @@ public class EdgeArrows : MonoBehaviour
     void LateUpdate()
     {
         var gm = GameManager.I;
+        if (!gm || !gm.player || !Camera.main)
+        {
+            foreach (var arrow in pool) if (arrow) arrow.gameObject.SetActive(false);
+            return;
+        }
         var me = gm.player;
         used = 0;
         if (!gm.Over)

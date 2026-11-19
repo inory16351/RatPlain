@@ -95,6 +95,7 @@ public class PortUI : MonoBehaviour
     int tab, seaSel, eqShip = -1;
     string shipSel, hoverPart;
     readonly List<int> picks = new List<int>();
+    int dismantleConfirmUid = -1;
     readonly List<GameObject> spawned = new List<GameObject>();
     ShipyardDB DB => Shipyard.DB;
     static readonly Color WHITE = Color.white, DIM = new Color(1, 1, 1, 0.45f), ROW = new Color(0.85f, 0.82f, 0.78f, 1f), ROW_ON = new Color(1f, 0.82f, 0.4f, 1f); // 나무 판넬 그림에 곱하는 색
@@ -481,10 +482,17 @@ public class PortUI : MonoBehaviour
             r.right.text = on ? "✔" : "";
             r.bg.color = on ? ROW_ON : ROW;
             int uid = it.uid;
-            r.click.onClick.AddListener(() => { if (!picks.Remove(uid)) picks.Add(uid); RenderLab(); });
+            r.click.onClick.AddListener(() => { dismantleConfirmUid = -1; if (!picks.Remove(uid)) picks.Add(uid); RenderLab(); });
         }
         var f = Shipyard.GetFuseInfo(picks);
-        if (f == null)
+        if (picks.Count == 1)
+        {
+            var part = Shipyard.Part(Shipyard.ItemOf(picks[0]).id);
+            var refund = Shipyard.DismantleValue(part);
+            fuseInfo.text = part.Name + "\n" + Loc.F("lab.dismantle_value", refund.plank, refund.coin);
+            SetButton(fuseButton, fuseButtonText, Loc.T(dismantleConfirmUid == picks[0] ? "lab.dismantle_confirm" : "lab.dismantle"), true);
+        }
+        else if (f == null)
         {
             fuseInfo.text = picks.Count == 0 ? Loc.F("lab.fuse_help", Shipyard.FUSE_N, Shipyard.UP_MAX) : Loc.F("lab.fuse_bad", picks.Count, Shipyard.FUSE_N);
             SetButton(fuseButton, fuseButtonText, Loc.T("lab.fuse"), false);
@@ -515,6 +523,16 @@ public class PortUI : MonoBehaviour
 
     void DoFuse()
     {
+        if (picks.Count == 1)
+        {
+            int uid = picks[0];
+            if (dismantleConfirmUid != uid) { dismantleConfirmUid = uid; RenderLab(); return; }
+            if (Shipyard.Dismantle(uid)) { reqResult.text = Loc.T("lab.dismantle_done"); Sfx.Play("ui_buy"); }
+            dismantleConfirmUid = -1;
+            picks.Clear();
+            Render();
+            return;
+        }
         var info = Shipyard.GetFuseInfo(picks.ToList());
         bool wasUp = info != null && info.up;
         var (it, ok) = Shipyard.Fuse(picks.ToList());

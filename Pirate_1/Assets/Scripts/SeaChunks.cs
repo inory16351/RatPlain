@@ -96,10 +96,8 @@ public class SeaChunks : MonoBehaviour
         decoTemplate.gameObject.SetActive(false);
     }
 
-    void Update()
+    void Fill(Vector2 me)
     {
-        var gm = GameManager.I;
-        Vector2 me = gm.player.transform.position;
         int cx0 = Mathf.FloorToInt(me.x / chunk), cy0 = Mathf.FloorToInt(me.y / chunk);
         for (int cy = cy0 - near; cy <= cy0 + near; cy++)
             for (int cx = cx0 - near; cx <= cx0 + near; cx++)
@@ -107,6 +105,22 @@ public class SeaChunks : MonoBehaviour
                 var k = new Vector2Int(cx, cy);
                 if (!chunks.ContainsKey(k)) chunks[k] = Make(cx, cy);
             }
+    }
+
+    // 새로 생길 섬 · 오브젝트가 배(내 배 · 적) 위에 겹치면 건너뜀
+    static bool OnShip(Vector2 p, float r)
+    {
+        var gm = GameManager.I;
+        if (Vector2.Distance(gm.player.transform.position, p) < r + 1.2f) return true;
+        return gm.foes.Exists(f => f && Vector2.Distance(f.transform.position, p) < r + f.len * 0.3f + 0.6f);
+    }
+
+    void Update()
+    {
+        var gm = GameManager.I;
+        Vector2 me = gm.player.transform.position;
+        int cx0 = Mathf.FloorToInt(me.x / chunk), cy0 = Mathf.FloorToInt(me.y / chunk);
+        Fill(me);
         var drop = new List<Vector2Int>();
         foreach (var kv in chunks) if (Mathf.Max(Mathf.Abs(kv.Key.x - cx0), Mathf.Abs(kv.Key.y - cy0)) > far) drop.Add(kv.Key);
         foreach (var k in drop) { foreach (var o in chunks[k].objs) if (o) Destroy(o); chunks.Remove(k); }
@@ -138,6 +152,7 @@ public class SeaChunks : MonoBehaviour
             if (Vector2.Distance(p, home) < 4.5f + r) continue; // 출발점 비움
             if (whirl && Vector2.Distance(p, gm.weather.whirl.position) < 7) continue;
             if (Island.All.Exists(o => Vector2.Distance(o.transform.position, p) < o.radius + r + 1.2f)) continue;
+            if (OnShip(p, r)) continue;
             var isl = Instantiate(islandTemplate, p, Quaternion.identity, transform);
             isl.gameObject.SetActive(true);
             isl.Setup(r, islandSprites[look], H(40 + i) * 7);
@@ -200,6 +215,7 @@ public class SeaChunks : MonoBehaviour
             if (Vector2.Distance(p, home) < homeClear + pr) continue; // 출발점 비움
             if (Island.All.Exists(o => Vector2.Distance(o.transform.position, p) < o.radius + pr + 0.6f)) continue;
             if (placed.Exists(q => Vector2.Distance(q, p) < q.z + pr + 0.5f)) continue;
+            if (!pf.Zone && OnShip(p, pr)) continue;
             var so = Instantiate(pf, p, Quaternion.Euler(0, 0, H(140 + i) * 360), transform);
             so.gameObject.SetActive(true);
             so.id = id;

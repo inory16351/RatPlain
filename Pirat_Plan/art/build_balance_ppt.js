@@ -1,11 +1,11 @@
-// 쥐 해적 밸런스 분석 기획서 PPT → Pirat_Plan/쥐해적_밸런스분석기획서.pptx
+// 쥐 해적 밸런스 분석 기획서 PPT → Pirat_Plan/벨런스-데이터/쥐해적_밸런스분석기획서.pptx
 // 수치: Pirat_Plan/art/balance/balance_model.js (Unity Pirate_1 코드 · 프리팹 · ShipyardDB 기준) 가 만든 model.json
 // 사용: node Pirat_Plan/art/balance/balance_model.js → NODE_PATH=<pptxgenjs · sharp · jszip 설치 폴더>/node_modules node Pirat_Plan/art/build_balance_ppt.js
 const path = require('path');
 const { kit, C, W, X0, CW, FONT } = require('./ppt_kit');
 const M = require('./balance/model.json');
 
-const OUT = path.join(__dirname, '..', '쥐해적_밸런스분석기획서.pptx');
+const OUT = path.join(__dirname, '..', '벨런스-데이터', '쥐해적_밸런스분석기획서.pptx');
 const k = kit('쥐 해적 · 밸런스 분석 기획서');
 const { pres } = k;
 const LC = { S: C.sea, M: C.green, H: C.red };

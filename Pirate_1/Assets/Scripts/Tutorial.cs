@@ -127,8 +127,8 @@ public class Tutorial : MonoBehaviour
                 case 4: if (me.items.Held >= 0) { Begin(5); return; } break;
                 case 5: next = me.items.Held < 0 && me.items.Active >= 0; break;
             }
-            // 오래 못 하면 (예: 보급 상자가 안 보임) 넘어가도 되게
-            if (step == 4 && stepT > 40) next = true;
+            // 오래 못 하면 (예: 보급 상자가 안 보임) 넘어가도 되게. 아이템이 없으니 "아이템을 얻었다" 단계는 건너뛰고 끝냄
+            if (step == 4 && stepT > 40) { Begin(steps.Length); return; }
             if (next) Begin(step + 1);
             if (gm.Over) { step = -1; gm.tutorialSafe = false; box.SetActive(false); }
         }

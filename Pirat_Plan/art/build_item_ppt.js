@@ -1,4 +1,4 @@
-// 쥐 해적 오브젝트 · 아이템 시스템 기획서 PPT → Pirat_Plan/쥐해적_오브젝트아이템기획서.pptx
+// 쥐 해적 오브젝트 · 아이템 시스템 기획서 PPT → Pirat_Plan/인게임/쥐해적_오브젝트아이템기획서.pptx
 // 컨셉 기획서 PPT 와 같은 스타일. 그림은 비율에 맞게 미리 자른 것만 쓰고 contain 으로만 넣음 (cover 는 PPT 에서 늘어남)
 // 사용: NODE_PATH=<pptxgenjs · sharp · jszip 설치 폴더>/node_modules node Pirat_Plan/art/build_item_ppt.js
 const fs = require('fs');
@@ -8,7 +8,7 @@ const sharp = require('sharp');
 
 const ART = __dirname;
 const SPR = path.join(ART, '..', '..', 'pirate', 'art', 'sprites');
-const OUT = path.join(ART, '..', '쥐해적_오브젝트아이템기획서.pptx');
+const OUT = path.join(ART, '..', '인게임', '쥐해적_오브젝트아이템기획서.pptx');
 const P = (f) => (f.includes('/') ? path.join(ART, f) : path.join(SPR, f));
 
 const FONT = 'Noto Sans KR';

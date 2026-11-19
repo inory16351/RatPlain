@@ -109,7 +109,19 @@ MonoBehaviour:
     desc: "\uC560\uAFB8 \uC120\uC7A5\uC774 \uCC98\uC74C \uD6D4\uCE5C \uB178 \uC813\uB294
       \uBC30. \uB300\uD3EC \uB450 \uBB38. \uC774 \uBC30\uC758 \uC7A5\uBE44\uB294
       \uBAA8\uB4E0 \uBC30\uC5D0 \uB084 \uC218 \uC788\uC74C."
-    add: []
+    add:
+    - stat: hp
+      value: -4.347824
+    - stat: speed
+      value: 0
+    - stat: guns
+      value: 0
+    - stat: dmg
+      value: -5.818182
+    - stat: reload
+      value: 0.10000014
+    - stat: dmgTaken
+      value: 0
     mul: []
     slots:
     - cannon
@@ -138,10 +150,18 @@ MonoBehaviour:
       \uBE60\uB974\uACE0 \uC798 \uB3CE."
     add:
     - stat: hp
-      value: 30
-    mul:
+      value: 21.739136
     - stat: speed
-      value: 1.15
+      value: 50
+    - stat: guns
+      value: 0
+    - stat: dmg
+      value: -4.909091
+    - stat: reload
+      value: -0.49999988
+    - stat: dmgTaken
+      value: 0.024065614
+    mul:
     - stat: turn
       value: 1.15
     slots:
@@ -173,15 +193,21 @@ MonoBehaviour:
     desc: "\uBC14\uB2E4\uC5D0\uC11C \uAC00\uC7A5 \uBE60\uB978 \uBC94\uC120. \uB0A0\uCE74\uB85C\uC6B4
       \uBC43\uBA38\uB9AC\uB85C \uB4E4\uC774\uBC1B\uC74C."
     add:
-    - stat: hp
-      value: 55
-    - stat: guns
-      value: 1
     - stat: ram
       value: 25
-    mul:
+    - stat: hp
+      value: 43.478256
     - stat: speed
-      value: 1.3
+      value: 65
+    - stat: guns
+      value: 1
+    - stat: dmg
+      value: -3.090909
+    - stat: reload
+      value: -0.64999986
+    - stat: dmgTaken
+      value: 0.055737615
+    mul:
     - stat: turn
       value: 1.2
     slots:
@@ -217,19 +243,25 @@ MonoBehaviour:
       \uC678\uB95C. \uC55E\uCABD \uC120\uC218\uD3EC\uAC00 \uC790\uB3D9\uC73C\uB85C
       \uC3E8."
     add:
-    - stat: hp
-      value: 85
-    - stat: guns
-      value: 1
     - stat: bow
       value: 1.4
     - stat: ram
       value: 30
     - stat: stormGuard
       value: 0.4
-    mul:
+    - stat: hp
+      value: 73.91304
     - stat: speed
-      value: 1.4
+      value: 80
+    - stat: guns
+      value: 1
+    - stat: dmg
+      value: -1.272728
+    - stat: reload
+      value: -0.79999995
+    - stat: dmgTaken
+      value: 0.089431405
+    mul:
     - stat: turn
       value: 1.25
     - stat: range
@@ -269,10 +301,6 @@ MonoBehaviour:
     desc: "\uC791\uACE0 \uC544\uC8FC \uBE60\uB984. \uB9C8\uC6B0\uC2A4 \uCABD\uC73C\uB85C
       \uC5B4\uB8B0\uB97C \uC3E8."
     add:
-    - stat: hp
-      value: 153
-    - stat: guns
-      value: 1
     - stat: bow
       value: 1.1
     - stat: torpedo
@@ -281,15 +309,23 @@ MonoBehaviour:
       value: 35
     - stat: stormGuard
       value: 0.5
-    mul:
+    - stat: hp
+      value: 126.08696
     - stat: speed
-      value: 1.61
+      value: 95
+    - stat: guns
+      value: 2
+    - stat: dmg
+      value: 1.454545
+    - stat: reload
+      value: -0.89999986
+    - stat: dmgTaken
+      value: 0.12534678
+    mul:
     - stat: turn
       value: 1.35
     - stat: range
       value: 1.1
-    - stat: dmgTaken
-      value: 0.96
     slots:
     - cannon
     - sail
@@ -328,10 +364,6 @@ MonoBehaviour:
     desc: "\uC950 \uADC0 \uB808\uC774\uB354\uC5D0 \uC720\uB3C4\uD0C4 \uBC1C\uC0AC\uB300.
       \uAC00\uC7A5 \uBE60\uB978 \uBC30."
     add:
-    - stat: hp
-      value: 231
-    - stat: guns
-      value: 1
     - stat: bow
       value: 0.8
     - stat: torpedo
@@ -344,15 +376,23 @@ MonoBehaviour:
       value: 0.6
     - stat: vision
       value: 200
-    mul:
+    - stat: hp
+      value: 186.95651
     - stat: speed
-      value: 1.8
+      value: 110
+    - stat: guns
+      value: 2
+    - stat: dmg
+      value: 5.090908
+    - stat: reload
+      value: -0.9999999
+    - stat: dmgTaken
+      value: 0.16371083
+    mul:
     - stat: turn
       value: 1.43
     - stat: range
       value: 1.13
-    - stat: dmgTaken
-      value: 0.93
     slots:
     - cannon
     - sail
@@ -391,13 +431,21 @@ MonoBehaviour:
     desc: "\uBC30\uAC00 \uB465\uAE00\uACE0 \uC9D0\uCE78\uC774 \uB113\uC74C. \uCCB4\uC778\uC0F7
       \xB7 \uD654\uC5FC\uD0C4\uC744 \uC2E3\uAE30 \uC2DC\uC791\uD568."
     add:
-    - stat: hp
-      value: 30
     - stat: chain
       value: 9
-    mul:
+    - stat: hp
+      value: 47.826096
     - stat: speed
-      value: 1.05
+      value: 20
+    - stat: guns
+      value: 0
+    - stat: dmg
+      value: -0.36363697
+    - stat: reload
+      value: -0.099999905
+    - stat: dmgTaken
+      value: -0.032258093
+    mul: []
     slots:
     - cannon
     - sail
@@ -427,17 +475,23 @@ MonoBehaviour:
     desc: "\uBE60\uB974\uACE0 \uD3EC\uB3C4 \uB9CE\uC740 \uB9CC\uB2A5 \uAD70\uD568.
       \uD654\uC5FC\uD0C4 \uC7A5\uCC29."
     add:
-    - stat: hp
-      value: 60
-    - stat: guns
-      value: 1
     - stat: chain
       value: 8
     - stat: fire
       value: 10
-    mul:
+    - stat: hp
+      value: 73.91304
     - stat: speed
-      value: 1.15
+      value: 32
+    - stat: guns
+      value: 1
+    - stat: dmg
+      value: 2.363636
+    - stat: reload
+      value: -0.19999993
+    - stat: dmgTaken
+      value: -0.0023279786
+    mul:
     - stat: turn
       value: 1.05
     slots:
@@ -472,10 +526,6 @@ MonoBehaviour:
     desc: "\uB3DB\uACFC \uC2A4\uD06C\uB8E8\uB97C \uD568\uAED8 \uC500. \uBC15\uACA9\uD3EC\uB97C
       \uC2E4\uC5B4 \uBA40\uB9AC \uD3ED\uACA9."
     add:
-    - stat: hp
-      value: 95
-    - stat: guns
-      value: 1
     - stat: chain
       value: 7
     - stat: fire
@@ -484,9 +534,19 @@ MonoBehaviour:
       value: 13
     - stat: stormGuard
       value: 0.3
-    mul:
+    - stat: hp
+      value: 108.69566
     - stat: speed
-      value: 1.2
+      value: 45
+    - stat: guns
+      value: 1
+    - stat: dmg
+      value: 6
+    - stat: reload
+      value: -0.29999995
+    - stat: dmgTaken
+      value: 0.029512644
+    mul:
     - stat: turn
       value: 1.05
     slots:
@@ -524,10 +584,6 @@ MonoBehaviour:
     desc: "\uAC15\uCCA0 \uAC11\uD310\uACFC \uD3EC\uD0D1. \uC120\uC6D0\uC774 \uB9CE\uC544
       \uC7A5\uC804\uC774 \uBE68\uB77C\uC9D0."
     add:
-    - stat: hp
-      value: 205
-    - stat: guns
-      value: 2
     - stat: chain
       value: 6
     - stat: fire
@@ -540,15 +596,23 @@ MonoBehaviour:
       value: 6
     - stat: stormGuard
       value: 0.4
-    mul:
+    - stat: hp
+      value: 178.26086
     - stat: speed
-      value: 1.3
+      value: 55
+    - stat: guns
+      value: 2
+    - stat: dmg
+      value: 10.545454
+    - stat: reload
+      value: -0.39999986
+    - stat: dmgTaken
+      value: 0.0634526
+    mul:
     - stat: turn
       value: 1.18
     - stat: range
       value: 1.05
-    - stat: dmgTaken
-      value: 0.96
     slots:
     - cannon
     - sail
@@ -587,10 +651,6 @@ MonoBehaviour:
     desc: "\uBB3C\uC18D\uC5D0\uC11C \uC5B4\uB8B0\uB97C \uC3D8\uACE0, \uB9DE\uC744
       \uB54C \uAC00\uB054 \uC7A0\uC218\uD574 \uD53C\uD568."
     add:
-    - stat: hp
-      value: 269
-    - stat: guns
-      value: 2
     - stat: chain
       value: 5
     - stat: fire
@@ -607,15 +667,23 @@ MonoBehaviour:
       value: 0.15
     - stat: stormGuard
       value: 0.7
-    mul:
+    - stat: hp
+      value: 256.52176
     - stat: speed
-      value: 1.38
+      value: 65
+    - stat: guns
+      value: 2
+    - stat: dmg
+      value: 16.90909
+    - stat: reload
+      value: -0.49999988
+    - stat: dmgTaken
+      value: 0.09970665
+    mul:
     - stat: turn
       value: 1.25
     - stat: range
       value: 1.08
-    - stat: dmgTaken
-      value: 0.93
     slots:
     - cannon
     - sail
@@ -654,15 +722,21 @@ MonoBehaviour:
     desc: "\uBCF4\uBB3C\uC120\uC774\uC790 \uAD70\uD568. \uB290\uB9AC\uC9C0\uB9CC
       \uD2BC\uD2BC\uD558\uACE0 \uB300\uD3EC\uAC00 \uB9CE\uC74C."
     add:
-    - stat: hp
-      value: 50
-    - stat: guns
-      value: 1
     - stat: goldBonus
       value: 0.1
-    mul:
+    - stat: hp
+      value: 108.69566
     - stat: speed
-      value: 0.95
+      value: -30
+    - stat: guns
+      value: 1
+    - stat: dmg
+      value: 4.181818
+    - stat: reload
+      value: 0.9000001
+    - stat: dmgTaken
+      value: -0.13978493
+    mul:
     - stat: turn
       value: 0.92
     slots:
@@ -694,19 +768,23 @@ MonoBehaviour:
     desc: "\uC138 \uCE35 \uAC11\uD310 \uAC00\uB4DD \uB300\uD3EC. \uC77C\uC81C \uC0AC\uACA9
       \uD55C \uBC88\uC774 \uBB34\uC11C\uC6C0."
     add:
-    - stat: hp
-      value: 100
-    - stat: guns
-      value: 3
     - stat: goldBonus
       value: 0.1
-    mul:
+    - stat: hp
+      value: 152.17392
     - stat: speed
-      value: 0.9
+      value: -22
+    - stat: guns
+      value: 2
+    - stat: dmg
+      value: 7.818182
+    - stat: reload
+      value: 0.8000002
+    - stat: dmgTaken
+      value: -0.13978493
+    mul:
     - stat: turn
       value: 0.85
-    - stat: dmg
-      value: 1.1
     slots:
     - cannon
     - sail
@@ -739,24 +817,26 @@ MonoBehaviour:
     desc: "\uC1E0\uB85C \uB458\uB7EC\uC2FC \uBC30. \uBC1B\uB294 \uD53C\uD574\uAC00
       \uD06C\uAC8C \uC904\uACE0 \uD68C\uC804 \uD3EC\uD0D1\uC774 \uC0DD\uAE40."
     add:
-    - stat: hp
-      value: 170
-    - stat: guns
-      value: 3
     - stat: bow
       value: 1.8
     - stat: bowDmg
       value: 6
     - stat: stormGuard
       value: 0.5
-    mul:
+    - stat: hp
+      value: 204.34784
     - stat: speed
-      value: 0.9
-    - stat: turn
-      value: 0.85
+      value: -15
+    - stat: guns
+      value: 3
     - stat: dmg
-      value: 1.2
+      value: 11.454544
+    - stat: reload
+      value: 0.70000005
     - stat: dmgTaken
+      value: -0.13978493
+    mul:
+    - stat: turn
       value: 0.85
     slots:
     - cannon
@@ -793,10 +873,6 @@ MonoBehaviour:
     desc: "\uAC70\uD3EC \uC5F4 \uBB38\uC9DC\uB9AC \uAC70\uB300 \uC804\uD568. \uD3EC
       \uD55C \uBC1C \uD55C \uBC1C\uC774 \uC544\uC8FC \uC148."
     add:
-    - stat: hp
-      value: 314
-    - stat: guns
-      value: 6
     - stat: bow
       value: 1.4
     - stat: bowDmg
@@ -805,19 +881,23 @@ MonoBehaviour:
       value: 12
     - stat: stormGuard
       value: 0.6
-    mul:
+    - stat: hp
+      value: 300
     - stat: speed
-      value: 0.99
+      value: -10
+    - stat: guns
+      value: 4
+    - stat: dmg
+      value: 16.90909
+    - stat: reload
+      value: 0.60000014
+    - stat: dmgTaken
+      value: -0.13978493
+    mul:
     - stat: turn
       value: 0.85
-    - stat: dmg
-      value: 1.1
-    - stat: dmgTaken
-      value: 0.77
     - stat: range
       value: 1.21
-    - stat: reload
-      value: 1.2
     slots:
     - cannon
     - sail
@@ -856,10 +936,6 @@ MonoBehaviour:
     desc: "\uC950 \uC870\uC885\uC0AC \uD568\uC7AC\uAE30\uAC00 \uB0A0\uC544\uC62C\uB77C
       \uC54C\uC544\uC11C \uC2F8\uC6C0."
     add:
-    - stat: hp
-      value: 450
-    - stat: guns
-      value: 3
     - stat: planes
       value: 3
     - stat: mortar
@@ -868,15 +944,21 @@ MonoBehaviour:
       value: 0.7
     - stat: vision
       value: 250
-    mul:
+    - stat: hp
+      value: 421.73914
     - stat: speed
-      value: 1.01
+      value: -5
+    - stat: guns
+      value: 5
+    - stat: dmg
+      value: 24.181816
+    - stat: reload
+      value: 0.5
+    - stat: dmgTaken
+      value: -0.13978493
+    mul:
     - stat: turn
       value: 0.83
-    - stat: dmg
-      value: 1.3
-    - stat: dmgTaken
-      value: 0.7
     - stat: range
       value: 1.19
     slots:
