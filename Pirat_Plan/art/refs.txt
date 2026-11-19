@@ -8,3 +8,7 @@ boss_shark -i ref_shark_top.png -i ref_style_top.png -i ref_shark.png
 boss_shark2 -i ref_shark_top.png -i ref_style_top.png
 mortar -i ref_style_top.png -i ref_icons.png
 title_bg -i ref_title.jpg -i ref_capt.png -i ref_navy.png
+ip_cover -i ref_capt.png -i ref_pirate.png -i ref_navy.png
+ip_broadside -i ref_style_top.png -i ref_galley.png -i ref_navy.png
+ip_evolution -i ref_capt.png -i ref_pirate.png -i ref_navy.png
+ip_gacha -i ref_capt.png -i ref_icons.png -i ref_pirate.png
